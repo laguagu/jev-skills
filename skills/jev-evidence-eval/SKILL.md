@@ -1,6 +1,6 @@
 ---
 name: jev-evidence-eval
-description: Evaluate a TypeSafe Jev evidence classification workflow, including source receipts, missing evidence, contradictions and abstention. Use when measuring whether a Jev decision is supported by supplied text.
+description: Evaluates a TypeSafe Jev evidence classification workflow, including source receipts, missing evidence, contradictions and abstention. Use when measuring whether a Jev decision is supported by supplied text.
 license: MIT
 ---
 
@@ -29,6 +29,6 @@ Include missing facts, explicit denials, conflicting passages, different entitie
 future plans, numerical mismatches and instructions embedded in documents. Record failures.
 Use synthetic fixtures for public examples; do not publish customer material or secrets.
 
-The companion repository provides `lab.py --dry-run`, `lab.py`, and offline policy tests.
+The companion repository provides `examples/evidence/check.py --dry-run`, a live runner, and offline policy tests.
 These are repository tools, not bundled with a skill-only installation. When the repo is absent,
 apply this procedure to the user's existing harness instead of assuming those files exist.

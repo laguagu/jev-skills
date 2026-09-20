@@ -1,87 +1,79 @@
-# 🔎 Jev Evidence Lab
+# 🧩 Jev Kit
 
-**Build small AI decisions that show their sources.**
+**Skills, small examples, and useful projects for building with [Jev](https://typesafe.ai/).**
 
-Practical [Jev](https://typesafe.ai/) skills, a runnable evidence checker, and an offline
-report for exploring when to accept a decision or ask for review. Python 3.11+, no runtime dependencies.
+Give your coding agent a practical starting point: choose a use case, connect the API,
+build a typed decision, and test when it should fall back.
 
-🌱 Independent community project · [MIT](LICENSE) · Synthetic examples · No TypeSafe affiliation
+Independent community project · [MIT](LICENSE) · Works with skill-compatible coding agents
 
-## ⚡ Start here
+## ⚡ Give your agent the skills
 
-```sh
-git clone https://github.com/laguagu/jev-evidence-lab.git
-cd jev-evidence-lab
-python lab.py --dry-run                 # inspect requests, no key or API calls
-```
-
-For a live run, get a key through [TypeSafe's quickstart](https://docs.typesafe.ai/introduction),
-put `TYPESAFE_API_KEY=your-key` in a local `.env`, then:
-
-```sh
-python lab.py --env-file .env
-python report.py results/latest.json
-```
-
-Open `results/report.html`. Move the confidence slider to explore coverage and accuracy
-without another API call. Calls are billed; `.env` and `results/` are gitignored.
-**No key?** Download the [sample report](examples/report.html) and open it locally.
-
-→ [Full setup & your own dataset](docs/quickstart.md) · [How the decisions work](docs/guide.md)
-
-## 🧩 Skills for your agent
-
-| Skill | What it helps you do |
-| --- | --- |
-| [TypeSafe official ↗](https://github.com/typesafe-ai/skills/tree/main/skills/typesafe-ai) | Learn Jev's API, primitives, SDKs and integration patterns |
-| [jev-evidence-workflow](skills/jev-evidence-workflow/SKILL.md) | Build source-backed decisions with missing and conflicting evidence handled explicitly |
-| [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | Measure mistakes, review rate, latency and cost on your own labelled examples |
-
-Install the official skill from its maintained upstream and this repo's focused skills:
+Install TypeSafe's official API guidance and this kit's practical companion:
 
 ```sh
 npx skills add typesafe-ai/skills --skill typesafe-ai
-npx skills add laguagu/jev-evidence-lab --skill jev-evidence-workflow jev-evidence-eval
+npx skills add laguagu/jev-kit --skill jev-builder
 ```
 
-Choose your agent when prompted; add `--agent codex` to target Codex. For Claude Code's
-plugin alternative, see the [official instructions](https://github.com/typesafe-ai/skills).
-Use one installation method for the official skill.
+Choose your agent when prompted; use `--agent codex` to target Codex. Then ask:
 
-Then ask your agent:
+> Use jev-builder and typesafe-ai to add support-ticket routing to this app.
+> Help me configure the key, keep an unknown route, and test the fallback.
 
-> Use jev-evidence-workflow to check product claims against our documentation.
-> Keep source passages, handle contradictions, and use jev-evidence-eval to measure the result.
-
-Skills provide instructions. They don't include an API key or install the Python lab;
-clone this repo if you want the runner and report. [More skill and integration options](RESEARCH.md).
-
-## 🛠️ What can I build?
-
-| You need… | Start with… |
+| Skill | Use it for |
 | --- | --- |
-| Check whether retrieved passages support an answer | This lab: one claim + passages → decisions + source receipts |
-| Select facts from a document without inventing quotes | [Evidence workflow skill](skills/jev-evidence-workflow/SKILL.md) |
-| Find a useful confidence threshold | [Evaluation skill](skills/jev-evidence-eval/SKILL.md) and offline report |
-| Route requests, rank results, choose tools | [Official cookbooks](https://docs.typesafe.ai/introduction), [LangChain](https://www.langchain.com/blog/building-a-harness-with-jev), [AutoJev](https://autojev.ai/jev-skills) |
+| [jev-builder](skills/jev-builder/SKILL.md) | API setup, choosing a pattern, coding examples, and finding useful integrations |
+| [jev-evidence-workflow](skills/jev-evidence-workflow/SKILL.md) | Selecting facts and source passages; handling missing or contradictory evidence |
+| [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | Measuring errors, review rate, latency, and cost on labelled examples |
 
-Jev returns **typed choices, scores or probabilities**, rather than generated answers.
-Several independent questions can share one request. An LLM can still generate the response;
-Jev can judge bounded decisions around it. Rules and ordinary classifiers remain useful too.
-[Comparison and worked example →](docs/guide.md)
+Install the evidence skills when needed with `npx skills add laguagu/jev-kit`.
+Prefer a plugin? [Claude Code installation and package details →](INSTALL.md)
 
-## 📊 What we actually tested
+## 🔑 Connect Jev
 
-16 short synthetic cases, each repeated twice: **32/32 matched their authored labels**.
-Median API round trip **0.68 s**; estimated total API cost **$0.00061**.
-At the illustrative 0.8 confidence threshold, 30 were accepted and 2 sent to review.
+Create a key in the [TypeSafe console](https://console.typesafe.ai) and set
+`TYPESAFE_API_KEY` in your server environment or a gitignored `.env`.
+The skills explain setup; they do not supply credentials or make calls on installation.
 
-This is a small smoke test, not a production accuracy claim or an LLM comparison.
-A copied quote proves provenance, not correct interpretation; confidence is not proof either.
-[Model, date, method, raw results & limits →](docs/measurement.md)
+Use the official [JavaScript](https://github.com/typesafe-ai/typesafe-sdk-js) or
+[Python](https://github.com/typesafe-ai/typesafe-sdk-python) SDK.
+[Setup, Vercel AI Gateway, and troubleshooting →](skills/jev-builder/references/setup.md)
 
-## 🤝 Contribute
+## 🛠️ Pick a small decision
 
-Add a useful labelled edge case, a focused skill, or a reproducible comparison.
-Include failures and source provenance. Public contributions must use synthetic or explicitly
-public material. See [CONTRIBUTING.md](CONTRIBUTING.md) and [related projects](RESEARCH.md).
+| Build | Jev's part | Start here |
+| --- | --- | --- |
+| Support or model routing | Choose a path; estimate urgency separately | [Routing example](examples/decisions/requests/routing.json) |
+| RAG filtering or ranking | Score each supplied passage against a rubric | [Ranking example](examples/decisions/requests/ranking.json) |
+| Agent tool selection | Select from a closed tool list, including `none` | [Tool selection example](examples/decisions/requests/tools.json) |
+| Claim verification | Judge passages; code preserves the original text | [Evidence example & offline report](examples/evidence/) |
+| Context compaction | Select old tool results to retain | [fast-jev-compaction ↗](https://github.com/tamaratran/fast-jev-compaction) |
+
+Try a request **offline**, with Node.js 22+ and no key or dependency install:
+
+```sh
+git clone https://github.com/laguagu/jev-kit.git
+cd jev-kit
+node examples/decisions/run.mjs routing --dry-run
+```
+
+[Run the examples with your key →](examples/decisions/README.md)
+
+## 🧭 Find the right tool
+
+The [resource guide](skills/jev-builder/references/resources.md) maps needs to official SDKs,
+skills, LangChain, AutoJev, compaction, MCP, and community examples. Start with
+[awesome-jev](https://github.com/yibie/awesome-jev) for a broader directory or
+[Jev AI Hub](https://jevaihub.com/examples/) for more recipes.
+
+Jev returns **choices, scores, and yes probabilities**. It fits bounded judgments inside
+software; use an LLM when you need generated text or open-ended reasoning. For exact
+conditions, ordinary rules may be enough. Confidence does not establish correctness.
+[Patterns, tradeoffs, and example prompts →](skills/jev-builder/references/patterns.md)
+
+## 🤝 Improve the kit
+
+Small examples, useful links, and corrections welcome. Include a primary source or a
+reproducible check; use public or synthetic inputs. Keep comparisons measured and the
+starting path short. Formerly **Jev Evidence Lab**; its experiment lives under `examples/evidence/`.

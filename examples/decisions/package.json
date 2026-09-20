@@ -1,0 +1,14 @@
+{
+  "name": "jev-kit-examples",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  },
+  "scripts": {
+    "test": "node --test policy.test.mjs"
+  }
+}

@@ -16,7 +16,7 @@ Pinned `jev-1.13.0`, 16 unique fixtures × 2 repetitions, sequential calls from 
 
 Cost is usage multiplied by the documented $0.042 per million input tokens; outputs are free.
 It is an estimate, not a bill. The run records model, timestamp, code/data hashes and raw answers.
-The [included snapshot](../examples/run.json) comes from the initial runner in commit `f520d21`; subsequent changes
+The [included snapshot](run.json) comes from the initial runner in commit `f520d21`; subsequent changes
 add custom dataset support. Offline tests verify that its decisions still replay identically.
 The [pricing source](https://docs.typesafe.ai/models) was checked on the measurement date.
 

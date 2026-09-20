@@ -2,7 +2,7 @@
 import argparse
 import json
 from pathlib import Path
-from lab import compose
+from check import compose
 
 
 def render(data):
@@ -12,7 +12,7 @@ def render(data):
     encoded = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c").replace("&", "\\u0026")
     template = '''<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Jev Evidence Lab · measured decisions</title>
+<title>Jev Kit · measured decisions</title>
 <style>
 :root{color-scheme:light;background:#f6f5f0;color:#202b29;font:16px/1.55 system-ui,sans-serif}
 *{box-sizing:border-box}body{margin:0}main{max-width:1020px;padding:60px 24px;margin:auto}

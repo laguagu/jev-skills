@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "jev-kit",
+  "version": "1.0.0",
+  "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
+  "author": {
+    "name": "laguagu",
+    "url": "https://github.com/laguagu"
+  },
+  "homepage": "https://github.com/laguagu/jev-kit",
+  "repository": "https://github.com/laguagu/jev-kit",
+  "license": "MIT",
+  "keywords": [
+    "jev",
+    "typesafe",
+    "agent-skills",
+    "classification",
+    "routing"
+  ]
+}

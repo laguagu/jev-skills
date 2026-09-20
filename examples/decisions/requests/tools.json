@@ -1,0 +1,27 @@
+{
+  "model": "jev-latest",
+  "state": {
+    "task": "Find the project's documented Node.js version.",
+    "tools": [
+      {
+        "id": "search_docs",
+        "purpose": "Search the project's documentation."
+      },
+      {
+        "id": "read_file",
+        "purpose": "Read a specified repository file; requires a known path."
+      }
+    ]
+  },
+  "questions": {
+    "tool": {
+      "type": "choice",
+      "instructions": "Choose the one tool that can best advance the task using information already supplied. Do not invent arguments. Choose none if no tool fits or more user information is required.",
+      "criteria": {
+        "search_docs": "The task calls for locating documented information without a known file path.",
+        "read_file": "The task supplies an exact file path to inspect.",
+        "none": "No available tool fits, or required information is missing."
+      }
+    }
+  }
+}

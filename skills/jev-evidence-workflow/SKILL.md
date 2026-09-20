@@ -1,6 +1,6 @@
 ---
 name: jev-evidence-workflow
-description: Build source-backed fact or claim decisions with TypeSafe Jev, preserving exact text receipts and handling missing or conflicting evidence. Use when implementing document fact selection, answer verification or evidence triage.
+description: Builds source-backed fact or claim decisions with TypeSafe Jev, preserving exact text receipts and handling missing or conflicting evidence. Use when implementing document fact selection, answer verification or evidence triage.
 license: MIT
 ---
 
@@ -35,10 +35,10 @@ boundaries. Treat confidence and chosen-option probability as different signals;
 the fact. Set review rules based on the application's consequences, and calibrate thresholds on
 labelled examples before treating them as reliable operating points.
 
-Measure with [jev-evidence-eval](https://github.com/laguagu/jev-evidence-lab/tree/main/skills/jev-evidence-eval)
+Measure with [jev-evidence-eval](https://github.com/laguagu/jev-kit/tree/main/skills/jev-evidence-eval)
 or an equivalent harness: include explicit denials, missing statements, wrong entities,
 contradictions, future plans and numerical mismatches. Report failures and coverage.
 
 This skill contains instructions only. The optional companion runner and offline report live
-in [Jev Evidence Lab](https://github.com/laguagu/jev-evidence-lab); don't assume they exist in
+in [Jev Kit](https://github.com/laguagu/jev-kit); don't assume they exist in
 a skill-only installation. Use the user's existing language and project when implementing.

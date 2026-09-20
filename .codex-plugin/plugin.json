@@ -1,0 +1,33 @@
+{
+  "name": "jev-kit",
+  "version": "1.0.0",
+  "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
+  "author": {
+    "name": "laguagu",
+    "url": "https://github.com/laguagu"
+  },
+  "homepage": "https://github.com/laguagu/jev-kit",
+  "repository": "https://github.com/laguagu/jev-kit",
+  "license": "MIT",
+  "keywords": [
+    "jev",
+    "typesafe",
+    "agent-skills",
+    "classification",
+    "routing"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Jev Kit",
+    "shortDescription": "Build small decisions with Jev",
+    "longDescription": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
+    "developerName": "laguagu",
+    "category": "Developer Tools",
+    "capabilities": [],
+    "websiteURL": "https://github.com/laguagu/jev-kit",
+    "defaultPrompt": [
+      "Use jev-builder to add a typed decision to this app.",
+      "Find a useful Jev integration for this project."
+    ]
+  }
+}

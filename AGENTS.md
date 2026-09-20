@@ -1,4 +1,4 @@
-# Jev Kit
+# Jev Skills
 
 - Read `README.md` and the relevant `skills/*/SKILL.md`. Use the official `typesafe-ai` skill for current API details.
 - Keep this a small skills-and-examples kit. Bundle reusable guidance under `skills/jev-builder/references/`; examples belong under `examples/`.

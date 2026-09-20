@@ -1,5 +1,5 @@
 {
-  "name": "jev-kit",
+  "name": "jev-skills",
   "owner": {
     "name": "laguagu",
     "url": "https://github.com/laguagu"
@@ -9,10 +9,10 @@
   },
   "plugins": [
     {
-      "name": "jev-kit",
+      "name": "jev-skills",
       "source": "./",
       "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
-      "version": "1.0.0"
+      "version": "1.1.0"
     }
   ]
 }

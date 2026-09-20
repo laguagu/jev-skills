@@ -4,7 +4,7 @@
 
 ```sh
 npx skills add typesafe-ai/skills --skill typesafe-ai
-npx skills add laguagu/jev-kit --skill jev-builder
+npx skills add laguagu/jev-skills --skill jev-builder
 ```
 
 Choose your agent when prompted, or add `--agent codex`. Omit `--skill` from the
@@ -16,11 +16,11 @@ Pick one installation method per skill to avoid duplicate copies.
 
 ## Claude Code plugin alternative
 
-Install all three Jev Kit skills together:
+Install all three Jev Skills skills together:
 
 ```sh
-claude plugin marketplace add laguagu/jev-kit
-claude plugin install jev-kit@jev-kit
+claude plugin marketplace add laguagu/jev-skills
+claude plugin install jev-skills@jev-skills
 ```
 
 For the official TypeSafe skill, use its plugin alternative **instead of** its skills CLI command:
@@ -31,7 +31,7 @@ claude plugin install typesafe@typesafe-ai
 ```
 
 Reload plugins or start a new session if your client does not pick them up immediately.
-For example, ask: “Use the jev-kit:jev-builder skill to design a request router.”
+For example, ask: “Use the jev-skills:jev-builder skill to design a request router.”
 
 ## What's in the package?
 

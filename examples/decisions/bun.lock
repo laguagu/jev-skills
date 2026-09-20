@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "jev-kit-examples",
+      "name": "jev-skills-examples",
       "dependencies": {
         "@typesafe-ai/sdk": "0.6.0",
       },

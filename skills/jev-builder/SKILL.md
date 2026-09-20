@@ -20,7 +20,7 @@ If the official skill is absent, the docs and references below are sufficient to
 | An existing skill, SDK, MCP integration, example, or compaction project | [Resources](references/resources.md) |
 
 Read only the references relevant to the task. These files are bundled with this skill;
-the optional [runnable examples](https://github.com/laguagu/jev-kit/tree/main/examples)
+the optional [runnable examples](https://github.com/laguagu/jev-skills/tree/main/examples)
 require the repository. Do not assume they exist in a skill-only installation.
 
 ## Implement a decision
@@ -56,8 +56,8 @@ for the actual task; constants in examples are illustrations.
 
 For evidence work, preserve source IDs and copy exact text in code. Use a missing-evidence
 outcome instead of treating silence as a negative. See the companion
-[evidence workflow](https://github.com/laguagu/jev-kit/tree/main/skills/jev-evidence-workflow)
-and [evaluation skill](https://github.com/laguagu/jev-kit/tree/main/skills/jev-evidence-eval).
+[evidence workflow](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-workflow)
+and [evaluation skill](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval).
 
 When recommending a third-party project, verify its current primary docs, supported runtime,
 license, and actual integration. State whether it was run or only inspected. For compaction

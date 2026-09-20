@@ -50,6 +50,6 @@ launch figures as a promise for the user's application.
 - “Find a maintained Jev context-compaction integration. Show which messages it sends externally and what happens if it fails.”
 - “Compare Jev against our existing ticket classifier on the same held-out cases. Include unknowns, errors, and fallback cost.”
 
-Runnable [decision examples](https://github.com/laguagu/jev-kit/tree/main/examples/decisions)
-and the [evidence experiment](https://github.com/laguagu/jev-kit/tree/main/examples/evidence)
+Runnable [decision examples](https://github.com/laguagu/jev-skills/tree/main/examples/decisions)
+and the [evidence experiment](https://github.com/laguagu/jev-skills/tree/main/examples/evidence)
 are optional companions. They are not bundled in a skill-only installation.

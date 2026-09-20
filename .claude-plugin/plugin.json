@@ -1,13 +1,13 @@
 {
-  "name": "jev-kit",
-  "version": "1.0.0",
+  "name": "jev-skills",
+  "version": "1.1.0",
   "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
   "author": {
     "name": "laguagu",
     "url": "https://github.com/laguagu"
   },
-  "homepage": "https://github.com/laguagu/jev-kit",
-  "repository": "https://github.com/laguagu/jev-kit",
+  "homepage": "https://github.com/laguagu/jev-skills",
+  "repository": "https://github.com/laguagu/jev-skills",
   "license": "MIT",
   "keywords": [
     "jev",

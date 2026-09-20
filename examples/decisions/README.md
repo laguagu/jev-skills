@@ -45,3 +45,17 @@ separate handling. `Noul` returns P(yes); it has no separate confidence field.
 
 Dry runs and policy tests verify local request/policy behavior, not model accuracy. Edit the
 synthetic input and criteria to try your own cases. Keep private inputs out of tracked files.
+
+## Live smoke check
+
+On September 20, 2026, the three bundled requests at commit `9abf769` were run once each
+through SDK 0.6.0. All returned `jev-1.13.0`; their resulting policies matched these expectations:
+
+| Example | Observed policy | Request and policy time |
+| --- | --- | --- |
+| Routing | Billing queue, not immediate | 727 ms |
+| Ranking | Retention passage, logging passage, billing passage | 742 ms |
+| Tool selection | Propose `search_docs`; execute nothing | 692 ms |
+
+Total reported input: 1,507 tokens. These are three synthetic smoke checks, not an accuracy
+benchmark or latency guarantee. The local policy tests cover uncertainty and malformed answers separately.

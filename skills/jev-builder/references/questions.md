@@ -18,6 +18,12 @@ Check TypeSafe's [primitives](https://docs.typesafe.ai/primitives) and the model
   as a description of that kind of input.
 - **Keep policy out of the question.** Thresholds, weights, and precedence rules belong in code,
   where they can change without invalidating earlier answers.
+- **Write the assumption into a speculative question.** When one question picks the branch and
+  another supplies the detail that branch needs, say so: ask which target *if* the operation is
+  the one named, and state that a separate question decides the operation. Left implicit, the
+  second question starts deciding the branch again on its own terms.
+- **Bound the answer to what you offered.** When the options are candidates you numbered this
+  turn, require one of those indices; an ID the application cannot resolve is a failed decision.
 
 Score levels need their own care. Each level is judged on its own, and the model sees neither
 its number nor its neighbours, so a level defined as worse than the one before it says nothing.

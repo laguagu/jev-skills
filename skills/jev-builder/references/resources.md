@@ -26,6 +26,7 @@ This kit links to upstream instead of shipping a competing copy of the official 
 | [AutoJev skills](https://autojev.ai/jev-skills) | Task/model routing, tool/research checks, and completion review; its MCP setup is separate from skill instructions |
 | [fast-jev-compaction](https://github.com/tamaratran/fast-jev-compaction) | Library and Claude Code plugin that select tool calls/results to retain; inspect hooks and runtime requirements before enabling |
 | [typesafe-mcp](https://github.com/itsmostafa/typesafe-mcp) | Community MCP bridge when an agent needs callable Jev evaluations |
+| [jev-ultrafast](https://github.com/browser-use/jev-ultrafast) | MIT browser agent that picks an operation and its target in one request over numbered page elements; its performance notes show what a paired, version-pinned comparison looks like |
 | [Jev AI Hub examples](https://jevaihub.com/examples/) | Independent recipes for routing, scoring, moderation, retrieval, and tool selection |
 | [awesome-jev](https://github.com/yibie/awesome-jev) | A broader, categorized directory when this short map does not cover the need |
 

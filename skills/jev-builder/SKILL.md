@@ -29,7 +29,8 @@ require the repository. Do not assume they exist in a skill-only installation.
 1. **Define the contract.** Identify the available input, allowed outcomes, cost of a
    wrong decision, and what happens when information is missing. If an exact rule solves
    the problem, use code. If the output is a new paragraph or arbitrary JSON content,
-   use a generative model or deterministic extraction instead.
+   use a generative model or deterministic extraction instead. The two compose well: a typed
+   decision picks the slot or candidate, and a generative model fills only that one slot.
 2. **Connect the provider.** Follow the setup reference and the project's existing secret
    handling. TypeSafe direct credentials and AI Gateway credentials are different.
    Keep keys on the server; never ask the user to paste a key into the conversation.

@@ -25,6 +25,7 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | Route to a model or subagent | Choice among a documented capability list | Resolve to configured IDs; retain a default; measure total cost including routing |
 | Rank retrieved passages ([`ranking`][ranking]) | One Score per passage with a relevance rubric | Sort in code, preserve passage IDs, and retain context needed for exceptions |
 | Select a tool ([`tools`][tools]) | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
+| Choose an action and what it acts on | Choice for the operation, plus one speculative Choice per operation over observed candidates | Number the candidates in code each turn; execute only the target belonging to the chosen operation |
 | Continue, retry, or stop ([`workflow`][workflow]) | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
 | Gate a pending action ([`risk`][risk]) | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
 | Verify a generated answer ([`verify`][verify]) | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
@@ -62,6 +63,11 @@ free-text explanations, or source quotations.
 Schema validity is not semantic accuracy. Any speed or cost advantage needs an equivalent
 task, the same inputs, a measured baseline, and the cost of fallbacks. Do not repeat “up to”
 launch figures as a promise for the user's application.
+
+When you do compare two implementations, alternate the arms over the same inputs rather than
+running each in a block, pin the versions on both sides, say what the clock starts and stops on,
+and report every attempt including failures. State the sample size honestly: a handful of paired
+runs shows a direction, not a significant result.
 
 ## Prompts for a coding agent
 

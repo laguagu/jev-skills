@@ -1,4 +1,7 @@
 import unittest
+import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import lab
 
@@ -9,6 +12,32 @@ def answer(label, confidence=0.95):
 
 
 class Decisions(unittest.TestCase):
+    def test_custom_dataset_preserves_source_text(self):
+        case = {"id": "custom", "claim": "Säilytysaika on 7 päivää.", "passages": ["  Loki poistetaan 7 päivän kuluttua.  "], "expected": "supported"}
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "cases.json"
+            path.write_text(json.dumps([case]), encoding="utf-8")
+            loaded, digest = lab.load_cases(path)
+        self.assertEqual(loaded, [case])
+        self.assertEqual(lab.request_body(loaded[0])["state"]["passages"], case["passages"])
+        self.assertEqual(len(digest), 64)
+
+    def test_bad_datasets_fail_before_api_calls(self):
+        valid = {"id": "one", "claim": "X", "passages": [], "expected": "not_stated"}
+        bad = [[], {}, [valid, valid], [{**valid, "passages": "text"}], [{**valid, "expected": "review"}], [{**valid, "claim": ""}]]
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "cases.json"
+            for dataset in bad:
+                with self.subTest(dataset=dataset):
+                    path.write_text(json.dumps(dataset), encoding="utf-8")
+                    with self.assertRaises(ValueError):
+                        lab.load_cases(path)
+
+    def test_published_snapshot_replays_with_current_policy(self):
+        report = json.loads((lab.ROOT / "examples/run.json").read_text(encoding="utf-8"))
+        for expected in report["threshold_sweep"]:
+            self.assertEqual(lab.summarize(report["rows"], expected["threshold"]), expected)
+
     def test_absence_is_not_negative(self):
         self.assertEqual(lab.compose({"p0": answer("irrelevant")}, .8), "not_stated")
 

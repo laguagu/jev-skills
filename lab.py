@@ -24,6 +24,29 @@ CRITERIA = {
 }
 
 
+def load_cases(path):
+    raw = path.read_bytes()
+    cases = json.loads(raw.decode("utf-8-sig"))
+    if not isinstance(cases, list) or not cases:
+        raise ValueError("Cases must be a nonempty JSON array")
+    seen = set()
+    for index, case in enumerate(cases):
+        if not isinstance(case, dict):
+            raise ValueError(f"Case {index + 1} must be an object")
+        case_id = case.get("id")
+        if not isinstance(case_id, str) or not case_id.strip() or case_id in seen:
+            raise ValueError(f"Case {index + 1} needs a unique nonempty id")
+        seen.add(case_id)
+        if not isinstance(case.get("claim"), str) or not case["claim"].strip():
+            raise ValueError(f"Case {index + 1} needs a nonempty claim")
+        passages = case.get("passages")
+        if not isinstance(passages, list) or any(not isinstance(p, str) or not p.strip() for p in passages):
+            raise ValueError(f"Case {index + 1} needs passages as an array of nonempty strings")
+        if case.get("expected") not in ("supported", "contradicted", "conflicting", "not_stated"):
+            raise ValueError(f"Case {index + 1} needs a supported, contradicted, conflicting or not_stated expected label")
+    return cases, hashlib.sha256(raw).hexdigest()
+
+
 def request_body(case, model=MODEL):
     # Expected answers and case IDs never enter model context.
     return {
@@ -127,7 +150,8 @@ def summarize(rows, threshold):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dry-run", action="store_true", help="Print synthetic requests; no API key or network needed")
+    parser.add_argument("--dry-run", action="store_true", help="Print selected input requests; no API key or network needed")
+    parser.add_argument("--cases", type=Path, default=ROOT / "cases.json", help="JSON array of labelled claims and source passages")
     parser.add_argument("--env-file", help="Read only TYPESAFE_API_KEY from this file, in memory")
     parser.add_argument("--model", default=MODEL)
     parser.add_argument("--repeat", type=int, default=1)
@@ -136,7 +160,12 @@ def main():
     args = parser.parse_args()
     if not 1 <= args.repeat <= 20 or not 1 <= args.workers <= 8:
         parser.error("repeat must be 1..20 and workers 1..8")
-    cases = json.loads((ROOT / "cases.json").read_text(encoding="utf-8"))
+    try:
+        cases, cases_hash = load_cases(args.cases)
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        parser.exit(2, "Could not read the cases file as UTF-8 JSON.\n")
+    except ValueError as exc:
+        parser.exit(2, f"Invalid cases: {exc}\n")
     if args.dry_run:
         print(json.dumps([request_body(c, args.model) for c in cases if c["passages"]], indent=2, ensure_ascii=False))
         return 0
@@ -152,7 +181,7 @@ def main():
     report = {
         "created_utc": datetime.now(timezone.utc).isoformat(), "requested_model": args.model,
         "returned_models": sorted({r["model"] for r in rows if r.get("model")}),
-        "cases_sha256": hashlib.sha256((ROOT / "cases.json").read_bytes()).hexdigest(),
+        "cases_sha256": cases_hash,
         "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "workers": args.workers, "repeats": args.repeat, "wall_seconds": round(time.perf_counter() - started, 3),
         "successful_api_calls": len(latencies), "input_tokens": tokens,

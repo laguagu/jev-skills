@@ -14,6 +14,8 @@ All included examples are newly written synthetic text. No customer documents or
 Inspect the requests and run policy tests for free:
 
 ```sh
+git clone https://github.com/laguagu/jev-evidence-lab.git
+cd jev-evidence-lab
 python lab.py --dry-run
 python -m unittest discover -s tests
 ```
@@ -37,6 +39,33 @@ python -m http.server 8080 --bind 127.0.0.1
 ```
 
 Then open `http://127.0.0.1:8080/examples/report.html`.
+
+## Bring your own evaluation set
+
+Pass a UTF-8 JSON file with labelled claims and their source passages:
+
+```json
+[
+  {
+    "id": "retention-policy",
+    "claim": "Logs are retained for 90 days.",
+    "passages": ["Logs are permanently deleted after 7 days."],
+    "expected": "contradicted"
+  }
+]
+```
+
+```sh
+python lab.py --cases my-cases.json --dry-run
+python lab.py --cases my-cases.json --env-file /path/to/your/.env --out results/my-run.json
+python report.py results/my-run.json --out results/my-report.html
+```
+
+IDs must be unique. Expected labels are `supported`, `contradicted`, `conflicting`, or
+`not_stated`. An empty passages array is valid; it produces `not_stated` without an API call.
+Invalid datasets fail before any API calls. Review requests locally before a paid run.
+The request builder sends only the claim and passages, never the expected labels.
+Keep private input files under the ignored `results/` directory or outside this repository.
 
 ## What happens
 
@@ -70,6 +99,8 @@ Pinned `jev-1.13.0`, 16 unique fixtures × 2 repetitions, sequential calls from 
 
 Cost is usage multiplied by the documented $0.042 per million input tokens; outputs are free.
 It is an estimate, not a bill. The run records model, timestamp, code/data hashes and raw answers.
+The included snapshot comes from the initial runner in commit `f520d21`; subsequent changes
+add custom dataset support. Offline tests verify that its decisions still replay identically.
 The [pricing source](https://docs.typesafe.ai/models) was checked on the measurement date.
 
 These fixtures are deliberately short and mostly unambiguous. The same author designed the
@@ -98,15 +129,15 @@ npx skills add typesafe-ai/skills --skill typesafe-ai
 ```
 
 This repository adds [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md), a focused evaluation
-procedure rather than a copy of that official skill. From this local checkout:
+procedure rather than a copy of that official skill. Install it directly from GitHub:
 
 ```sh
-npx skills add . --skill jev-evidence-eval --agent codex
+npx skills add laguagu/jev-evidence-lab --skill jev-evidence-eval --agent codex
 ```
 
-After publication, the GitHub owner/repo can replace `.`. The local skill directory is portable
+For another agent, omit `--agent codex` and choose your agent. The skill directory is portable
 Agent Skills content; it does not claim marketplace installation or native plugin registration.
-See [research and launch direction](RESEARCH.md) for the ecosystem and packaging recommendation.
+See [related projects and design notes](RESEARCH.md) for the ecosystem and packaging rationale.
 
 ## Contribute
 

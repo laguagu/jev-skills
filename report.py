@@ -1,4 +1,4 @@
-"""Render a saved synthetic run as an offline, interactive HTML report."""
+"""Render a saved evaluation run as an offline, interactive HTML report."""
 import argparse
 import json
 from pathlib import Path
@@ -31,13 +31,13 @@ blockquote{margin:12px 0;padding:12px 16px;border-left:3px solid #778e7b;backgro
 <div class="metrics" aria-live="polite"><div class="metric"><strong id="coverage"></strong><span>coverage of all cases</span></div><div class="metric"><strong id="accuracy"></strong><span>accuracy on accepted cases</span></div><div class="metric"><strong id="review"></strong><span>sent for review</span></div><div class="metric"><strong id="latency"></strong><span>median successful API call</span></div></div>
 <p class="muted">Move the threshold to replay the policy without API calls. Confidence describes the answer distribution, not a guarantee of truth. A quotation proves source identity, not interpretation.</p>
 <section id="cases" aria-label="Case results"></section>
-<footer><span id="sample"></span> These are demonstration cases, not an independent benchmark. Repetitions do not increase the number of unique examples. Missing evidence means missing from these supplied passages. No live API calls, analytics, or external assets.<br><a href="https://docs.typesafe.ai/confidence">TypeSafe confidence documentation</a></footer>
+<footer><span id="sample"></span> The bundled dataset is a synthetic demonstration, not an independent benchmark. Repetitions do not increase the number of unique examples. Missing evidence means missing from these supplied passages. No live API calls, analytics, or external assets.<br><a href="https://docs.typesafe.ai/confidence">TypeSafe confidence documentation</a></footer>
 </main><script id="data" type="application/json">__DATA__</script><script>
 const data=JSON.parse(document.querySelector('#data').textContent);
 const el=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
 el('run').textContent=`${data.returned_models.join(', ')} · ${data.created_utc.slice(0,10)} · ${data.successful_api_calls} successful calls · ${data.workers} worker(s) · estimated API cost $${data.estimated_successful_call_usd?.toFixed(6) ?? 'unknown'}`;
-el('sample').textContent=`${new Set(data.rows.map(r=>r.id)).size} hand-authored synthetic fixtures, ${data.repeats} repetition(s).`;
+el('sample').textContent=`${new Set(data.rows.map(r=>r.id)).size} unique cases, ${data.repeats} repetition(s).`;
 function update(){
  const threshold=Number(el('threshold').value);el('value').textContent=(threshold/100).toFixed(2);
  const rows=data.rows.map(row=>({...row,outcome:row.outcomes[threshold]}));
@@ -51,7 +51,7 @@ function update(){
   if(el('failures').checked && row.outcome===row.expected)return;
   const item=document.createElement('details'),summary=document.createElement('summary');
   summary.append(text('strong',`${i+1}. ${row.id}`),text('span',row.outcome.replaceAll('_',' '),'outcome'));item.append(summary);
-  item.append(text('p',row.claim),text('p',`Expected: ${row.expected} · ${row.api_called?'API '+row.seconds.toFixed(3)+'s':'Local decision'}${row.error?' · '+row.error:''}`,'muted'));
+  item.append(text('p',row.claim),text('p',`Expected: ${row.expected} · ${row.error?'Service error: '+row.error:row.api_called?'API '+row.seconds.toFixed(3)+'s':'Local decision'}`,'muted'));
   row.passages.forEach((passage,n)=>{const answer=row.answers?.['p'+n];item.append(text('blockquote',passage));if(answer)item.append(text('p',`${answer.choice} · confidence ${answer.confidence.toFixed(2)} · P(selected) ${answer.probabilities[answer.choice].toFixed(2)}`,'muted'));});
   if(!row.passages.length)item.append(text('p','No passages supplied. No API call.','muted'));
   el('cases').append(item);

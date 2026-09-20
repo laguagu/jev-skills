@@ -1,4 +1,4 @@
-# Jev ecosystem and launch direction
+# Related projects and design notes
 
 Research snapshot: September 20, 2026. Repository descriptions were checked against their
 primary GitHub pages. Projects were not installed or audited unless explicitly noted.
@@ -13,35 +13,30 @@ primary GitHub pages. Projects were not installed or audited unless explicitly n
 | [typesafe-mcp](https://github.com/itsmostafa/typesafe-mcp) | MCP bridge to typed evaluations | A basic API-to-MCP wrapper alone is weak differentiation |
 | [mobile-jev](https://github.com/droidrun/mobile-jev) | Android action selection and inspection studio | Immediate, visible behavior makes a stronger demo than a skill list |
 | [awesome-jev-projects](https://github.com/logicrw/awesome-jev-projects) | Project discovery and ecosystem directory | Contribute an actual working project rather than another directory |
+| [jevcal](https://github.com/abhixhek/jevcal) | Threshold calibration, held-out evaluation and drift checks | Use a dedicated calibration workflow when selecting production thresholds |
+| [jev-mcp](https://github.com/jkudish/jev-mcp) | MCP tools including claim verification against supplied evidence | Useful when the caller is an agent rather than a local evaluation script |
+| [jev-usecases](https://github.com/kenhuangus/jev-usecases) | Multiple Jev use-case harnesses and decision policies | Broader workflow examples beyond this lab's passage-level evaluation |
 
 Official [cookbooks](https://docs.typesafe.ai/introduction) already cover routing, reranking,
 function selection, extraction and citation checking. In particular, the
 [citation-checking cookbook](https://docs.typesafe.ai/cookbooks/citation_check) checks exact
 quotes and then their meaning. This lab does **not** claim to invent evidence verification.
-Its proposed contribution is an easy-to-run, inspectable receipt and an honest abstention demo.
+Its contribution is a dependency-free evaluation runner, inspectable source receipts and an
+offline abstention demo. Bring labelled examples from any domain using `--cases`; the runner
+does not contain a domain-specific taxonomy or private product integration.
 
-## Recommended first release
+## Design choices
 
-Use one focused repository: **Jev Evidence Lab**. The hook is “typed decisions with the source
-text attached, including a visible I-don't-know path.” Show a positive, a contradiction, a missing
-fact and a conflict in a short screen recording. Publish commands, costs and failures alongside it.
+- One question per passage keeps individual evidence judgments available for inspection.
+- Original text is copied by code; no quote generation or normalization is needed.
+- Conflicts are preserved rather than resolved by confidence alone.
+- The report reuses the Python policy at every threshold. Its browser code only displays results.
+- Labels are required for evaluation and never sent to the model.
+- The default threshold is an example. Coverage and accuracy are shown together.
 
-Before a larger launch, add an independently labelled held-out set and an equivalent LLM baseline.
-Do not sell the current 32/32 smoke-test result as a benchmark victory. A confidence slider is
-useful because it lets readers inspect the coverage trade-off rather than trust a headline.
-
-Suggested launch copy:
-
-> I built a tiny Jev evidence lab. It checks claims against source passages, keeps the original
-> text attached, and lets you replay confidence thresholds without more API calls. Includes
-> synthetic fixtures, raw results and a reusable evaluation skill. Looking for hard cases where
-> typed answers still get the meaning wrong.
-
-Publish under a personal account, with an explicit independent-project description. Share the
-working demo in relevant TypeSafe/community channels and propose it to an existing directory.
-No social posts or directory submissions have been made as part of this prototype.
-Virality is uncertain; a reusable result and a clear demo are stronger reasons to star a repo
-than a promise that a new model is revolutionary.
+Useful next experiments include independently labelled held-out cases, an equivalent LLM
+baseline and retrieval coverage for longer documents. The current small synthetic run is a
+smoke test, not evidence of general superiority over other models or projects.
 
 ## Skills versus plugins
 
@@ -51,9 +46,9 @@ servers. Its [root manifest](https://agent-plugins.org/plugin-authors/manifest) 
 native client packaging and distribution may require adapters. A manifest does not itself
 list a project in a marketplace or make its code popular.
 
-Ship the runnable lab and focused skill first. Add a plugin when several reusable skills or
-a real MCP capability justify installation as one package. Keep the official TypeSafe skill
-upstream and preserve attribution if any MIT material is later copied.
+This repository ships the runnable lab and a focused skill. A plugin may follow if several
+reusable skills or a real MCP capability justify installation as one package. The official
+TypeSafe skill stays upstream; this repository links to it instead of redistributing a copy.
 
 ## Model facts relevant to the experiment
 
@@ -65,8 +60,6 @@ upstream and preserve attribution if any MIT material is later copied.
   request run independently. Noul is a probability of yes, not just a Boolean.
 - [Confidence](https://docs.typesafe.ai/confidence) summarizes the distribution. It is not
   the selected label's probability or a guarantee of correctness on a target domain.
-- The requested Vercel launch URL was unavailable to the research fetcher; the launch date and
-  technical statements above use TypeSafe's own announcement and documentation instead.
 
 Avoid unverified claims such as “no competitor has this”, “cannot make mistakes”, or universal
 speed/cost multipliers. Specialized classifiers, rerankers and structured-output models are

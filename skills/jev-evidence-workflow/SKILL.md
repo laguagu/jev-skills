@@ -1,6 +1,6 @@
 ---
 name: jev-evidence-workflow
-description: Builds source-backed fact or claim decisions with TypeSafe Jev, preserving exact text receipts and handling missing or conflicting evidence. Use when implementing document fact selection, answer verification or evidence triage.
+description: Builds source-backed fact or claim decisions with TypeSafe Jev, preserving exact text receipts and handling missing, conflicting or out-of-scope evidence. Use when implementing a citation or grounding check for a retrieval answer, document fact selection, claim triage, or verification that generated text is supported by its sources. Measurement belongs to the jev-evidence-eval skill.
 license: MIT
 ---
 

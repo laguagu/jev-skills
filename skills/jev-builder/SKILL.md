@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects.
+description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects. Complements the official typesafe-ai skill, which carries current API detail; source receipts and measurement belong to the jev-evidence-workflow and jev-evidence-eval skills.
 license: MIT
 ---
 

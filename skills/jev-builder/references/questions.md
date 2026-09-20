@@ -12,8 +12,8 @@ Check TypeSafe's [primitives](https://docs.typesafe.ai/primitives) and the model
 - **Name the field being judged.** Question IDs are bookkeeping; the model never sees them.
 - **State the condition exactly, including the boundary you have in mind.** Negations, scoping
   words, and implied conditions are read at face value.
-- **Point the criteria the same way as the instruction.** A yes/no question whose yes side
-  describes a no performs worse than one written in a single direction.
+- **Point the criteria the same way as the instruction.** A Noul whose yes side describes
+  a no performs worse than one written in a single direction.
 - **Write examples as instances**, such as a sentence a user would actually send, rather than
   as a description of that kind of input.
 - **Keep policy out of the question.** Thresholds, weights, and precedence rules belong in code,
@@ -37,7 +37,7 @@ fits whenever the listed options may not cover every input.
 - Convert machine encodings to words: a colour name rather than a hex value, a named bucket
   rather than a raw figure.
 - Keep counting, sums, ordering, and date arithmetic in code. Ask instead for extraction, or for
-  one yes/no per item, and total the results yourself.
+  one Noul per item, and total the results yourself.
 - State is data, but it is not treated as hostile. Text inside it can argue for its own answer.
   Say in the criteria what counts, and test adversarial and self-describing inputs before rollout.
 
@@ -52,7 +52,7 @@ question's answer and its probabilities against the label.
 | Low confidence on a Choice | Options overlap, or none fits | Contrast the options; add an outcome for nothing fits |
 | Scores bunch in the middle | Levels describe degrees or carry numerals | Rewrite each level as a distinct situation |
 | Top-of-scale cases look alike | The extreme has no level of its own | Add one |
-| A yes/no answer sits near 0.5 | The condition is vague | Define it; 0.5 means unsure, not medium — use a Score for degree |
+| A Noul sits near 0.5 | The condition is vague | Define it; 0.5 means unsure, not medium — use a Score for degree |
 | Accuracy drops as input grows | Distractors in state | Filter in code; send only the fields the questions use |
 | Errors on counts, dates, or magnitudes | The question implies arithmetic | Move the arithmetic to code |
 | Rewording trades one error for another | The question weighs several properties | Split it and combine in code |

@@ -1,6 +1,6 @@
 ---
 name: jev-evidence-eval
-description: Evaluates a TypeSafe Jev evidence classification workflow, including source receipts, missing evidence, contradictions and abstention. Use when measuring whether a Jev decision is supported by supplied text.
+description: Measures a TypeSafe Jev evidence or classification workflow for accuracy on accepted cases, review rate and coverage, abstention, latency, usage and cost, with source receipts, missing evidence and contradictions in the test set. Use when checking whether a Jev decision is supported by supplied text, choosing or sweeping a confidence threshold, or comparing a Jev workflow against an existing classifier or LLM.
 license: MIT
 ---
 

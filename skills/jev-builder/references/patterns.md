@@ -4,19 +4,36 @@ Choose one boundary in the application and keep its downstream policy explicit.
 See TypeSafe's [patterns](https://docs.typesafe.ai/patterns) and
 [API reference](https://docs.typesafe.ai/api) for current definitions.
 
+## Screen the task first
+
+A decision fits this shape when all four hold:
+
+- A knowledgeable person would answer it immediately from the supplied context, without research.
+- The allowed answers are known before the call: named alternatives, ordered levels, or yes.
+- Everything needed is already in state; nothing has to be fetched mid-question.
+- Code consumes the answer; no one reads it as prose.
+
+When one of these fails, split the task rather than rewriting the question. A step that needs
+new prose, arbitrary JSON, arithmetic the code can do exactly, or several dependent lookups
+belongs elsewhere; see [Compared with other approaches](#compared-with-other-approaches).
+
+## Shapes that fit
+
 | Need | Typed question | Application behavior to design |
 | --- | --- | --- |
-| Route a support ticket | Choice: billing / product / technical / unknown | Unknown or uncertain → triage; urgency is an independent Noul |
+| Route a support ticket ([`routing`][routing]) | Choice: billing / product / technical / unknown | Unknown or uncertain → triage; urgency is an independent Noul |
 | Route to a model or subagent | Choice among a documented capability list | Resolve to configured IDs; retain a default; measure total cost including routing |
-| Rank retrieved passages | One Score per passage with a relevance rubric | Sort in code, preserve passage IDs, and retain context needed for exceptions |
-| Select a tool | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
-| Continue, retry, or stop | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
-| Gate a pending action | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
-| Verify a generated answer | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
+| Rank retrieved passages ([`ranking`][ranking]) | One Score per passage with a relevance rubric | Sort in code, preserve passage IDs, and retain context needed for exceptions |
+| Select a tool ([`tools`][tools]) | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
+| Continue, retry, or stop ([`workflow`][workflow]) | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
+| Gate a pending action ([`risk`][risk]) | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
+| Verify a generated answer ([`verify`][verify]) | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
 | Moderate content | Separate Noul checks for concrete policy conditions | Combine policy rules in code; uncertain cases need an explicit disposition |
 | Classify documents | Choice from a taxonomy plus unknown | Check missing fields separately; avoid forced labels for unrelated documents |
 | Select evidence | Choice over candidate facts or spans | Copy selected text from source, preserve contradictions, and distinguish not stated |
 | Compact agent context | Noul per candidate tool result: needed for the current task? | Keep required instructions and tool-call/result pairing; compare task success after pruning |
+
+Bracketed names link to a complete request and a tested policy in the decision examples.
 
 ## Worked example: routing and urgency
 
@@ -55,3 +72,10 @@ launch figures as a promise for the user's application.
 Runnable [decision examples](https://github.com/laguagu/jev-skills/tree/main/examples/decisions)
 and the [evidence experiment](https://github.com/laguagu/jev-skills/tree/main/examples/evidence)
 are optional companions. They are not bundled in a skill-only installation.
+
+[routing]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/routing.json
+[ranking]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/ranking.json
+[tools]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/tools.json
+[workflow]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/workflow.json
+[risk]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/risk.json
+[verify]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/verify.json

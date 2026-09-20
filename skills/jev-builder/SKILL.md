@@ -21,9 +21,9 @@ If the official skill is absent, the docs and references below are sufficient to
 | An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
 | An existing skill, SDK, MCP integration, example, or compaction project | [Resources](references/resources.md) |
 
-Read only the references relevant to the task. These files are bundled with this skill;
-the optional [runnable examples](https://github.com/laguagu/jev-skills/tree/main/examples)
-require the repository. Do not assume they exist in a skill-only installation.
+These reference files are bundled with this skill. The optional
+[runnable examples](https://github.com/laguagu/jev-skills/tree/main/examples)
+require the repository; do not assume they exist in a skill-only installation.
 
 ## Implement a decision
 

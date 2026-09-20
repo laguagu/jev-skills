@@ -35,7 +35,7 @@ For example, ask: “Use the jev-skills:jev-builder skill to design a request ro
 
 ## What's in the package?
 
-- `skills/`: three skills, with setup, patterns, and resource references bundled inside `jev-builder`.
+- `skills/`: three skills, with setup, patterns, question, and resource references bundled inside `jev-builder`.
 - `plugin.json`: the [Agent Plugins](https://agent-plugins.org/plugin-authors/manifest) portable manifest.
 - `.claude-plugin/`: Claude Code manifest and marketplace.
 - `.codex-plugin/plugin.json`: Codex-native metadata for plugin loaders. The skills CLI above is the documented Codex installation path here.

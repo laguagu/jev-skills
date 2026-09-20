@@ -32,6 +32,7 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | Classify documents | Choice from a taxonomy plus unknown | Check missing fields separately; avoid forced labels for unrelated documents |
 | Select evidence | Choice over candidate facts or spans | Copy selected text from source, preserve contradictions, and distinguish not stated |
 | Compact agent context | Noul per candidate tool result: needed for the current task? | Keep required instructions and tool-call/result pairing; compare task success after pruning |
+| Trim an agent's tool or skill manifest | Noul or Score per installed capability: relevant to this task? | Load what passes and keep a default set, so one wrong judgment cannot disable the agent |
 
 Bracketed names link to a complete request and a tested policy in the decision examples.
 

@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Helps build applications with TypeSafe Jev by choosing decision patterns, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, or when finding Jev skills and example projects.
+description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects.
 license: MIT
 ---
 
@@ -17,6 +17,7 @@ If the official skill is absent, the docs and references below are sufficient to
 | --- | --- |
 | First call, API key, provider choice, or authentication trouble | [Setup](references/setup.md) |
 | Routing, scoring, filtering, tool choice, or workflow design | [Patterns](references/patterns.md) |
+| Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
 | An existing skill, SDK, MCP integration, example, or compaction project | [Resources](references/resources.md) |
 
 Read only the references relevant to the task. These files are bundled with this skill;
@@ -37,7 +38,9 @@ require the repository. Do not assume they exist in a skill-only installation.
    of yes, not a separate confidence field or a Boolean decision made for the application.
 4. **Provide explicit context.** Put task data and candidate definitions in state. Write
    self-contained instructions: question IDs are bookkeeping, not model-visible meaning.
-   Independent questions can share a request. If B requires A's answer, make a second request.
+   Independent questions can share a request, including ones only some branches consume;
+   they are judged in parallel. If B requires A's answer, make a second request.
+   [Questions](references/questions.md) covers wording and diagnosis in detail.
 5. **Use the existing SDK or framework.** Prefer official clients and follow current API
    examples. Check model names, request limits and pricing in live docs; pin a supported
    version for a reproducible evaluation and record the returned model.

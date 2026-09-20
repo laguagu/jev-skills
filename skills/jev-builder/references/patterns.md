@@ -33,9 +33,15 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | Classify documents | Choice from a taxonomy plus unknown | Check missing fields separately; avoid forced labels for unrelated documents |
 | Select evidence | Choice over candidate facts or spans | Copy selected text from source, preserve contradictions, and distinguish not stated |
 | Compact agent context | Noul per candidate tool result: needed for the current task? | Keep required instructions and tool-call/result pairing; compare task success after pruning |
-| Trim an agent's tool or skill manifest | Noul or Score per installed capability: relevant to this task? | Load what passes and keep a default set, so one wrong judgment cannot disable the agent |
+| Trim an agent's tool or skill manifest | Noul or Score per installed capability: relevant to this task? | Load what passes and keep a default set, so one wrong judgment cannot disable the agent; the [skill suggestion cookbook](https://docs.typesafe.ai/cookbooks/skill_suggestion) measures a two-stage version of this |
 
 Bracketed names link to a complete request and a tested policy in the decision examples.
+
+When the table has no row for the task, read TypeSafe's
+[cookbooks](https://docs.typesafe.ai/cookbooks) before inventing a shape. They cover ground this
+table does not — guardrail batteries, deep taxonomies, entity alignment, date extraction,
+structure recovery — and several carry runnable code and measured results, so prefer an official
+recipe over a decomposition improvised here.
 
 ## Worked example: routing and urgency
 
@@ -76,9 +82,11 @@ runs shows a direction, not a significant result.
 - “Find a maintained Jev context-compaction integration. Show which messages it sends externally and what happens if it fails.”
 - “Compare Jev against our existing ticket classifier on the same held-out cases. Include unknowns, errors, and fallback cost.”
 
-Runnable [decision examples](https://github.com/laguagu/jev-skills/tree/main/examples/decisions)
-and the [evidence experiment](https://github.com/laguagu/jev-skills/tree/main/examples/evidence)
-are optional companions. They are not bundled in a skill-only installation.
+The [decision examples](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) and the
+[evidence experiment](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) are optional
+companions, not bundled in a skill-only installation. They run offline without an API key and test
+the failure paths — malformed answers, spent budgets, uncertainty — rather than the happy path.
+For breadth of task shapes, the official cookbooks are the better source.
 
 [routing]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/routing.json
 [ranking]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/ranking.json

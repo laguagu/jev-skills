@@ -1,15 +1,12 @@
----
-name: jev-evidence-workflow
-description: Builds source-backed fact or claim decisions with TypeSafe Jev, preserving exact text receipts and handling missing, conflicting or out-of-scope evidence. Use when implementing a citation or grounding check for a retrieval answer, document fact selection, claim triage, or verification that generated text is supported by its sources. Measurement belongs to the jev-evidence-eval skill.
-license: MIT
----
-
 # Build decisions with source receipts
+
+Read this when an answer has to point at its source: a citation or grounding check for a
+retrieval answer, document fact selection, claim triage, or verifying that generated text
+is supported by the passages it came from.
 
 Read the current [TypeSafe API](https://docs.typesafe.ai/api),
 [confidence guide](https://docs.typesafe.ai/confidence) and
 [citation cookbook](https://docs.typesafe.ai/cookbooks/citation_check).
-For broader API and SDK work, use the [official skill](https://github.com/typesafe-ai/skills).
 
 Choose the shape that matches the user's application:
 
@@ -35,10 +32,10 @@ boundaries. Treat confidence and chosen-option probability as different signals;
 the fact. Set review rules based on the application's consequences, and calibrate thresholds on
 labelled examples before treating them as reliable operating points.
 
-Measure with [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval)
-or an equivalent harness: include explicit denials, missing statements, wrong entities,
+Measure with the [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval)
+skill or an equivalent harness: include explicit denials, missing statements, wrong entities,
 contradictions, future plans and numerical mismatches. Report failures and coverage.
 
-This skill contains instructions only. The optional companion runner and offline report live
-in [Jev Skills](https://github.com/laguagu/jev-skills); don't assume they exist in
-a skill-only installation. Use the user's existing language and project when implementing.
+The optional companion runner and offline report live in
+[Jev Skills](https://github.com/laguagu/jev-skills); don't assume they exist in a skill-only
+installation. Use the user's existing language and project when implementing.

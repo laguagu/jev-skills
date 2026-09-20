@@ -19,11 +19,10 @@ Choose your agent when prompted, or add `--agent codex`.
 
 | Skill | Purpose |
 | --- | --- |
-| [jev-builder](skills/jev-builder/SKILL.md) | API setup, decision patterns, question design, and finding useful Jev integrations |
-| [jev-evidence-workflow](skills/jev-evidence-workflow/SKILL.md) | Select facts and source passages; handle missing or conflicting evidence |
+| [jev-builder](skills/jev-builder/SKILL.md) | API setup, decision patterns, question design, source-backed evidence, and useful Jev integrations |
 | [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | Evaluate accuracy, review rate, latency, and cost |
 
-Omit `--skill jev-builder` from the install command to choose any of the three.
+Omit `--skill jev-builder` from the install command to choose either skill.
 The official TypeSafe skill stays maintained upstream.
 
 ## Use

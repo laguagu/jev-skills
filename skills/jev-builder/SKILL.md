@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects. Complements the official typesafe-ai skill, which carries current API detail; source receipts and measurement belong to the jev-evidence-workflow and jev-evidence-eval skills.
+description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects. Complements the official typesafe-ai skill, which carries current API detail; measuring a finished workflow belongs to the jev-evidence-eval skill.
 license: MIT
 ---
 
@@ -18,6 +18,7 @@ If the official skill is absent, the docs and references below are sufficient to
 | First call, API key, provider choice, or authentication trouble | [Setup](references/setup.md) |
 | Routing, scoring, filtering, tool choice, or workflow design | [Patterns](references/patterns.md) |
 | Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
+| An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
 | An existing skill, SDK, MCP integration, example, or compaction project | [Resources](references/resources.md) |
 
 Read only the references relevant to the task. These files are bundled with this skill;
@@ -59,9 +60,9 @@ the chosen outcome's probability and does not prove correctness. Select operatin
 for the actual task; constants in examples are illustrations.
 
 For evidence work, preserve source IDs and copy exact text in code. Use a missing-evidence
-outcome instead of treating silence as a negative. See the companion
-[evidence workflow](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-workflow)
-and [evaluation skill](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval).
+outcome instead of treating silence as a negative; [Evidence](references/evidence.md) covers
+the shapes and their failure modes. To measure a finished workflow, use the companion
+[evaluation skill](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval).
 
 When recommending a third-party project, verify its current primary docs, supported runtime,
 license, and actual integration. State whether it was run or only inspected. For compaction

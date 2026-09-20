@@ -47,7 +47,7 @@ LLM or trained classifier. Use the same inputs and target decisions when making 
 5. Preserve your application's deterministic rules. Log errors separately from model decisions.
 6. Pick thresholds on development data and measure the chosen policy on unseen examples.
 
-For a fixed set of facts, follow [jev-evidence-workflow](../../skills/jev-evidence-workflow/SKILL.md).
+For a fixed set of facts, follow the [evidence reference](../../skills/jev-builder/references/evidence.md).
 For this lab's claim/passages format, follow [the setup guide](README.md).
 The report is an evaluation viewer, not a production service: it contains the supplied text,
 does not retrieve documents, and has no authentication or persistence layer.

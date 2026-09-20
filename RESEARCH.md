@@ -7,6 +7,8 @@ primary GitHub pages. Projects were not installed or audited unless explicitly n
 
 | Project | What exists | Implication |
 | --- | --- | --- |
+| [LangChain + Jev](https://www.langchain.com/blog/building-a-harness-with-jev) | TypeSafeClassifier and experimental model-routing middleware | Use existing framework integration when building agent loops |
+| [AutoJev skills](https://autojev.ai/jev-skills) | Six focused agent skills backed by AutoJev MCP tools | Skill instructions and callable MCP tools are separate installations |
 | [TypeSafe skills](https://github.com/typesafe-ai/skills) | Official MIT integration skill, skills.sh installation and Claude plugin | Link to the original; a generic competing skill adds little |
 | [TypeSafe JavaScript SDK](https://github.com/typesafe-ai/typesafe-sdk-js) | Official JS client, also linked from TypeSafe docs | Use the SDK for production; avoid building a redundant client library |
 | [jev-router](https://github.com/gargpratyush/jev-router) | Per-turn model routing for Claude Code and Codex | A general cheap-model router is already a populated category |
@@ -46,7 +48,7 @@ servers. Its [root manifest](https://agent-plugins.org/plugin-authors/manifest) 
 native client packaging and distribution may require adapters. A manifest does not itself
 list a project in a marketplace or make its code popular.
 
-This repository ships the runnable lab and a focused skill. A plugin may follow if several
+This repository ships the runnable lab and two focused skills. A plugin may follow if several
 reusable skills or a real MCP capability justify installation as one package. The official
 TypeSafe skill stays upstream; this repository links to it instead of redistributing a copy.
 

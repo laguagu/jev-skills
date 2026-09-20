@@ -29,6 +29,6 @@ Include missing facts, explicit denials, conflicting passages, different entitie
 future plans, numerical mismatches and instructions embedded in documents. Record failures.
 Use synthetic fixtures for public examples; do not publish customer material or secrets.
 
-The companion repository provides `examples/evidence/check.py --dry-run`, a live runner, and offline policy tests.
-These are repository tools, not bundled with a skill-only installation. When the repo is absent,
-apply this procedure to the user's existing harness instead of assuming those files exist.
+Apply this procedure to the user's existing harness. Build a dry run that prints requests without
+network access, keep the raw answers with the model version and usage, and replay the policy from
+saved results so a threshold change costs nothing.

@@ -35,10 +35,14 @@ For live calls, create a key in the [TypeSafe console](https://console.typesafe.
 and set `TYPESAFE_API_KEY` in your server environment or a gitignored `.env`.
 The skills include setup instructions; installing them makes no API calls.
 
-## Examples and resources
+## Examples
 
-- [Decision examples](examples/decisions/README.md): routing, ranking, tool selection, workflow control, risk scoring, and answer verification, with offline dry runs.
-- [Evidence example](examples/evidence/README.md): claim checking and a saved interactive report.
-- [Resource guide](skills/jev-builder/references/resources.md): official SDKs, other skills, and community projects.
+Clone the repository to run these. The skills are self-contained and do not depend on them.
+
+- [Decision examples](examples/decisions/README.md): routing, ranking, tool selection, workflow control, risk scoring, and answer verification. Offline dry runs, plus tests for the failure paths — malformed answers, unknown choices, spent retry budgets.
+- [Evidence example](examples/evidence/README.md): claim checking and a saved interactive report whose confidence slider replays the policy without another API call.
+
+For the breadth of task shapes, read TypeSafe's [cookbooks](https://docs.typesafe.ai/cookbooks).
+The [resource guide](skills/jev-builder/references/resources.md) maps official SDKs, other skills, and community projects.
 
 Independent community project. [MIT license](LICENSE).

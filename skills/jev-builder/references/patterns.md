@@ -21,21 +21,19 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 
 | Need | Typed question | Application behavior to design |
 | --- | --- | --- |
-| Route a support ticket ([`routing`][routing]) | Choice: billing / product / technical / unknown | Unknown or uncertain → triage; urgency is an independent Noul |
+| Route a support ticket | Choice: billing / product / technical / unknown | Unknown or uncertain → triage; urgency is an independent Noul |
 | Route to a model or subagent | Choice among a documented capability list | Resolve to configured IDs; retain a default; measure total cost including routing |
-| Rank retrieved passages ([`ranking`][ranking]) | One Score per passage with a relevance rubric | Sort in code, preserve passage IDs, and retain context needed for exceptions |
-| Select a tool ([`tools`][tools]) | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
+| Rank retrieved passages | One Score per passage with a relevance rubric | Sort in code, preserve passage IDs, and retain context needed for exceptions |
+| Select a tool | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
 | Choose an action and what it acts on | Choice for the operation, plus one speculative Choice per operation over observed candidates | Number the candidates in code each turn; execute only the target belonging to the chosen operation |
-| Continue, retry, or stop ([`workflow`][workflow]) | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
-| Gate a pending action ([`risk`][risk]) | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
-| Verify a generated answer ([`verify`][verify]) | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
+| Continue, retry, or stop | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
+| Gate a pending action | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
+| Verify a generated answer | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
 | Moderate content | Separate Noul checks for concrete policy conditions | Combine policy rules in code; uncertain cases need an explicit disposition |
 | Classify documents | Choice from a taxonomy plus unknown | Check missing fields separately; avoid forced labels for unrelated documents |
 | Select evidence | Choice over candidate facts or spans | Copy selected text from source, preserve contradictions, and distinguish not stated |
 | Compact agent context | Noul per candidate tool result: needed for the current task? | Keep required instructions and tool-call/result pairing; compare task success after pruning |
 | Trim an agent's tool or skill manifest | Noul or Score per installed capability: relevant to this task? | Load what passes and keep a default set, so one wrong judgment cannot disable the agent; the [skill suggestion cookbook](https://docs.typesafe.ai/cookbooks/skill_suggestion) measures a two-stage version of this |
-
-Bracketed names link to a complete request and a tested policy in the decision examples.
 
 When the table has no row for the task, read TypeSafe's
 [cookbooks](https://docs.typesafe.ai/cookbooks) before inventing a shape. They cover ground this
@@ -82,15 +80,5 @@ runs shows a direction, not a significant result.
 - “Find a maintained Jev context-compaction integration. Show which messages it sends externally and what happens if it fails.”
 - “Compare Jev against our existing ticket classifier on the same held-out cases. Include unknowns, errors, and fallback cost.”
 
-The [decision examples](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) and the
-[evidence experiment](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) are optional
-companions, not bundled in a skill-only installation. They run offline without an API key and test
-the failure paths — malformed answers, spent budgets, uncertainty — rather than the happy path.
-For breadth of task shapes, the official cookbooks are the better source.
-
-[routing]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/routing.json
-[ranking]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/ranking.json
-[tools]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/tools.json
-[workflow]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/workflow.json
-[risk]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/risk.json
-[verify]: https://github.com/laguagu/jev-skills/blob/main/examples/decisions/requests/verify.json
+Before adopting a shape, write the failure paths down with it: a malformed answer, an unknown
+choice, a spent retry budget, a service error. Each one needs a defined outcome in code.

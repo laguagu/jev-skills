@@ -40,7 +40,7 @@ route, apply the application's own fallback policy before dispatching.
 Already using AI Gateway? Check the current [Jev gateway entry](https://vercel.com/ai-gateway/models/jev)
 and [Gateway docs](https://vercel.com/docs/ai-gateway) for the supported API and authentication.
 Use gateway credentials with its endpoint; a TypeSafe direct key is not a gateway key.
-The direct SDK example above and this kit's runnable examples target TypeSafe directly.
+The direct SDK example above targets TypeSafe directly.
 Do not convert it into a generic chat request without checking the adapter's documented schema.
 
 For LangChain, start with its [TypeSafe integration](https://docs.langchain.com/oss/python/integrations/providers/typesafe).

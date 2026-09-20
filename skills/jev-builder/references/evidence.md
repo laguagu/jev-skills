@@ -36,6 +36,4 @@ Measure with the [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/
 skill or an equivalent harness: include explicit denials, missing statements, wrong entities,
 contradictions, future plans and numerical mismatches. Report failures and coverage.
 
-The optional companion runner and offline report live in
-[Jev Skills](https://github.com/laguagu/jev-skills); don't assume they exist in a skill-only
-installation. Use the user's existing language and project when implementing.
+Use the user's existing language and project when implementing.

@@ -1,23 +1,29 @@
-# Three small decisions
+# Six small decisions
 
 Node.js 22+. Each JSON file is a complete TypeSafe request with synthetic input.
 The runner uses the official JavaScript SDK for live calls. It prints a policy decision;
-it does not dispatch tickets or execute tools.
+it does not dispatch tickets, send messages, or execute tools.
 
 | Example | Request | Code does |
 | --- | --- | --- |
 | `routing` | Choice for team + independent Noul for immediate urgency | Sends unknown or uncertain routes to triage |
 | `ranking` | One Score per passage, on a 0–3 relevance rubric | Sorts expected scores, or keeps original order when uncertain; preserves all passages |
 | `tools` | Choice among listed tools + none | Prints a proposed tool, leaving execution to the application |
+| `workflow` | Choice: continue, retry, ask the user, or stop | Counts the retry budget itself; a spent budget or an uncertain answer asks the user |
+| `risk` | Score for the damage of a pending action + independent Noul for time pressure | Requires approval from a rubric level up, and on uncertainty |
+| `verify` | Two Nouls over a drafted answer: supported by the source, and in scope | Publishes only clear cases, blocks unsupported ones, and sends the band between them to review |
+
+The same shapes cover ordinary classification work: `routing` is a taxonomy Choice with an
+unknown outcome, `risk` a rubric that sorts cases into tiers, and `verify` a guardrail.
 
 ## Offline
 
 From the repository root; no installation or key needed:
 
 ```sh
-node examples/decisions/run.mjs routing --dry-run
-node examples/decisions/run.mjs ranking --dry-run
-node examples/decisions/run.mjs tools --dry-run
+for example in routing ranking tools workflow risk verify; do
+  node examples/decisions/run.mjs "$example" --dry-run
+done
 node --test examples/decisions/policy.test.mjs
 ```
 
@@ -30,12 +36,12 @@ Put `TYPESAFE_API_KEY=your-key` in a gitignored `.env` at the repository root, t
 cd examples/decisions
 npm install
 node --env-file=../../.env run.mjs routing --live
-node --env-file=../../.env run.mjs ranking --live
-node --env-file=../../.env run.mjs tools --live
+node --env-file=../../.env run.mjs verify --live
 ```
 
-Alternatively, set the process environment and omit `--env-file`. Each command makes one
-paid request, without automatic retries. Without `--live` or `--dry-run`, the runner exits.
+Any example name works in place of `routing`. Alternatively, set the process environment and
+omit `--env-file`. Each command makes one paid request, without automatic retries.
+Without `--live` or `--dry-run`, the runner exits.
 You can use `bun install --frozen-lockfile` instead of `npm install` with the included lockfile.
 
 These requests use `jev-latest` for discovery; pin a currently supported model for repeatable
@@ -48,7 +54,7 @@ synthetic input and criteria to try your own cases. Keep private inputs out of t
 
 ## Live smoke check
 
-On September 20, 2026, the three bundled requests at commit `9abf769` were run once each
+On September 20, 2026, the routing, ranking, and tool requests at commit `9abf769` were run once each
 through SDK 0.6.0. All returned `jev-1.13.0`; their resulting policies matched these expectations:
 
 | Example | Observed policy | Request and policy time |
@@ -59,3 +65,6 @@ through SDK 0.6.0. All returned `jev-1.13.0`; their resulting policies matched t
 
 Total reported input: 1,507 tokens. These are three synthetic smoke checks, not an accuracy
 benchmark or latency guarantee. The local policy tests cover uncertainty and malformed answers separately.
+
+`workflow`, `risk`, and `verify` were added afterwards. Their requests and policies are covered
+by the dry runs and policy tests above; no live call has been made for them here.

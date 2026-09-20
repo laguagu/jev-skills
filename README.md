@@ -38,7 +38,7 @@ The skills include setup instructions; installing them makes no API calls.
 
 ## Examples and resources
 
-- [Decision examples](examples/decisions/README.md): routing, ranking, and tool selection, with offline dry runs.
+- [Decision examples](examples/decisions/README.md): routing, ranking, tool selection, workflow control, risk scoring, and answer verification, with offline dry runs.
 - [Evidence example](examples/evidence/README.md): claim checking and a saved interactive report.
 - [Resource guide](skills/jev-builder/references/resources.md): official SDKs, other skills, and community projects.
 

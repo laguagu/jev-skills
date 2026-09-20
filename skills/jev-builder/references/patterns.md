@@ -11,6 +11,8 @@ See TypeSafe's [patterns](https://docs.typesafe.ai/patterns) and
 | Rank retrieved passages | One Score per passage with a relevance rubric | Sort in code, preserve passage IDs, and retain context needed for exceptions |
 | Select a tool | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
 | Continue, retry, or stop | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
+| Gate a pending action | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
+| Verify a generated answer | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
 | Moderate content | Separate Noul checks for concrete policy conditions | Combine policy rules in code; uncertain cases need an explicit disposition |
 | Classify documents | Choice from a taxonomy plus unknown | Check missing fields separately; avoid forced labels for unrelated documents |
 | Select evidence | Choice over candidate facts or spans | Copy selected text from source, preserve contradictions, and distinguish not stated |

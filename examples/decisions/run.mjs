@@ -1,10 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { decision } from './policy.mjs';
 
+const EXAMPLES = ['routing', 'ranking', 'tools', 'workflow', 'risk', 'verify'];
+
 const [example, mode, ...extra] = process.argv.slice(2);
-if (!['routing', 'ranking', 'tools'].includes(example) ||
-    !['--dry-run', '--live'].includes(mode) || extra.length) {
-  console.error('Usage: node run.mjs routing|ranking|tools --dry-run|--live');
+if (!EXAMPLES.includes(example) || !['--dry-run', '--live'].includes(mode) || extra.length) {
+  console.error(`Usage: node run.mjs ${EXAMPLES.join('|')} --dry-run|--live`);
   process.exit(2);
 }
 

@@ -6,6 +6,7 @@ import { decision } from './policy.mjs';
 const request = name => JSON.parse(readFileSync(new URL(`./requests/${name}.json`, import.meta.url)));
 const choice = (label, confidence = 0.95) => ({ type: 'choice', choice: label, confidence });
 const score = (value, confidence = 0.95) => ({ type: 'score', score: value, confidence });
+const noul = value => ({ type: 'noul', noul: value });
 
 test('an urgent unknown ticket goes to triage, not an invented queue', () => {
   assert.deepEqual(decision('routing', request('routing'), {
@@ -37,6 +38,32 @@ test('tool choices remain proposals, and none abstains', () => {
   assert.deepEqual(decision('tools', request('tools'), { tool: choice('search_docs') }),
     { proposedTool: 'search_docs', executed: false });
   assert.equal(decision('tools', request('tools'), { tool: choice('none') }).proposedTool, null);
+});
+
+test('a spent retry budget turns a retry answer into a question for the user', () => {
+  const input = request('workflow'); // attempts 2 of 3.
+  assert.equal(decision('workflow', input, { next: choice('retry') }).next, 'retry');
+  const spent = { ...input, state: { ...input.state, attempts: 3 } };
+  assert.equal(decision('workflow', spent, { next: choice('retry') }).next, 'ask_user');
+  assert.equal(decision('workflow', input, { next: choice('continue', 0.3) }).next, 'ask_user');
+});
+
+test('a customer-visible action needs approval, and urgency is judged separately', () => {
+  const input = request('risk');
+  assert.deepEqual(decision('risk', input, { risk: score(2), time_critical: noul(0.05) }),
+    { requiresApproval: true, notifyNow: false, executed: false });
+  assert.equal(decision('risk', input, { risk: score(1), time_critical: noul(0.99) }).requiresApproval, false);
+  assert.equal(decision('risk', input, { risk: score(1, 0.4), time_critical: noul(0.1) }).requiresApproval, true);
+});
+
+test('only a supported, in-scope draft publishes; the uncertain band goes to a person', () => {
+  const input = request('verify');
+  const disposition = (supported, inScope) =>
+    decision('verify', input, { supported: noul(supported), in_scope: noul(inScope) }).disposition;
+  assert.equal(disposition(0.97, 0.96), 'publish');
+  assert.equal(disposition(0.05, 0.99), 'block');
+  assert.equal(disposition(0.6, 0.99), 'review');
+  assert.equal(disposition(0.97, 0.5), 'review');
 });
 
 test('malformed answers and out-of-catalog tools fail before policy use', () => {

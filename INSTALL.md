@@ -8,7 +8,7 @@ npx skills add laguagu/jev-skills --skill jev-builder
 ```
 
 Choose your agent when prompted, or add `--agent codex`. Omit `--skill` from the
-second command to choose from all three kit skills. Follow the installer's scope prompt;
+second command to choose either kit skill. Follow the installer's scope prompt;
 a project installation and a personal installation are different choices.
 
 The official TypeSafe skill is maintained upstream and is not bundled here.

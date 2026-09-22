@@ -25,6 +25,10 @@ development set, then evaluate the chosen policy on unseen labelled data. Repeat
 same examples measure stability, not independent sample size. Confidence is not chosen-label
 probability and neither is a domain accuracy guarantee.
 
+For an LLM comparison, the official [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python)
+answers the same Python request with OpenAI, Anthropic, or Gemini. Pin both models, alternate
+the arms over the same cases, and count retries and malformed outputs as part of the baseline's cost.
+
 Include missing facts, explicit denials, conflicting passages, different entities, negation,
 future plans, numerical mismatches and instructions embedded in documents. Record failures.
 Use synthetic fixtures for public examples; do not publish customer material or secrets.

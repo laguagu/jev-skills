@@ -68,6 +68,10 @@ Schema validity is not semantic accuracy. Any speed or cost advantage needs an e
 task, the same inputs, a measured baseline, and the cost of fallbacks. Do not repeat “up to”
 launch figures as a promise for the user's application.
 
+For an LLM baseline on identical questions, TypeSafe's
+[System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) keeps the Python
+client interface and answers with OpenAI, Anthropic, or Gemini, so only the client changes.
+
 When you do compare two implementations, alternate the arms over the same inputs rather than
 running each in a block, pin the versions on both sides, say what the clock starts and stops on,
 and report every attempt including failures. State the sample size honestly: a handful of paired

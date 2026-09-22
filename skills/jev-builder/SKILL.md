@@ -19,7 +19,7 @@ If the official skill is absent, the docs and references below are sufficient to
 | Routing, scoring, filtering, tool choice, or workflow design | [Patterns](references/patterns.md) |
 | Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
 | An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
-| An existing skill, SDK, MCP integration, example, or compaction project | [Resources](references/resources.md) |
+| An existing skill, SDK, provider, MCP server, open model, or example project | [Resources](references/resources.md) |
 
 These reference files are bundled with this skill.
 

@@ -24,6 +24,9 @@ Check TypeSafe's [primitives](https://docs.typesafe.ai/primitives) and the model
   second question starts deciding the branch again on its own terms.
 - **Bound the answer to what you offered.** When the options are candidates you numbered this
   turn, require one of those indices; an ID the application cannot resolve is a failed decision.
+- **Define every Choice option, not just name it.** A bare label leaves close neighbours such as
+  `order_physical_card` and `get_physical_card` to guesswork. On a 77-intent banking set, one
+  sentence per option that separated it from its nearest neighbour cut errors by about 40%.
 
 Score levels need their own care. Each level is judged on its own, and the model sees neither
 its number nor its neighbours, so a level defined as worse than the one before it says nothing.

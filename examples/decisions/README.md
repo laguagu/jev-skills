@@ -66,5 +66,13 @@ through SDK 0.6.0. All returned `jev-1.13.0`; their resulting policies matched t
 Total reported input: 1,507 tokens. These are three synthetic smoke checks, not an accuracy
 benchmark or latency guarantee. The local policy tests cover uncertainty and malformed answers separately.
 
-`workflow`, `risk`, and `verify` were added afterwards. Their requests and policies are covered
-by the dry runs and policy tests above; no live call has been made for them here.
+On September 24, 2026, all six requests at commit `f88ccdf` were run once each through SDK 0.6.0
+on Node 24. All returned `jev-1.13.0`, and the three added after the first check behaved as intended:
+
+| Example | Observed policy | Request and policy time |
+| --- | --- | --- |
+| Workflow | Retry, with the budget counted in code | 676 ms |
+| Risk | Approval required, no urgent notification, nothing executed | 672 ms |
+| Verify | Blocked: the draft's "support can restore them" is not in the source | 678 ms |
+
+Routing, ranking, and tool selection repeated their earlier policies.

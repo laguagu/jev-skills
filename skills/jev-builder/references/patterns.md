@@ -30,7 +30,7 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | Gate a pending action | Score on a damage rubric, with time pressure as a separate Noul | Require approval from a chosen level up, and whenever confidence is low |
 | Verify a generated answer | Noul per guardrail: supported by the source, within scope | Publish only clear cases; send the uncertain band to a person instead of a threshold |
 | Moderate content | Separate Noul checks for concrete policy conditions | Combine policy rules in code; uncertain cases need an explicit disposition |
-| Classify documents | Choice from a taxonomy plus unknown | Check missing fields separately; avoid forced labels for unrelated documents |
+| Classify documents | Choice from a taxonomy plus unknown, each option defined; the nearest labelled examples in state when you have them | Check missing fields separately; avoid forced labels for unrelated documents |
 | Select evidence | Choice over candidate facts or spans | Copy selected text from source, preserve contradictions, and distinguish not stated |
 | Compact agent context | Noul per candidate tool result: needed for the current task? | Keep required instructions and tool-call/result pairing; compare task success after pruning |
 | Trim an agent's tool or skill manifest | Noul or Score per installed capability: relevant to this task? | Load what passes and keep a default set, so one wrong judgment cannot disable the agent; the [skill suggestion cookbook](https://docs.typesafe.ai/cookbooks/skill_suggestion) measures a two-stage version of this |
@@ -67,6 +67,20 @@ free-text explanations, or source quotations.
 Schema validity is not semantic accuracy. Any speed or cost advantage needs an equivalent
 task, the same inputs, a measured baseline, and the cost of fallbacks. Do not repeat “up to”
 launch figures as a promise for the user's application.
+
+What [one comparison](https://github.com/laguagu/jev-rerank-bench#3-classification) found,
+as a prior rather than a promise. On three public intent sets (BANKING77, CLINC150 with
+out-of-scope, and Finnish MASSIVE; 600 messages each, `jev-1.13.0`, September 2026), Jev with
+label names only was 2 to 9 points behind gpt-5.6-sol and gpt-6-sol, and ahead of the small
+gpt-6-luna. One-sentence label definitions closed most of that gap. Given the ten nearest
+labelled messages in state, it tied a logistic regression on embeddings trained on the full
+training split, and so did the chat models. No arm beat that trained classifier, which costs
+almost nothing to run. What set Jev apart was speed (about 0.25 s against 1.5–2 s), cost (a
+few cents per thousand messages), and a probability that gated well: with the examples in
+state, it answered 88–100% of messages automatically at 95% accuracy. GPT-5.x returned no
+probability, and gpt-6-luna only its chosen token's. When labelled data exists, compare against
+a trained classifier before choosing Jev for accuracy alone. Choose it when the gate, the
+latency, or a missing training set is what matters.
 
 For an LLM baseline on identical questions, TypeSafe's
 [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) keeps the Python

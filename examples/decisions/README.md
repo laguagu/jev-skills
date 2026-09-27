@@ -24,8 +24,13 @@ From the repository root; no installation or key needed:
 for example in routing ranking tools workflow risk verify; do
   node examples/decisions/run.mjs "$example" --dry-run
 done
-node --test examples/decisions/policy.test.mjs
+node --test examples/decisions/*.test.mjs
 ```
+
+With the SDK installed, the tests also run the runner in a child process against a loopback
+server, using a synthetic key. A response that stalls after headers or partway through its
+body must produce only the controlled failure message and exit 1, after one attempt. These
+tests take about 30 seconds and skip when the SDK is absent; they make no paid calls.
 
 ## Live
 
@@ -43,6 +48,11 @@ Any example name works in place of `routing`. Alternatively, set the process env
 omit `--env-file`. Each command makes one paid request, without automatic retries.
 Without `--live` or `--dry-run`, the runner exits.
 You can use `bun install --frozen-lockfile` instead of `npm install` with the included lockfile.
+
+The SDK uses `TYPESAFE_BASE_URL` when set, otherwise its default TypeSafe endpoint.
+Both JavaScript runners use a [shared fetch](../fetch-whole-body.mjs) that reads the whole
+response body before returning it to the SDK, so a timeout during the body read is caught
+by the runner's existing error handler ([SDK issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)).
 
 These requests use `jev-latest` for discovery; pin a currently supported model for repeatable
 comparisons. The SDK version is pinned in `package.json`. Confidence thresholds in `policy.mjs`

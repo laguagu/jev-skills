@@ -78,7 +78,8 @@ wording reached 88.1% balanced accuracy:
 
 The state holds only `claim` and `passage`. A three-way supports / contradicts / says-nothing
 Choice, accepting only supports, reached 81.8%, because it let through more claims that were
-subtly wrong. Keep the three-way Choice for when code must tell a contradiction from silence.
+subtly wrong. On the separate easy set, that three-way Choice reached 99.2%; the binary Noul
+was not run there. Keep the three-way Choice for when code must tell a contradiction from silence.
 TypeSafe's [citation cookbook](https://docs.typesafe.ai/cookbooks/citation_check) takes the other
 design, a Choice over the verdicts with an automatic-accept bar at confidence 0.8, and its four
 accurate citations passed at 0.93 or higher. On this harder Finnish set, the binary Noul beat the

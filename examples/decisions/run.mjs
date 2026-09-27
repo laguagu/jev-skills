@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { fetchWholeBody } from '../fetch-whole-body.mjs';
 import { decision } from './policy.mjs';
 
 const EXAMPLES = ['routing', 'ranking', 'tools', 'workflow', 'risk', 'verify'];
@@ -19,8 +20,8 @@ if (mode === '--dry-run') {
   try {
     const { TypeSafeClient } = await import('@typesafe-ai/sdk');
     const client = new TypeSafeClient({
-      baseURL: 'https://api.typesafe.ai', logLevel: 'off', timeout: 30_000,
-      retry: { maxRetries: 0 },
+      logLevel: 'off', timeout: 30_000,
+      retry: { maxRetries: 0 }, fetch: fetchWholeBody,
     });
     const started = performance.now();
     const result = await client.systemOne(request);

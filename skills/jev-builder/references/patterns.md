@@ -154,8 +154,8 @@ a trained classifier before choosing Jev for accuracy alone. Choose it when the 
 latency, or a missing training set is what matters.
 
 Two refinements from the same [report](https://github.com/laguagu/jev-rerank-bench/blob/main/classify/results/report.md).
-A Choice over only the ten labels nearest in embedding space, with the ten nearest examples,
-matched a Choice over every label on all three sets at lower cost: $0.034 against $0.059 per thousand messages on
+A Choice over the trained embedding classifier's top ten labels (plus out-of-scope), with the ten nearest examples,
+was within 0.7 percentage points of a Choice over every label on all three sets at lower cost: $0.034 against $0.059 per thousand messages on
 BANKING77, $0.033 against $0.075 on CLINC150, $0.032 against $0.048 on MASSIVE fi. Label
 definitions and examples raised accuracy but lowered out-of-scope recall on CLINC150, from 88%
 with label names alone to 74–79%; measure out-of-scope separately.

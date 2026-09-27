@@ -9,6 +9,6 @@
     "@typesafe-ai/sdk": "0.6.0"
   },
   "scripts": {
-    "test": "node --test rerank.test.mjs"
+    "test": "node --test rerank.test.mjs run.test.mjs"
   }
 }

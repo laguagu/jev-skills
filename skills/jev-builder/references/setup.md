@@ -88,7 +88,7 @@ A skill supplies guidance; it does not create an API account, grant credits, or 
 | Results changed with no code change | An alias moved. `jev-latest` follows official releases; `jev-preview` may point to a build that is not official. Pin a versioned ID for evaluations |
 | Confident but wrong results | Question scope, candidate coverage, labels, and missing/ambiguous inputs |
 | Unexpected cost or latency | Input size, batching, retries, network time, and recorded usage |
-| Node exits after a cancelled JavaScript call | SDK 0.6.0, still the latest release on September 27, 2026, can crash on a handled abort on Node 20 or 22 ([open issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)); Node 24 is unaffected |
+| Node exits after a JavaScript call timed out or was cancelled | SDK 0.6.0, still the latest release on September 27, 2026, can crash with an uncatchable AbortError when its timeout or a cancellation fires while a response body is still arriving ([open issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)). Locally it crashed on Node 22.10, 24.11 and 25.4, not on 24.18 or 26.5. A `fetch` that reads the whole body before the SDK sees it avoids the crash on all of them ([example](https://github.com/laguagu/jev-skills/blob/main/examples/rerank/run.mjs)) |
 
 Check [confidence semantics](https://docs.typesafe.ai/confidence) before implementing a gate.
 For paid calls, start with a small sample. Dry runs in this kit print requests without network access.

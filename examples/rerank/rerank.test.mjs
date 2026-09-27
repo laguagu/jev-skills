@@ -102,6 +102,31 @@ test('a 422 belongs to that request: no cooldown', async () => {
   assert.equal(calls, 2);
 });
 
+test('an invalid batch size fails at construction instead of looping forever', () => {
+  const { systemOne } = fake(() => 0.5);
+  for (const batchSize of [0, -1, NaN, 1.5, Infinity, '15']) {
+    assert.throws(() => createReranker({ systemOne, batchSize }), { name: 'RangeError', message: /batchSize/ });
+    assert.throws(() => buildRequests('q', candidates(3), { batchSize }), { name: 'RangeError', message: /batchSize/ });
+  }
+  assert.deepEqual(buildRequests('q', candidates(3), { batchSize: 1 }).map((r) => Object.keys(r.questions)), [['p0'], ['p0'], ['p0']]);
+});
+
+test('invalid timing and threshold settings fail at construction', () => {
+  const { systemOne } = fake(() => 0.5);
+  const invalid = {
+    deadlineMs: [0, -5, NaN, Infinity, 2 ** 31, '1500'],
+    cooldownMs: [-1, NaN, Infinity],
+    minCandidates: [-1, 1.5, NaN],
+  };
+  for (const [name, values] of Object.entries(invalid)) {
+    for (const value of values) {
+      assert.throws(() => createReranker({ systemOne, [name]: value }), { name: 'RangeError', message: new RegExp(name) });
+    }
+  }
+  assert.throws(() => createReranker({ systemOne: undefined }), { name: 'TypeError', message: /systemOne/ });
+  assert.equal(typeof createReranker({ systemOne, cooldownMs: 0, minCandidates: 0 }), 'function');
+});
+
 test('too few candidates: nothing is sent', async () => {
   const backend = fake(() => 0.5);
   const result = await createReranker({ systemOne: backend.systemOne })('q', candidates(1));

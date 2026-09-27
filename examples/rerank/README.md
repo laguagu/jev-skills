@@ -8,8 +8,9 @@ a fictional product; only one of them answers the query.
 | File | What it does |
 | --- | --- |
 | `rerank.mjs` | Builds one request per 15 candidates, validates every answer, applies a total deadline, falls back to the first-stage order, records the model each response reports |
-| `rerank.test.mjs` | Offline tests against a fake backend: ordering and ties, incomplete answers, a failed batch, the deadline, 429 and 422 handling |
+| `rerank.test.mjs` | Offline tests against a fake backend: ordering and ties, incomplete answers, a failed batch, the deadline, 429 and 422 handling, invalid settings |
 | `run.mjs` | `--dry-run` prints the requests; `--live` makes one paid request |
+| `run.test.mjs` | Runs `run.mjs --live` in a child process against a local server that sends headers and then stalls, with a synthetic key: the fallback must be served and the process must exit 0 |
 
 The question follows the wording measured in [Rerank](../../skills/jev-builder/references/rerank.md#a-question-you-can-copy);
 rewrite its `corpus` field and criteria for your own data.
@@ -22,6 +23,10 @@ From the repository root; no installation or key needed:
 node examples/rerank/run.mjs --dry-run
 node --test examples/rerank/rerank.test.mjs
 ```
+
+After `npm install` in `examples/rerank`, `npm test` also runs `run.test.mjs`, still with no key
+and no request beyond the local machine. It takes about five seconds: it waits out the deadline
+and the SDK's timeout.
 
 ## Live
 
@@ -42,10 +47,13 @@ It makes one request for the ten passages, pinned to `jev-1.13.0`, without retri
   every batch must succeed; otherwise the whole shortlist keeps its first-stage order. A ranking in
   which only some candidates were judged misleads.
 - **A total deadline.** The reranker stops waiting after `deadlineMs` and serves the first-stage
-  order. It passes no abort signal to the SDK: cancelling a call in SDK 0.6.0 can end the process on
-  Node 20 and 22 ([open issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)). The live
-  client instead has its own per-attempt timeout and no retries. The tests use a fake backend, so
-  they check the policy, not the SDK's timing.
+  order. It passes no abort signal; the SDK's own timeout, set above the deadline, ends the abandoned
+  request. In SDK 0.6.0, a timeout or cancellation that fires while a response body is still
+  arriving can end the process with an AbortError no caller can catch
+  ([open issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)), so `run.mjs` gives the
+  SDK a `fetch` that reads the whole body first. Against a local server that stalls after the
+  headers, the unmodified client crashed on Node 22.10, 23.1, 24.0, 24.10, 24.11 and 25.4 and
+  exited cleanly on 24.18 and 26.5; with that `fetch`, `run.test.mjs` passes on all eight.
 - **A cooldown only on service trouble.** A missed deadline, a connection failure, 401, 403, 408,
   429 or 5xx pauses reranking for `cooldownMs`. A 400, 413 or 422 belongs to that one request, so
   the next search tries again.

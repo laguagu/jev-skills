@@ -21,8 +21,25 @@ const CRITERIA = {
     'contain the specific statement the question asks about.',
 };
 
+const MAX_TIMER_MS = 2 ** 31 - 1; // setTimeout fires at once above this
+
+// A batch size below 1 would never end the batching loop, and a bad deadline would never fire or
+// fire at once, so invalid settings fail when the reranker is created, not on a search.
+function assertInteger(name, value, min) {
+  if (!Number.isSafeInteger(value) || value < min) {
+    throw new RangeError(`${name} must be an integer of at least ${min}, got ${String(value)}`);
+  }
+}
+
+function assertMs(name, value, min) {
+  if (typeof value !== 'number' || !(value >= min && value <= MAX_TIMER_MS)) {
+    throw new RangeError(`${name} must be a number of milliseconds from ${min} to ${MAX_TIMER_MS}, got ${String(value)}`);
+  }
+}
+
 /** One request per batch; each Noul is told which passage it judges. */
 export function buildRequests(query, candidates, { batchSize = BATCH_SIZE, model = MODEL } = {}) {
+  assertInteger('batchSize', batchSize, 1);
   const requests = [];
   for (let start = 0; start < candidates.length; start += batchSize) {
     const batch = candidates.slice(start, start + batchSize);
@@ -90,6 +107,11 @@ export function createReranker({
   model = MODEL,
   now = () => Date.now(),
 }) {
+  if (typeof systemOne !== 'function') throw new TypeError('systemOne must be a function that returns a promise');
+  assertMs('deadlineMs', deadlineMs, 1);
+  assertMs('cooldownMs', cooldownMs, 0);
+  assertInteger('minCandidates', minCandidates, 0);
+  assertInteger('batchSize', batchSize, 1);
   let coolingUntil = 0;
 
   return async function rerank(query, candidates) {

@@ -166,8 +166,10 @@ With Jev, three details matter beyond them:
 - **Set a total deadline, not only a per-attempt timeout.** The JavaScript SDK's defaults are 10 s
   per attempt with no total budget, 2 retries, and `Retry-After` honoured up to 60 s
   ([RetryPolicy](https://docs.typesafe.ai/sdk/javascript/api/interfaces/RetryPolicy)), so one call can
-  hold a search for more than 30 s. On the search path, lower `maxRetries` and abort at a deadline
-  shorter than the request's own timeout.
+  hold a search for more than 30 s. On the search path, lower `maxRetries` and stop waiting at a
+  deadline shorter than the request's own timeout. With SDK 0.6.0, a timeout that fires
+  mid-response can end the process on Node 22 and some later releases; [setup](setup.md#troubleshooting)
+  has the workaround.
 - **Cool down only on service trouble.** A timeout, 5xx, 429 or 401 says the next request will
   probably fail too; skip reranking for a while. A 400, 413 or 422 belongs to one request, such as
   one that was too large; serve the first-stage order for it and keep reranking the rest.

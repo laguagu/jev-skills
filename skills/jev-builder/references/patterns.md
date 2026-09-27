@@ -5,7 +5,7 @@ See TypeSafe's [patterns](https://docs.typesafe.ai/patterns) and
 [API reference](https://docs.typesafe.ai/api) for current definitions.
 
 Contents: [screen the task](#screen-the-task-first) · [shapes that fit](#shapes-that-fit) ·
-[routing example](#worked-example-routing-and-urgency) · [rerank a shortlist](#rerank-a-shortlist) ·
+[official recipes](#official-recipes) · [routing example](#worked-example-routing-and-urgency) · [rerank a shortlist](#rerank-a-shortlist) ·
 [verify, then escalate](#verify-then-escalate) · [other approaches](#compared-with-other-approaches) ·
 [prompts](#prompts-for-a-coding-agent)
 
@@ -40,11 +40,31 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | Compact agent context | Noul per candidate tool result: needed for the current task? | Keep required instructions and tool-call/result pairing; compare task success after pruning |
 | Trim an agent's tool or skill manifest | Noul or Score per installed capability: relevant to this task? | Load what passes and keep a default set, so one wrong judgment cannot disable the agent; the [skill suggestion cookbook](https://docs.typesafe.ai/cookbooks/skill_suggestion) measures a two-stage version of this |
 
-When the table has no row for the task, read TypeSafe's
-[cookbooks](https://docs.typesafe.ai/cookbooks) before inventing a shape. They cover ground this
-table does not — guardrail batteries, deep taxonomies, entity alignment, date extraction,
-structure recovery — and several carry runnable code and measured results, so prefer an official
-recipe over a decomposition improvised here.
+## Official recipes
+
+TypeSafe's [cookbooks](https://docs.typesafe.ai/cookbooks) carry runnable code, cached responses
+that replay without a key, and measured results. Find the need here, then read the recipe in full
+before improvising a decomposition. Their model versions and figures are the docs' own; recheck
+them there.
+
+| Need | Cookbook | Shape |
+| --- | --- | --- |
+| Rerank a search shortlist | [Re-ranking](https://docs.typesafe.ai/cookbooks/rerank_typesafe) | One Noul per query and candidate over a BM25 shortlist of 30; see [below](#rerank-a-shortlist) for batching |
+| Filter retrieved passages before an answer | [Classifying RAG passages](https://docs.typesafe.ai/cookbooks/classifying_rag_passages) | Four Nouls per passage route it to evidence, conflict, or neither, and keep a planted injection out |
+| Find the line that answers | [Line-by-line search](https://docs.typesafe.ai/cookbooks/semantic_find) | A Choice over numbered lines, plus a Noul on whether the document answers at all |
+| Pick one skill or tool from a large roster | [Skill suggestion](https://docs.typesafe.ai/cookbooks/skill_suggestion) | Rank the whole roster with a need-any gate, then re-judge the top three on their full text |
+| Map a request to a function call | [Function calling](https://docs.typesafe.ai/cookbooks/function_calling) | A Choice per closed-set argument, plus a Noul on whether the user stated it, so defaults stand |
+| Classify into a deep taxonomy | [Hierarchical classification](https://docs.typesafe.ai/cookbooks/hierarchical_classification) | A Choice per level with a beam of plausible paths, pruned by geometric-mean probability |
+| Fall back to a broader label when unsure | [Classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence) | One Choice over fine labels; below a confidence bar, code reports the parent label with no second call |
+| Keep repeated judgments stable | [Self-consistency: nouls](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) and [choices](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) | Repeat a rubric and measure variance; send the uncertain band to a person |
+| Screen LLM input and output | [Guardrails for LLMs](https://docs.typesafe.ai/cookbooks/llm_guardrails) | A battery of hazard Nouls plus a severity Score in one request; review and block thresholds live in policy code |
+| Ask many questions of one document | [Parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions) | Every question in one request: the same answers at a fraction of the cost and time |
+| Extract a value without generating it | [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook) and [date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) | Regex or components propose candidates, a Choice picks one, code copies or assembles it |
+| Check a small model's extraction | [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade) | Per-field checks decide which records go to a reasoning model; see [Verify, then escalate](#verify-then-escalate) |
+| Match records across catalogs | [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment) | A three-level Score sends the middle to a curator, with per-field Nouls showing what disagrees |
+| Check a quotation against its source | [Double-checking citations](https://docs.typesafe.ai/cookbooks/citation_check) | A string match catches fabricated quotes, then a Choice over the section decides support |
+| Rebuild structure from flattened text | [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat) | Two requests of classifications; every output character comes from the input |
+| Turn text into model features | [Autoresearch feature discovery](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery) | An LLM proposes Score and Noul questions, their answers become columns for a trained regressor |
 
 ## Worked example: routing and urgency
 
@@ -62,16 +82,68 @@ free-text explanations, or source quotations.
 
 ## Rerank a shortlist
 
-Ask one Noul per candidate over shared state and sort by its probability in code. Batch about
-15 candidates per request, telling each question which index it judges and to ignore the rest:
-the framing is billed once, which made batching cheaper and faster than one request per candidate
-in [this benchmark](https://github.com/laguagu/jev-rerank-bench#batching-is-free-quality).
+A first stage (BM25, vectors, or both) narrows the corpus to 10–30 candidates; Jev judges each
+against the query, and code sorts by the probability. A reranker cannot add what the first stage
+missed, so measure how often the right answer is on the shortlist at all before tuning the question.
 
-On noisy speech transcripts (one-minute ASR segments of Finnish lecture videos, 70 full questions
-and 15 terms of one to three words, `jev-1.13.0`, September 2026) four things mattered:
+The [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe) sends one request per
+query and candidate. Batching about 15 candidates per request, each Noul told which index it judges,
+bills the shared framing once. On MuPLeR-fi it took 400 requests instead of 6,000, a p50 of 331 ms
+instead of 892 ms, and $0.60 instead of $0.93 per thousand queries, at a top-1 recall of 96.5%
+against 95.5% ([benchmark](https://github.com/laguagu/jev-rerank-bench#batching-is-free-quality)).
+A sketch with the JavaScript SDK:
 
-- **Put the source title in state** beside each segment; a transcript rarely names its own topic.
-  The title raised hit@1 on both query sets, if only by one query each.
+```ts
+import { noul, TypeSafeClient, type Questions } from "@typesafe-ai/sdk";
+
+const client = new TypeSafeClient({ timeout: 10_000 }); // reads TYPESAFE_API_KEY
+const task = "A user asked a question. Decide whether this passage is a source that answers it.";
+const criteria = {
+  true: "The passage contains the specific statement the question asks about; someone reading it alone could answer.",
+  false: "The passage shares a subject or vocabulary with the question but does not contain that statement.",
+};
+
+type Candidate = { id: string; title: string; text: string };
+
+export async function rerank(query: string, shortlist: Candidate[], size = 15) {
+  const batches = Array.from({ length: Math.ceil(shortlist.length / size) },
+    (_, b) => shortlist.slice(b * size, (b + 1) * size));
+  const scores = new Map<string, number>();
+  await Promise.all(batches.map(async (batch) => {
+    const questions: Questions = {};
+    batch.forEach((_, i) => {
+      questions[`p${i}`] = noul({ task, judge: `Judge only passages[${i}]; the others are competing candidates.` }, criteria);
+    });
+    const { answers } = await client.systemOne({
+      state: { query, passages: batch.map(({ title, text }) => ({ title, text })) },
+      questions,
+    });
+    batch.forEach((c, i) => {
+      const a = answers[`p${i}`];
+      if (a?.type === "noul") scores.set(c.id, a.noul);
+    });
+  }));
+  // Stable sort: an unscored candidate keeps its first-stage place behind every scored one.
+  return [...shortlist].sort((a, b) => (scores.get(b.id) ?? -1) - (scores.get(a.id) ?? -1));
+}
+```
+
+The caller catches a failed call and serves the first-stage order. Rewrite `task` and `criteria`
+for your corpus; they matter more than anything else here.
+
+What mattered, measured on Finnish legal text (MuPLeR-fi and 160 collective agreements) and on
+one-minute ASR segments of Finnish lecture videos (70 full questions and 15 terms of one to three
+words), `jev-1.13.0`, September 2026:
+
+- **Write the criteria for what separates a right answer in this corpus.** A question written for
+  collective agreements required the passage to come from the agreement the user named. MuPLeR's
+  passages carry only a numeric id, so that condition could never be met, and a Noul that cannot
+  verify its condition answers no: 77.0% against 96.5% for a question about the passage alone, and
+  73.0% with no reranking ([benchmark](https://github.com/laguagu/jev-rerank-bench#the-largest-effect-is-the-question-not-the-model)).
+  Put only the fields the judgment uses in state; an unused id is a distractor.
+- **Put the source title in state** when the passage does not name its own topic. A transcript
+  segment rarely does, and the title raised hit@1 on both transcript query sets, if only by one
+  query each.
 - **Name the short-query case in the criteria.** For a term of one to three words, require its
   subject to be a substantial topic of the segment rather than a passing mention, and say that
   shared vocabulary, such as a word inside a longer compound, does not count. Cross-encoders take
@@ -79,7 +151,13 @@ and 15 terms of one to three words, `jev-1.13.0`, September 2026) four things ma
   hit@1 on short queries from 0.933 to 0.600, where Jev with the criterion reached 1.000.
 - **Rerank only the top 10 when the first stage is already good.** Jev's gain on full questions
   held (hit@1 0.543 unreranked, 0.629 reordering 30, 0.657 reordering the top 10), and the
-  cross-encoder's harm on short queries mostly disappeared (back to 0.933).
+  cross-encoder's harm on short queries mostly disappeared (back to 0.933). A deeper shortlist
+  rarely pays: 100 candidates instead of 30 raised top-1 on the agreements by 1.4 to 2.8 points
+  at 3.3 times the cost.
+- **Gate on the top score.** Accepting the first result only when its Noul was at least 0.9
+  answered 55% of MuPLeR queries with no top-1 error; show the list or ask for the rest
+  ([benchmark](https://github.com/laguagu/jev-rerank-bench#it-knows-when-it-is-right)).
+  Choose the threshold on your own development queries.
 - **Keep search independent of the reranker.** Cache scores per query and candidate for a few
   minutes, time the call out, and after a failure skip reranking for a cooldown and serve the
   first-stage order.

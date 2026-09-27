@@ -18,18 +18,8 @@ Contents: [official foundations](#official-foundations) · [framework and langua
 | [JavaScript SDK](https://github.com/typesafe-ai/typesafe-sdk-js) / [Python SDK](https://github.com/typesafe-ai/typesafe-sdk-python) | Adding direct API calls to an application |
 | [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) | Running the same Python request through OpenAI, Anthropic, or Gemini as an LLM baseline; it records retries, usage, and latency per call |
 | [Confidence guide](https://docs.typesafe.ai/confidence) | Designing an accept / review / fallback policy |
-| [Cookbooks](https://docs.typesafe.ai/cookbooks) | Worked recipes with cached responses, so they replay without a key; the ones below map to this kit's patterns |
+| [Cookbooks](https://docs.typesafe.ai/cookbooks) | Worked recipes with cached responses, so they replay without a key; [Patterns](patterns.md#official-recipes) maps each to the need it serves |
 | [Vercel launch and use cases](https://vercel.com/blog/ai-gateway-jev-model-launch#about-jev) | Understanding proposed places for Jev in an agent workflow; performance figures are vendor reports |
-
-Cookbooks worth reading before inventing a shape:
-
-- [Re-ranking](https://docs.typesafe.ai/cookbooks/rerank_typesafe): one Noul per query and candidate over a 30-passage BM25 shortlist.
-- [Line-by-line search](https://docs.typesafe.ai/cookbooks/semantic_find): a Choice over numbered lines points at the answer, and a Noul in the same request says whether the document answers at all.
-- [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat): Markdown rebuilt from flattened text in two requests; the model only classifies, so every output character comes from the input.
-- [Function calling](https://docs.typesafe.ai/cookbooks/function_calling): a Choice per closed-set argument, plus a Noul on whether the user stated it, so the function's default can stand.
-- [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment): a three-level Score (different, related, same) sends the middle to a curator, with per-field Nouls showing what disagrees.
-- [Classifying RAG passages](https://docs.typesafe.ai/cookbooks/classifying_rag_passages): four Nouls per retrieved passage route it to evidence, conflict, or neither, and keep a planted prompt injection out of the answer.
-- [Double-checking citations](https://docs.typesafe.ai/cookbooks/citation_check): a string match catches fabricated quotes first, then a Choice over the quoted section decides support.
 
 Install the official skill with `npx skills add typesafe-ai/skills --skill typesafe-ai`,
 or use its documented Claude Code plugin installation. Choose one method for that skill.

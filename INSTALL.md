@@ -35,7 +35,7 @@ For example, ask: “Use the jev-skills:jev-builder skill to design a request ro
 
 ## What's in the package?
 
-- `skills/`: two skills, with setup, patterns, question, evidence, and resource references bundled inside `jev-builder`.
+- `skills/`: two skills, with setup, patterns, rerank, screening, question, evidence, resource, and evaluation references bundled inside `jev-builder`.
 - `plugin.json`: the [Agent Plugins](https://agent-plugins.org/plugin-authors/manifest) portable manifest.
 - `.claude-plugin/`: Claude Code manifest and marketplace.
 - `.codex-plugin/plugin.json`: Codex-native metadata for plugin loaders. The skills CLI above is the documented Codex installation path here.
@@ -47,5 +47,6 @@ Examples remain optional; installing a skill does not execute them.
 the skills instead. Claude's validator may note that distinction.
 
 For the runnable examples, clone the repository and follow
-[the decision examples](examples/decisions/README.md) or
+[the decision examples](examples/decisions/README.md),
+[the rerank example](examples/rerank/README.md) or
 [the evidence example](examples/evidence/README.md).

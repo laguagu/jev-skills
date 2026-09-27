@@ -1,0 +1,56 @@
+{
+  "note": "Synthetic help-centre passages for a fictional product, in first-stage order. Only restore-window answers the query.",
+  "query": "How long can I still restore a project after deleting it?",
+  "candidates": [
+    {
+      "id": "archive",
+      "title": "Archive a project",
+      "text": "Archiving a project makes it read-only and hides it from the dashboard. Archived projects are kept until an owner unarchives or deletes them."
+    },
+    {
+      "id": "api-delete",
+      "title": "Projects API",
+      "text": "DELETE /projects/{id} moves the project to the trash. Add ?permanent=true to delete it at once, without the trash."
+    },
+    {
+      "id": "file-versions",
+      "title": "File history",
+      "text": "Every file keeps its earlier versions for 60 days. Restoring a version of one file does not change any other file in the project."
+    },
+    {
+      "id": "restore-window",
+      "title": "Deleted projects",
+      "text": "A deleted project stays in the trash for 30 days, and an owner can restore it from Settings, Trash. After 30 days it is purged and cannot be recovered."
+    },
+    {
+      "id": "backups",
+      "title": "Backups",
+      "text": "The database is backed up every night and each backup is kept for 14 days. Backups are for disaster recovery and cannot be used to bring back a single project."
+    },
+    {
+      "id": "account-closure",
+      "title": "Close an account",
+      "text": "When an account is closed, its projects are deleted 90 days later and their export links stop working."
+    },
+    {
+      "id": "trash-access",
+      "title": "Who can see the trash",
+      "text": "Only project owners can open the trash. A member who deleted something by mistake can ask an owner to restore it."
+    },
+    {
+      "id": "export",
+      "title": "Export a project",
+      "text": "Owners can export a project as a ZIP file at any time. The download link expires after 24 hours."
+    },
+    {
+      "id": "storage",
+      "title": "Storage quota",
+      "text": "A project stops counting towards the storage quota as soon as it is deleted."
+    },
+    {
+      "id": "audit-log",
+      "title": "Audit log",
+      "text": "The audit log records who deleted or restored each project and keeps every entry for one year."
+    }
+  ]
+}

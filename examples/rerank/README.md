@@ -12,8 +12,8 @@ a fictional product; only one of them answers the query.
 | `run.mjs` | `--dry-run` prints the requests; `--live` makes one paid request |
 | `run.test.mjs` | Runs `run.mjs --live` in a child process against a local server that sends headers and then stalls, with a synthetic key: the fallback must be served and the process must exit 0 |
 
-The question follows the wording measured in [Rerank](../../skills/jev-builder/references/rerank.md#a-question-you-can-copy);
-rewrite its `corpus` field and criteria for your own data.
+For question design and batching, see [Rerank](../../skills/jev-builder/references/rerank.md#a-question-you-can-copy).
+Adapt the example's `corpus` field and criteria for your own data.
 
 ## Offline
 

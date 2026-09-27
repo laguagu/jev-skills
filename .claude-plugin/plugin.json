@@ -1,7 +1,7 @@
 {
   "name": "jev-skills",
-  "version": "1.9.2",
-  "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
+  "version": "1.10.0",
+  "description": "A curated collection of Jev skills, example projects, tools and integrations.",
   "author": {
     "name": "laguagu",
     "url": "https://github.com/laguagu"

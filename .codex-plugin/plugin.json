@@ -1,7 +1,7 @@
 {
   "name": "jev-skills",
-  "version": "1.9.2",
-  "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
+  "version": "1.10.0",
+  "description": "A curated collection of Jev skills, example projects, tools and integrations.",
   "author": {
     "name": "laguagu",
     "url": "https://github.com/laguagu"
@@ -19,15 +19,15 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Jev Skills",
-    "shortDescription": "Build small decisions with Jev",
-    "longDescription": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
+    "shortDescription": "Explore and build with Jev",
+    "longDescription": "A curated collection of Jev skills, example projects, tools and integrations.",
     "developerName": "laguagu",
     "category": "Developer Tools",
     "capabilities": [],
     "websiteURL": "https://github.com/laguagu/jev-skills",
     "defaultPrompt": [
       "Use jev-builder to add a typed decision to this app.",
-      "Find a useful Jev integration for this project."
+      "Use jev-curator to find useful Jev projects and update the collection."
     ]
   }
 }

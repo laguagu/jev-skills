@@ -1,52 +1,34 @@
 ---
 name: jev-evidence-eval
-description: Measures a TypeSafe Jev evidence or classification workflow for accuracy on accepted cases, review rate and coverage, abstention, latency, usage and cost, with source receipts, missing evidence and contradictions in the test set. Use when checking whether a Jev decision or a cited claim is supported by supplied text, choosing or sweeping a confidence threshold, or comparing a Jev workflow against an existing classifier or LLM.
+description: Evaluates TypeSafe Jev evidence and classification workflows for accuracy, review coverage, latency and cost. Use when testing citation support, choosing confidence thresholds or comparing a Jev workflow with a classifier or LLM.
 license: MIT
 ---
 
 # Evaluate decisions against evidence
 
-Read the live [TypeSafe API](https://docs.typesafe.ai/api) and
-[confidence guide](https://docs.typesafe.ai/confidence) before implementing requests.
-The official [typesafe-ai skill](https://github.com/typesafe-ai/skills) covers broader integrations.
+Use the current [TypeSafe API](https://docs.typesafe.ai/api) and
+[confidence guide](https://docs.typesafe.ai/confidence) when implementing requests.
 
-Define the claim and the complete candidate passages. Keep expected labels outside model state.
-Ask an independent question per passage. To accept or flag a citation, a binary Noul on whether
-the passage fully supports the claim beat a supports / contradicts / irrelevant Choice in a
-measured Finnish test; keep the Choice when contradiction and silence need different handling.
-Preserve entity, time, qualifiers and scope. Missing evidence does not establish a negative.
+Define the claim and candidate passages; keep expected labels outside model state. Use a Noul
+for whether a passage fully supports a claim, or a Choice when code must distinguish support,
+contradiction and silence. Include entity, time, qualifiers and scope. Missing evidence is not a denial.
+Copy receipts from source spans in code; a verbatim receipt establishes provenance, not correctness.
+Measure retrieval coverage separately from the judgments on retrieved passages.
 
-Copy receipt text from source spans in code. A verbatim receipt proves where text came from,
-not that the model's interpretation is correct. Retain contradictory passages and an explicit
-review outcome. For long documents, measure retrieval coverage separately; omitted evidence
-cannot be recovered by a classifier. Adjacent context may be necessary for pronouns and exceptions.
+Include ordinary cases, missing facts, contradictions, negation, different entities, numerical
+mismatches, dropped conditions, changes from allowed to required, valid inferences and instructions
+embedded in documents. Keep synthetic fixtures public and customer inputs private.
 
-Measure end-to-end latency, returned model version, usage, and errors separately from accuracy.
-Report coverage alongside accuracy on accepted cases, and recall per failure type. Spend cases on
-the types that separate systems: in a [Finnish citation test](https://github.com/laguagu/jev-rerank-bench/blob/main/verify/results/hard/report.md)
-every hosted model scored 96–99% on plain supports / contradicts / silent claims, while dropped
-conditions and *may* turned into *must* separated them, and an 88% overall hid a 50% catch rate on
-the latter. Use balanced accuracy when supported and unsupported cases are uneven. Sweep the
-threshold (a Noul's probability, or confidence) on a development set, for example with
-[jevcal](https://github.com/abhixhek/jevcal), and set one per outcome by the cost of its error:
-stricter for an answer that acts than for one that only reorders a list. Then test the frozen
-policy on unseen cases written after the questions, rules and thresholds, naming entities that
-none of them mentions; rules written beside the first cases fit those cases. Generated test sets
-can flatter: batched Jev scored 96.5% on LLM-written queries and 56.9% on human questions over a
-different corpus, an observed gap rather than a measured bias. Repeated calls on the same
-examples measure stability, not independent sample size. Confidence is not chosen-label
-probability and neither is a domain accuracy guarantee.
+Sweep thresholds on development cases and freeze the policy before testing unseen cases.
+Report accuracy on accepted cases together with review rate, coverage and errors per category.
+Use balanced accuracy for uneven classes. Neither confidence nor a chosen-label probability
+is an accuracy guarantee, and repeated calls do not increase the number of independent cases.
 
-For an LLM comparison, the official [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python)
-answers the same Python request with OpenAI, Anthropic, or Gemini. Pin both models, alternate
-the arms over the same cases, and count retries and malformed outputs as part of the baseline's cost.
-Measure a cascade as a third arm: Jev decides, and only its uncertain or flagged cases go to the LLM.
+Compare against the existing workflow on matching inputs. For an LLM baseline, the
+[System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) accepts the same
+Python requests. Evaluate escalation to an LLM as a separate arm and count its cost and latency.
+Pin model versions, alternate the arms, and include retries, malformed outputs and service errors.
 
-Include missing facts, explicit denials, conflicting passages, different entities, negation,
-future plans, numerical mismatches, dropped conditions, changes between allowed and required,
-sound inferences that should pass, and instructions embedded in documents. Record failures.
-Use synthetic fixtures for public examples; do not publish customer material or secrets.
-
-Apply this procedure to the user's existing harness. Build a dry run that prints requests without
-network access, keep the raw answers with the model version and usage, and replay the policy from
-saved results so a threshold change costs nothing.
+Use the user's existing harness. Provide an offline dry run and save answers, returned model
+versions and usage so policy changes can be replayed without new calls. Deliver a report with
+case counts, accuracy, coverage, end-to-end latency, cost and representative failures.

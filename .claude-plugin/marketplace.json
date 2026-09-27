@@ -5,14 +5,14 @@
     "url": "https://github.com/laguagu"
   },
   "metadata": {
-    "description": "Practical Jev skills, decision examples, and a small guide to useful integrations."
+    "description": "A curated collection of Jev skills, example projects, tools and integrations."
   },
   "plugins": [
     {
       "name": "jev-skills",
       "source": "./",
-      "description": "Practical Jev skills, decision examples, and a small guide to useful integrations.",
-      "version": "1.9.2"
+      "description": "A curated collection of Jev skills, example projects, tools and integrations.",
+      "version": "1.10.0"
     }
   ]
 }

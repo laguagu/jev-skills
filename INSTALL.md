@@ -3,12 +3,12 @@
 ## Any supported coding agent
 
 ```sh
-npx skills add typesafe-ai/skills --skill typesafe-ai
-npx skills add laguagu/jev-skills --skill jev-builder
+bunx --bun skills add typesafe-ai/skills --skill typesafe-ai
+bunx --bun skills add laguagu/jev-skills --skill jev-builder
 ```
 
 Choose your agent when prompted, or add `--agent codex`. Omit `--skill` from the
-second command to choose either kit skill. Installation is project-local by default;
+second command to choose the kit skills. Installation is project-local by default;
 add `-g` for a personal installation.
 
 The official TypeSafe skill is maintained upstream and is not bundled here.
@@ -16,7 +16,7 @@ Pick one installation method per skill to avoid duplicate copies.
 
 ## Claude Code plugin alternative
 
-Install both Jev Skills skills together:
+Install all Jev Skills skills together:
 
 ```sh
 claude plugin marketplace add laguagu/jev-skills
@@ -35,7 +35,7 @@ For example, ask: “Use the jev-skills:jev-builder skill to design a request ro
 
 ## What's in the package?
 
-- `skills/`: two skills, with setup, patterns, rerank, screening, question, evidence, resource, and evaluation references bundled inside `jev-builder`.
+- `skills/`: `jev-builder`, `jev-evidence-eval` and `jev-curator`, with setup, patterns, rerank, screening, question, evidence, resource, and evaluation references bundled inside `jev-builder`.
 - `plugin.json`: the [Agent Plugins](https://agent-plugins.org/plugin-authors/manifest) portable manifest.
 - `.claude-plugin/`: Claude Code manifest and marketplace.
 - `.codex-plugin/plugin.json`: Codex-native metadata for plugin loaders. The skills CLI above is the documented Codex installation path here.

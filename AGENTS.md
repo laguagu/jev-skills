@@ -1,10 +1,10 @@
 # Jev Skills
 
 - Read `README.md` and the relevant `skills/*/SKILL.md`. Use the official `typesafe-ai` skill for current API details.
-- Keep this a small skills-and-examples kit. Bundle reusable guidance under `skills/jev-builder/references/`; examples belong under `examples/`.
+- Keep the README a browsable collection of Jev skills, repos and examples, with short descriptions and visible categories. Keep benchmark results in the evaluation reference. Bundle reusable guidance under `skills/jev-builder/references/`; examples belong under `examples/`.
 - For a new resource, inspect its primary docs and actual artifact. Describe what exists; distinguish reviewed source from software tested here. Prefer useful coverage over link counts.
 - Use original wording and respect upstream licenses. Keep TypeSafe's official skill installed from upstream instead of maintaining a copy.
 - Use synthetic or explicitly public fixtures. Never commit credentials, private inputs, or raw provider errors. Live calls are billed; dry runs are offline.
 - After code changes, run the relevant offline checks in `examples/decisions/README.md`, `examples/rerank/README.md` or `examples/evidence/README.md`. Validate changed skills and plugin manifests before publishing.
-- Reference links into laguagu/jev-rerank-bench use its README anchors; that repository's `scripts/check_links.py --skills <this checkout>` checks them.
+- For collection updates, read `skills/jev-curator/SKILL.md`; a bare `skills/` folder is not automatically discovered by every agent.
 - Version and description are repeated in `plugin.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and `.codex-plugin/plugin.json`. Change them together; validation does not compare them.

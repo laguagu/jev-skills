@@ -10,10 +10,9 @@ Read the current [TypeSafe API](https://docs.typesafe.ai/api),
 
 Choose the shape that matches the user's application:
 
-- **Claim checking:** give each candidate passage an independent question. To accept or flag a
-  citation, a binary Noul on whether the passage *fully* supports the claim was more accurate than
-  a supports / contradicts / irrelevant Choice ([Questions](questions.md#a-measured-case-accepting-a-citation));
-  use the Choice when code must treat contradiction and silence differently. Preserve both
+- **Claim checking:** give each candidate passage an independent question. A Noul can ask whether
+  the passage *fully* supports the claim ([Questions](questions.md#accepting-a-citation));
+  use a Choice when code must treat contradiction and silence differently. Preserve both
   supporting and contradicting passages.
 - **Fact selection:** ask YES / NO / NOT_STATED or a defined taxonomy with an unknown option.
   In a second request, select source-span IDs that establish the chosen fact, with explicit

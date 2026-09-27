@@ -27,7 +27,7 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | Need | Typed question | Application behavior to design |
 | --- | --- | --- |
 | Route a support ticket | Choice: billing / product / technical / unknown | Unknown or uncertain → triage; urgency is an independent Noul |
-| Route to a model or subagent | Choice among a documented capability list | Resolve to configured IDs; retain a default; measure total cost including routing. Or use a ready router: see [Resources](resources.md#integrations-and-examples) |
+| Route to a model or subagent | Choice among a documented capability list | Resolve to configured IDs; retain a default; measure total cost including routing. Or use a ready router: see [Resources](resources.md#choose-a-starting-point) |
 | Rank retrieved passages | One Noul per passage; a Score only when code needs the grade itself; a single Choice picks a top result well but orders the rest poorly | Sort in code, preserve passage IDs, and retain context needed for exceptions; see [Rerank](rerank.md) |
 | Select a tool | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
 | Choose an action and what it acts on | Choice for the operation, plus one speculative Choice per operation over observed candidates | Number the candidates in code each turn; execute only the target belonging to the chosen operation |
@@ -98,20 +98,15 @@ free-text explanations, or source quotations.
 ## Rerank a shortlist
 
 Reranking a search shortlist has its own reference: [Rerank](rerank.md). It covers batching,
-a measured question to adapt, sizing a batch, gating on the top score, the comparison with an
-LLM asked the same question, and keeping search independent of the reranker.
+a question to adapt, sizing a batch, comparing ranking quality and keeping search independent
+of the reranker.
 
 ## Verify, then escalate
 
-Jev answers every case, and code sends only the doubtful ones to a stronger LLM. On the citation
-check in [Questions](questions.md#a-measured-case-accepting-a-citation), escalating when the
-support probability fell between 0.3 and 0.7, or when a claim was accepted but the targeted
-modality check fired, sent 19% of the 600 claims to gpt-6-sol. The cascade scored 92.5% balanced
-accuracy against 93.2% for gpt-6-sol on every claim, at about a quarter of its cost
-($0.25 against $0.97 per thousand claims). Treat that as exploratory: both rules were chosen on
-the same data, and gpt-6-sol also wrote the claims and their labels, so its own score may carry
-home advantage. Fix the band on development cases and measure it on held-out ones
-([method and data](https://github.com/laguagu/jev-rerank-bench/tree/main/verify#citation-check)).
+Let Jev judge first and send uncertain or flagged cases to a stronger model or a person.
+The [citation example](questions.md#accepting-a-citation) gives one possible first-stage check.
+Choose the escalation band on development cases and evaluate the complete cascade on held-out
+cases, including fallback latency and cost. Keep generated labels separate from independent review.
 TypeSafe's [SDE cascade cookbook](https://docs.typesafe.ai/cookbooks/sde_cascade) applies the
 same shape to extraction: Jev checks a small model's fields before a reasoning model is called.
 Its rules for the verifier carry over: frame the case to escalate as the yes side, ask one narrow
@@ -139,29 +134,10 @@ Schema validity is not semantic accuracy. Any speed or cost advantage needs an e
 task, the same inputs, a measured baseline, and the cost of fallbacks. Do not repeat “up to”
 launch figures as a promise for the user's application.
 
-What [one comparison](https://github.com/laguagu/jev-rerank-bench#3-classification) found,
-as a prior rather than a promise. On three public intent sets (BANKING77, CLINC150 with
-out-of-scope, and Finnish MASSIVE; 600 messages each, `jev-1.13.0`, September 2026), Jev with
-label names only was 2 to 9 points behind gpt-5.6-sol and gpt-6-sol, and ahead of the small
-gpt-6-luna. One-sentence label definitions closed most of that gap. Given the ten nearest
-labelled messages in state, it tied a logistic regression on embeddings trained on the full
-training split, and so did the chat models. No arm beat that trained classifier, which costs
-almost nothing to run. What set Jev apart was speed (about 0.25 s against 1.5–2 s), cost (a
-few cents per thousand messages), and a probability that gated well: with the examples in
-state, it answered 88–100% of messages automatically at 95% accuracy. GPT-5.x returned no
-probability, and gpt-6-luna only its chosen token's. When labelled data exists, compare against
-a trained classifier before choosing Jev for accuracy alone. Choose it when the gate, the
-latency, or a missing training set is what matters.
-
-Two refinements from the same [report](https://github.com/laguagu/jev-rerank-bench/blob/main/classify/results/report.md).
-A Choice over the trained embedding classifier's top ten labels (plus out-of-scope), with the ten nearest examples,
-was within 0.7 percentage points of a Choice over every label on all three sets at lower cost: $0.034 against $0.059 per thousand messages on
-BANKING77, $0.033 against $0.075 on CLINC150, $0.032 against $0.048 on MASSIVE fi. Label
-definitions and examples raised accuracy but lowered out-of-scope recall on CLINC150, from 88%
-with label names alone to 74–79%; measure out-of-scope separately.
-
-For reranking, the same comparison against an LLM asked the identical question is in
-[Rerank](rerank.md#against-an-llm-asked-the-identical-question).
+When labelled data exists, include a trained classifier in the comparison. Define each label
+and try representative examples in state. A shortlist can reduce decision cost, but measure
+candidate coverage and out-of-scope recall separately. [Published evaluations](evaluations.md)
+provide examples of these comparisons.
 
 For an LLM baseline on identical questions, TypeSafe's
 [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) keeps the Python

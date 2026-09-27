@@ -16,7 +16,9 @@ If the official skill is absent, the docs and references below are sufficient to
 | Need | Read |
 | --- | --- |
 | First call, API key, provider choice, or authentication trouble | [Setup](references/setup.md) |
-| Routing, scoring, reranking, tool choice, escalation to an LLM, workflow design, or the official cookbook for a need | [Patterns](references/patterns.md) |
+| Routing, scoring, tool choice, escalation to an LLM, workflow design, or the official cookbook for a need | [Patterns](references/patterns.md) |
+| Reranking a search shortlist: batching, the question, gating, keeping search independent | [Rerank](references/rerank.md) |
+| Screening one document against a long checklist | [Screening](references/screening.md) |
 | Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
 | An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
 | An existing skill, SDK, provider, MCP server, open model, or example project | [Resources](references/resources.md) |

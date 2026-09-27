@@ -44,6 +44,24 @@ fits whenever the listed options may not cover every input.
 - State is data, but it is not treated as hostile. Text inside it can argue for its own answer.
   Say in the criteria what counts, and test adversarial and self-describing inputs before rollout.
 
+## A measured case: accepting a citation
+
+To accept or flag a citation, ask one Noul whose yes side is demanding: everything the claim
+asserts, including numbers, time limits, actors, conditions, scope, and whether something is
+required or only allowed, is stated in the passage or follows directly from it. On 600 hard
+Finnish claims (`jev-1.13.0`, September 2026) this binary question reached 88.1% balanced
+accuracy. A three-way supports / contradicts / says-nothing Choice, accepting only supports,
+reached 81.8%, because it let through more claims that were subtly wrong. Keep the three-way
+Choice for when code must tell a contradiction from silence.
+
+An overall figure hid the weak spots. The binary question accepted 96% of claims that follow by
+inference and caught nearly every added detail and wrong source, but only 72% of dropped
+conditions and 50% of modality shifts, where *may* becomes *must*. A second, targeted Noul in the
+same request, asking whether the claim changes what is required, allowed, or conditional, raised
+those to 87% and 79%. It also flagged sound inferences: their acceptance fell from 96% to 79%, and
+used as a veto the pair scored 85.1%, below the single question. Use a targeted check like this to
+send a case onward, not to reject it; [Patterns](patterns.md#verify-then-escalate) has the cascade.
+
 ## Fix it
 
 Find the question that fails before changing anything: run labelled examples and compare each
@@ -67,6 +85,10 @@ Change one or two questions per revision; probabilities shift in ways that are h
 so leave questions that already discriminate well alone. Judge the revision on labelled data,
 because higher confidence alone does not mean a better question. Once code depends on an answer
 space, keep it stable: adding or removing a level or an option changes what every earlier answer meant.
+
+Pin the versioned model ID while revising, such as `jev-1.13.0`, and log the `model` each response
+reports. The `jev-latest` alias moves when a release ships, and the display name is not an ID:
+`jev-1.13` is rejected with HTTP 400.
 
 Do not carry a threshold from one primitive to another, and do not expect a question and its
 negation to sum to one. Separate questions are separate judgments, not terms in an equation.

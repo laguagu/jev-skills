@@ -1,6 +1,6 @@
 ---
 name: jev-evidence-eval
-description: Measures a TypeSafe Jev evidence or classification workflow for accuracy on accepted cases, review rate and coverage, abstention, latency, usage and cost, with source receipts, missing evidence and contradictions in the test set. Use when checking whether a Jev decision is supported by supplied text, choosing or sweeping a confidence threshold, or comparing a Jev workflow against an existing classifier or LLM.
+description: Measures a TypeSafe Jev evidence or classification workflow for accuracy on accepted cases, review rate and coverage, abstention, latency, usage and cost, with source receipts, missing evidence and contradictions in the test set. Use when checking whether a Jev decision or a cited claim is supported by supplied text, choosing or sweeping a confidence threshold, or comparing a Jev workflow against an existing classifier or LLM.
 license: MIT
 ---
 
@@ -11,7 +11,9 @@ Read the live [TypeSafe API](https://docs.typesafe.ai/api) and
 The official [typesafe-ai skill](https://github.com/typesafe-ai/skills) covers broader integrations.
 
 Define the claim and the complete candidate passages. Keep expected labels outside model state.
-Ask independent Choice questions for each passage: supports, contradicts or irrelevant.
+Ask an independent question per passage. To accept or flag a citation, a binary Noul on whether
+the passage fully supports the claim beat a supports / contradicts / irrelevant Choice in a
+measured Finnish test; keep the Choice when contradiction and silence need different handling.
 Preserve entity, time, qualifiers and scope. Missing evidence does not establish a negative.
 
 Copy receipt text from source spans in code. A verbatim receipt proves where text came from,
@@ -20,17 +22,21 @@ review outcome. For long documents, measure retrieval coverage separately; omitt
 cannot be recovered by a classifier. Adjacent context may be necessary for pronouns and exceptions.
 
 Measure end-to-end latency, returned model version, usage, and errors separately from accuracy.
-Report coverage alongside accuracy on accepted cases. Sweep confidence thresholds on a
-development set, then evaluate the chosen policy on unseen labelled data. Repeated calls on the
-same examples measure stability, not independent sample size. Confidence is not chosen-label
+Report coverage alongside accuracy on accepted cases, and recall per failure type: on hard
+citations, 88% overall hid a 50% catch rate on claims that turned *may* into *must*. Use balanced
+accuracy when supported and unsupported cases are uneven. Sweep the threshold (a Noul's
+probability, or confidence) on a development set, then evaluate the chosen policy on unseen
+labelled data. Repeated calls on the same examples measure stability, not independent sample size. Confidence is not chosen-label
 probability and neither is a domain accuracy guarantee.
 
 For an LLM comparison, the official [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python)
 answers the same Python request with OpenAI, Anthropic, or Gemini. Pin both models, alternate
 the arms over the same cases, and count retries and malformed outputs as part of the baseline's cost.
+Measure a cascade as a third arm: Jev decides, and only its uncertain or flagged cases go to the LLM.
 
 Include missing facts, explicit denials, conflicting passages, different entities, negation,
-future plans, numerical mismatches and instructions embedded in documents. Record failures.
+future plans, numerical mismatches, dropped conditions, changes between allowed and required,
+sound inferences that should pass, and instructions embedded in documents. Record failures.
 Use synthetic fixtures for public examples; do not publish customer material or secrets.
 
 Apply this procedure to the user's existing harness. Build a dry run that prints requests without

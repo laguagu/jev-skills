@@ -37,8 +37,8 @@ Clone the repository to run these. The skills work without them.
 
 ## Ecosystem
 
-Reviewed on September 24, 2026 through public repositories and documentation. These are leads,
-not endorsements: apart from jegrep, nothing here was run for this kit, and most numbers are self-reported.
+Reviewed on September 27, 2026 through public repositories and documentation. These are leads,
+not endorsements: apart from jegrep and Laya, nothing here was run for this kit, and most numbers are self-reported.
 Check license, maintenance, and failure paths before adopting any of it.
 
 ### Learn
@@ -77,6 +77,7 @@ Same request shape, different models. None of these is Jev, so re-measure any th
 - [TheoLeeCJ/SemIf-OpenJev](https://github.com/TheoLeeCJ/SemIf-OpenJev): reads option probabilities from open models, including a WebGPU demo that runs in the browser.
 - [featherless-ai/simple-jev](https://github.com/featherless-ai/simple-jev): choices, scores, and yes probabilities from Hugging Face model logits, with a keyless demo API.
 - [zhengxuyu/litjev](https://github.com/zhengxuyu/litjev): the same idea on Qwen checkpoints. Useful for understanding the shape of the API.
+- [NandhaKishorM/laya](https://github.com/NandhaKishorM/laya): the three primitives from local weights in one forward pass. Run for this kit on Finnish text, reranking with it scored below no reranking at all ([benchmark](https://github.com/laguagu/jev-rerank-bench#three-things-that-did-not-work)).
 
 ### Browser and computer use
 
@@ -87,6 +88,7 @@ Same request shape, different models. None of these is Jev, so re-measure any th
 ### Developer tools
 
 - [can1357/jegrep](https://github.com/can1357/jegrep): semantic grep that scores files by probability, without an embedding index. Run for this kit: it found every labelled file for its own English benchmark queries, but under half when the same questions were asked in Finnish, because its candidates come from a keyword scan ([benchmark](https://github.com/laguagu/jev-rerank-bench#2-code-search-without-an-index)).
+- [hotchpotch/jev-reranker](https://github.com/hotchpotch/jev-reranker): a Python library for reranking and relevance filtering in RAG, with replaceable prompts and automatic splitting of long candidate lists.
 - [andududu/jeview](https://github.com/andududu/jeview): a local gateway that records every call and draws it live. Handy when a question misbehaves.
 - [sutro-sh/jev-align](https://github.com/sutro-sh/jev-align): finds uncertain rows, asks you to label them, and proposes a better question definition with GEPA.
 - [valentynkit/jev-commit](https://github.com/valentynkit/jev-commit): pre-commit hook judging whether the message matches the diff.

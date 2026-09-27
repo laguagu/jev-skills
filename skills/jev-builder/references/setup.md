@@ -56,10 +56,10 @@ A skill supplies guidance; it does not create an API account, grant credits, or 
 | --- | --- |
 | Key missing | The process that makes the call actually loads `TYPESAFE_API_KEY` |
 | Authentication failure | Credential and endpoint belong to the same provider |
-| Model or request rejected | Current [models](https://docs.typesafe.ai/models) and [API schema](https://docs.typesafe.ai/api) |
+| Model or request rejected | TypeSafe direct takes a versioned ID such as `jev-1.13.0` or an alias such as `jev-latest`; the display name `jev-1.13` returns 400. Current [models](https://docs.typesafe.ai/models) and [API schema](https://docs.typesafe.ai/api) |
 | Confident but wrong results | Question scope, candidate coverage, labels, and missing/ambiguous inputs |
 | Unexpected cost or latency | Input size, batching, retries, network time, and recorded usage |
-| Node exits after a cancelled JavaScript call | SDK 0.6.0, still the latest release on September 24, 2026, can crash on a handled abort on Node 20 or 22 ([open issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)); Node 24 is unaffected |
+| Node exits after a cancelled JavaScript call | SDK 0.6.0, still the latest release on September 27, 2026, can crash on a handled abort on Node 20 or 22 ([open issue](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2)); Node 24 is unaffected |
 
 Check [confidence semantics](https://docs.typesafe.ai/confidence) before implementing a gate.
 For paid calls, start with a small sample. Dry runs in this kit print requests without network access.

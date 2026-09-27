@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, ranking, classification, tool selection, evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects. Complements the official typesafe-ai skill, which carries current API detail; measuring a finished workflow belongs to the jev-evidence-eval skill.
+description: Helps build applications with TypeSafe Jev by choosing decision patterns, wording and debugging typed questions, setting up API credentials, selecting SDKs or integrations, and designing fallbacks and evaluations. Use when adding Jev routing, reranking, classification, tool selection, citation or evidence checks, or context selection, when a Jev question answers wrong or with low confidence, or when finding Jev skills and example projects. Complements the official typesafe-ai skill, which carries current API detail; measuring a finished workflow belongs to the jev-evidence-eval skill.
 license: MIT
 ---
 
@@ -16,7 +16,7 @@ If the official skill is absent, the docs and references below are sufficient to
 | Need | Read |
 | --- | --- |
 | First call, API key, provider choice, or authentication trouble | [Setup](references/setup.md) |
-| Routing, scoring, filtering, tool choice, or workflow design | [Patterns](references/patterns.md) |
+| Routing, scoring, reranking, tool choice, escalation to an LLM, or workflow design | [Patterns](references/patterns.md) |
 | Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
 | An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
 | An existing skill, SDK, provider, MCP server, open model, or example project | [Resources](references/resources.md) |

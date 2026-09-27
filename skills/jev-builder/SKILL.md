@@ -20,6 +20,7 @@ If the official skill is absent, the docs and references below are sufficient to
 | Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
 | An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
 | An existing skill, SDK, provider, MCP server, open model, or example project | [Resources](references/resources.md) |
+| Whether independent measurements back a choice: batching, gates, wording, rerankers | [Evaluations](references/evaluations.md) |
 
 These reference files are bundled with this skill.
 

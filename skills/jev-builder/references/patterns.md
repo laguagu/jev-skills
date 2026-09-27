@@ -28,7 +28,7 @@ belongs elsewhere; see [Compared with other approaches](#compared-with-other-app
 | --- | --- | --- |
 | Route a support ticket | Choice: billing / product / technical / unknown | Unknown or uncertain → triage; urgency is an independent Noul |
 | Route to a model or subagent | Choice among a documented capability list | Resolve to configured IDs; retain a default; measure total cost including routing |
-| Rank retrieved passages | One Noul per passage, or a Score when grades matter | Sort in code, preserve passage IDs, and retain context needed for exceptions; see [Rerank a shortlist](#rerank-a-shortlist) |
+| Rank retrieved passages | One Noul per passage, or a Score when grades matter; a single Choice picks a top result well but orders the rest poorly | Sort in code, preserve passage IDs, and retain context needed for exceptions; see [Rerank a shortlist](#rerank-a-shortlist) |
 | Select a tool | Choice from available tools plus none | Validate arguments and permissions separately; selection does not execute anything |
 | Choose an action and what it acts on | Choice for the operation, plus one speculative Choice per operation over observed candidates | Number the candidates in code each turn; execute only the target belonging to the chosen operation |
 | Continue, retry, or stop | Choice over a bounded workflow state | Enforce retry budgets and stop conditions in code |
@@ -91,45 +91,33 @@ query and candidate. Batching about 15 candidates per request, each Noul told wh
 bills the shared framing once. On MuPLeR-fi it took 400 requests instead of 6,000, a p50 of 331 ms
 instead of 892 ms, and $0.60 instead of $0.93 per thousand queries, at a top-1 recall of 96.5%
 against 95.5% ([benchmark](https://github.com/laguagu/jev-rerank-bench#batching-is-free-quality)).
+Independent runs batched 30, 40 and 100 candidates per request with the same outcome
+([Evaluations](evaluations.md#reranking)).
 A sketch with the JavaScript SDK:
 
 ```ts
-import { noul, TypeSafeClient, type Questions } from "@typesafe-ai/sdk";
+import { noul, type Questions } from "@typesafe-ai/sdk";
 
-const client = new TypeSafeClient({ timeout: 10_000 }); // reads TYPESAFE_API_KEY
 const task = "A user asked a question. Decide whether this passage is a source that answers it.";
-const criteria = {
-  true: "The passage contains the specific statement the question asks about; someone reading it alone could answer.",
-  false: "The passage shares a subject or vocabulary with the question but does not contain that statement.",
-};
 
-type Candidate = { id: string; title: string; text: string };
-
-export async function rerank(query: string, shortlist: Candidate[], size = 15) {
-  const batches = Array.from({ length: Math.ceil(shortlist.length / size) },
-    (_, b) => shortlist.slice(b * size, (b + 1) * size));
-  const scores = new Map<string, number>();
-  await Promise.all(batches.map(async (batch) => {
-    const questions: Questions = {};
-    batch.forEach((_, i) => {
-      questions[`p${i}`] = noul({ task, judge: `Judge only passages[${i}]; the others are competing candidates.` }, criteria);
-    });
-    const { answers } = await client.systemOne({
-      state: { query, passages: batch.map(({ title, text }) => ({ title, text })) },
-      questions,
-    });
-    batch.forEach((c, i) => {
-      const a = answers[`p${i}`];
-      if (a?.type === "noul") scores.set(c.id, a.noul);
-    });
-  }));
-  // Stable sort: an unscored candidate keeps its first-stage place behind every scored one.
-  return [...shortlist].sort((a, b) => (scores.get(b.id) ?? -1) - (scores.get(a.id) ?? -1));
-}
+// One request per batch of about 15; run the batches in parallel.
+const questions: Questions = {};
+batch.forEach((_, i) => {
+  questions[`p${i}`] = noul(
+    { task, judge: `Judge only passages[${i}]; the others are competing candidates.` },
+    criteria, // your corpus's yes and no, written as the bullets below describe
+  );
+});
+const { answers } = await client.systemOne({
+  state: { query, passages: batch.map(({ title, text }) => ({ title, text })) },
+  questions,
+});
+// Map answers[`p${i}`].noul back to candidate IDs, then sort stably so an unscored
+// candidate keeps its first-stage place behind every scored one.
 ```
 
-The caller catches a failed call and serves the first-stage order. Rewrite `task` and `criteria`
-for your corpus; they matter more than anything else here.
+On a failed call, serve the first-stage order. The other passages in a batch did not act as
+distractors here: a Noul told which index it judges scored as well as one that saw a single passage.
 
 What mattered, measured on Finnish legal text (MuPLeR-fi and 160 collective agreements) and on
 one-minute ASR segments of Finnish lecture videos (70 full questions and 15 terms of one to three
@@ -157,7 +145,8 @@ words), `jev-1.13.0`, September 2026:
 - **Gate on the top score.** Accepting the first result only when its Noul was at least 0.9
   answered 55% of MuPLeR queries with no top-1 error; show the list or ask for the rest
   ([benchmark](https://github.com/laguagu/jev-rerank-bench#it-knows-when-it-is-right)).
-  Choose the threshold on your own development queries.
+  Calibration did not transfer between collections in an independent test, so choose the
+  threshold on each corpus's own development queries ([Evaluations](evaluations.md#gates-and-calibration)).
 - **Keep search independent of the reranker.** Cache scores per query and candidate for a few
   minutes, time the call out, and after a failure skip reranking for a cooldown and serve the
   first-stage order.
@@ -170,7 +159,9 @@ support probability fell between 0.3 and 0.7, or when a claim was accepted but t
 modality check fired, sent 19% of the 600 claims to gpt-6-sol. The cascade scored 92.5% balanced
 accuracy against 93.2% for gpt-6-sol on every claim, at about a quarter of its cost
 ($0.25 against $0.97 per thousand claims). Treat that as exploratory: both rules were chosen on
-the same data, so fix the band on development cases and measure it on held-out ones.
+the same data, and gpt-6-sol also wrote the claims and their labels, so its own score may carry
+home advantage. Fix the band on development cases and measure it on held-out ones
+([method and data](https://github.com/laguagu/jev-rerank-bench/tree/main/verify#citation-check)).
 TypeSafe's [SDE cascade cookbook](https://docs.typesafe.ai/cookbooks/sde_cascade) applies the
 same shape to extraction: Jev checks a small model's fields before a reasoning model is called.
 

@@ -14,6 +14,9 @@ npx skills add laguagu/jev-skills --skill jev-builder
 Choose your agent when prompted, or add `--agent codex`.
 [Claude Code plugin and other options](INSTALL.md).
 
+To have the agent itself use Jev for bulk reading and repeated checks during ordinary work, add
+[altryne/jevify](https://github.com/altryne/jevify) from its upstream: `npx skills add altryne/jevify`.
+
 ## Skills
 
 | Skill | Purpose |
@@ -32,10 +35,17 @@ Installing a skill makes no API calls.
 
 <img src="docs/question-effect.svg" alt="Top-1 recall on two Finnish corpora with no reranking, with Jev asked a question written for the other corpus, and with a question written for this one" width="760">
 
-The guidance comes from runs like this one. On MuPLeR-fi, rewriting the question for the corpus
-raised top-1 recall from 77.0% to 96.5%, while Jev, a cross-encoder, and two chat models
-reranking the same shortlists were within 4.5 points of each other.
-Method, costs, and the runs behind it: [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench).
+The skill's advice comes from [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench),
+four benchmarks on Finnish text run for this kit with `jev-1.13.0`:
+
+| Benchmark | What the skill takes from it |
+| --- | --- |
+| [Reranking](https://github.com/laguagu/jev-rerank-bench#1-reranking) | On MuPLeR-fi, a question written for the corpus raised top-1 from 77.0% to 96.5%, while the rerankers compared were within 4.5 points of each other. Fifteen candidates per request cost less than one each, at the same quality |
+| [Code search](https://github.com/laguagu/jev-rerank-bench#2-code-search-without-an-index) | Rerank an index's top 30 rather than scan without one: with Finnish queries, the index plus Jev found 90% of labelled files in its top five, and jegrep with no index found 42% |
+| [Classification](https://github.com/laguagu/jev-rerank-bench#3-classification) | One-sentence label definitions cut errors by about 40%; ten labelled examples in state tied a trained classifier |
+| [Citation check](https://github.com/laguagu/jev-rerank-bench#4-citation-check) | One demanding yes/no question reached 88.1%; sending the doubtful 19% to gpt-6-sol reached 92.5% at a quarter of its cost |
+
+Where outside evaluations agree, and where they do not: [What others measured](skills/jev-builder/references/evaluations.md).
 
 ## Examples
 
@@ -46,7 +56,7 @@ Clone the repository to run these. The skills work without them.
 
 ## Ecosystem
 
-SDKs, provider and framework integrations, other skills, MCP servers, open models, and applications,
-reviewed on September 27, 2026: [ECOSYSTEM.md](ECOSYSTEM.md).
+SDKs, provider and framework integrations, other skills, MCP servers, open models, applications,
+and independent evaluations, reviewed on September 27, 2026: [ECOSYSTEM.md](ECOSYSTEM.md).
 
 Independent community project. [MIT license](LICENSE).

@@ -20,11 +20,17 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
   In S1Rank a "which is best?" Choice ranked well below the per-document Noul (65.6 against 73.7
   nDCG@10 on TREC DL19). Use a Choice when code needs the answer, and one judgment per candidate
   when it needs an order.
-- **Level with commercial rerankers in English, not everywhere.** Jev's rubric tied Cohere Rerank 4
+- **Level with commercial rerankers on some English sets, not everywhere.** Jev's rubric tied Cohere Rerank 4
   Pro on eight English datasets (0.692 against 0.691) at a fifth of the price, and S1Rank's
   per-document Noul beat bge-reranker-v2-m3 and monoT5-3B on TREC-COVID, NFCorpus and SciFact. On
   French, Qwen3-Reranker-4B beat every Jev setup. Parallel found Jev comparable to its internal
   reranker (nDCG@10 about 0.7). Measure on your language before choosing.
+- **A cross-encoder can still win, even in English.** memsearch reranked ten frozen candidates for
+  2,172 memory queries in Chinese and again in English translation: Jev raised Recall@5 from 0.7471 to 0.7941 and Voyage
+  rerank-3 to 0.8187, and Voyage led on MRR@10 (0.7754 against 0.6884) in both languages, at $0.120
+  against Jev's $0.171 per thousand queries. Its authors kept Jev as "an optional provider, rather
+  than a new default". They also used a third batch layout: every candidate's text inside its own
+  Noul, with the query alone in the shared state.
 
 ## Gates and calibration
 
@@ -38,8 +44,16 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
 - **Uncertainty says how hard a query is, not who would do better.** S1Rank's routing of
   uncertain queries to another reranker did no better than random.
 - **Answers vary slightly between identical requests.** 52% of S1Rank's probabilities changed
-  across byte-identical requests, by small amounts. Cache answers when reproducibility matters,
-  and do not tune a threshold finer than that noise.
+  across byte-identical requests, by small amounts. TypeSafe's own self-consistency recipes agree:
+  over 15 repeats a Noul's mean per-question standard deviation was 0.0102, yet one question ranged
+  from 0.43 to 0.53, across a 0.5 threshold; a Choice flipped its pick on 2 of 8 questions, and
+  acting only when the top probability was at least 0.60 gave 99.2% agreement while deciding 74.2%
+  of answers automatically ([Noul](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook),
+  [Choice](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook)). Cache answers when
+  reproducibility matters, and do not tune a threshold finer than that noise.
+- **A tool can run the sweep.** [abhixhek/jevcal](https://github.com/abhixhek/jevcal)
+  picks a threshold per question on half of your labelled data, checks it on the other half, and
+  fails CI when a model update breaks it.
 
 ## Wording and context
 
@@ -51,6 +65,10 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
   and attachment metadata to state raised zero-shot accuracy from 93.62% to 97.98% with the
   question unchanged; rewording then added 0.66 points (bitnovus/jev-spam-eval). Before revising a
   question, check that state holds what a person would need to answer it.
+- **Say what the system is for.** On 662 labelled prompt-injection messages, telling Jev what the
+  protected assistant does raised recall from 74.9% to 95.1%, and accuracy to 96.5% at a plain 0.5
+  cut (Gaurav-Gosain/jev-sec-bench). A message that subverts one assistant can be an ordinary
+  request to another.
 
 ## Classification
 
@@ -70,6 +88,13 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
 
 ## Sources
 
+TypeSafe publishes its own dated snapshots rather than a leaderboard, and argues why in
+[Antibenchmaxxing](https://typesafe.ai/blog/antibenchmaxxing). On its
+[workflow evals](https://evals.typesafe.ai), averaged over four workflows, Jev scored 67.8% against
+73.1% for Claude Opus 5, at about $0.0004 against $0.1761 per case; the reference labels are the
+averaged answers of GPT-6 Astra and Claude Fable 5.1, so the figure measures agreement with those
+models, not with people.
+
 | Evaluation | What it measured |
 | --- | --- |
 | [zaesho/S1Rank](https://github.com/zaesho/S1Rank) | Reranking BM25 top-100 on TREC DL and BEIR, calibration, nondeterminism; paper and every raw response |
@@ -81,4 +106,6 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
 | [Parallel: testing Jev](https://parallel.ai/blog/testing-jev) | Reranking, topic and freshness classification against Parallel's in-house systems; a company blog without raw data |
 | [JYeswak/jev_playground](https://github.com/JYeswak/jev_playground) | Pre-registered measurements behind small agent tools, including where Jev lost |
 | [instax-dutta/sysone-bench](https://github.com/instax-dutta/sysone-bench) | Jev, Laya and Qwen PCD on identical bytes, with paired tests |
-| [laguagu/jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) | This kit's own runs on Finnish text: reranking, code search, classification, citation checks |
+| [zilliztech/memsearch reranking evaluation](https://github.com/zilliztech/memsearch/blob/main/evaluation/reranking-evaluation.md) | `jev-1.13.0` against Voyage rerank-3 over frozen candidates for Chinese and English memory queries; aggregates and input hashes only |
+| [Gaurav-Gosain/jev-sec-bench](https://github.com/Gaurav-Gosain/jev-sec-bench) | Prompt injection on deepset/prompt-injections and matched vulnerable-code pairs, with raw per-sample output |
+| [laguagu/jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) | This kit's own runs on Finnish text: reranking, code search, classification, citation checks, lecture transcripts |

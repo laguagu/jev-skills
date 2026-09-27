@@ -22,11 +22,19 @@ review outcome. For long documents, measure retrieval coverage separately; omitt
 cannot be recovered by a classifier. Adjacent context may be necessary for pronouns and exceptions.
 
 Measure end-to-end latency, returned model version, usage, and errors separately from accuracy.
-Report coverage alongside accuracy on accepted cases, and recall per failure type: on hard
-citations, 88% overall hid a 50% catch rate on claims that turned *may* into *must*. Use balanced
-accuracy when supported and unsupported cases are uneven. Sweep the threshold (a Noul's
-probability, or confidence) on a development set, then evaluate the chosen policy on unseen
-labelled data. Repeated calls on the same examples measure stability, not independent sample size. Confidence is not chosen-label
+Report coverage alongside accuracy on accepted cases, and recall per failure type. Spend cases on
+the types that separate systems: in a [Finnish citation test](https://github.com/laguagu/jev-rerank-bench/blob/main/verify/results/hard/report.md)
+every hosted model scored 96–99% on plain supports / contradicts / silent claims, while dropped
+conditions and *may* turned into *must* separated them, and an 88% overall hid a 50% catch rate on
+the latter. Use balanced accuracy when supported and unsupported cases are uneven. Sweep the
+threshold (a Noul's probability, or confidence) on a development set, for example with
+[jevcal](https://github.com/abhixhek/jevcal), and set one per outcome by the cost of its error:
+stricter for an answer that acts than for one that only reorders a list. Then test the frozen
+policy on unseen cases written after the questions, rules and thresholds, naming entities that
+none of them mentions; rules written beside the first cases fit those cases. Generated test sets
+can flatter: batched Jev scored 96.5% on LLM-written queries and 56.9% on human questions over a
+different corpus, an observed gap rather than a measured bias. Repeated calls on the same
+examples measure stability, not independent sample size. Confidence is not chosen-label
 probability and neither is a domain accuracy guarantee.
 
 For an LLM comparison, the official [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python)

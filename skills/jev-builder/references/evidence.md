@@ -25,10 +25,23 @@ document identity and context. Never ask Jev to generate a quote or accept an ar
 string as a source ID. Validate the answer keys, allowed choices and numerical metadata before
 using them. Unresolved references, time qualifiers and contradictory passages require review.
 
+When the answer arrives with its own quote, as in the citation cookbook, check the quote against
+the source in code before any model sees it. The cookbook's match is exact after normalizing
+whitespace and quotation marks, so a truncated or lightly reworded quote comes back as
+fabricated; normalize, and use a tolerant match before calling a quote invented.
+
 A verbatim span check establishes provenance only. Even an exact quote may support a different
 entity or time period. If multiple passages jointly establish a fact, retain the set or escalate;
 do not present one convenient sentence as complete evidence. Retrieval coverage is a separate
 measurement: a classifier cannot judge evidence it never receives.
+
+When retrieved passages feed a generator, TypeSafe's
+[RAG passages cookbook](https://docs.typesafe.ai/cookbooks/classifying_rag_passages) routes each
+one by fixed tests: injection first, then contradiction before evidence, because a passage that
+denies the question's premise usually also states something usable. Evidence and conflicts reach
+the generator in separate blocks. Its injection Noul is a filter, not a security boundary: a
+passage under the threshold still reaches the prompt, so the generator must treat every passage
+as untrusted text.
 
 Keep business rules and execution in code. Preserve existing evidence checks and authorization
 boundaries. Treat confidence and chosen-option probability as different signals; neither proves

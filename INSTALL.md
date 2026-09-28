@@ -8,15 +8,15 @@ bunx --bun skills add laguagu/jev-skills --skill jev-builder
 ```
 
 Choose your agent when prompted, or add `--agent codex`. Omit `--skill` from the
-second command to choose the kit skills. Installation is project-local by default;
-add `-g` for a personal installation.
+second command to pick from all three of this repo's skills. Installation is
+project-local by default; add `-g` for a personal installation.
 
 The official TypeSafe skill is maintained upstream and is not bundled here.
 Pick one installation method per skill to avoid duplicate copies.
 
 ## Claude Code plugin alternative
 
-Install all Jev Skills skills together:
+Install all three of this repo's skills together:
 
 ```sh
 claude plugin marketplace add laguagu/jev-skills

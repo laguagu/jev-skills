@@ -64,25 +64,9 @@ synthetic input and criteria to try your own cases. Keep private inputs out of t
 
 ## Live smoke check
 
-On September 20, 2026, the routing, ranking, and tool requests at commit `9abf769` were run once each
-through SDK 0.6.0. All returned `jev-1.13.0`; their resulting policies matched these expectations:
-
-| Example | Observed policy | Request and policy time |
-| --- | --- | --- |
-| Routing | Billing queue, not immediate | 727 ms |
-| Ranking | Retention passage, logging passage, billing passage | 742 ms |
-| Tool selection | Propose `search_docs`; execute nothing | 692 ms |
-
-Total reported input: 1,507 tokens. These are three synthetic smoke checks, not an accuracy
-benchmark or latency guarantee. The local policy tests cover uncertainty and malformed answers separately.
-
-On September 24, 2026, all six requests at commit `f88ccdf` were run once each through SDK 0.6.0
-on Node 24. All returned `jev-1.13.0`, and the three added after the first check behaved as intended:
-
-| Example | Observed policy | Request and policy time |
-| --- | --- | --- |
-| Workflow | Retry, with the budget counted in code | 676 ms |
-| Risk | Approval required, no urgent notification, nothing executed | 672 ms |
-| Verify | Blocked: the draft's "support can restore them" is not in the source | 678 ms |
-
-Routing, ranking, and tool selection repeated their earlier policies.
+The requests were run live through SDK 0.6.0, once per example per run: routing, ranking and
+tools on September 20, 2026 (commit `9abf769`), then all six on September 24 (commit `f88ccdf`,
+Node 24). Every response reported `jev-1.13.0`, every policy matched its expectation, and the
+recorded request-and-policy times ranged from 672 to 742 ms. For example, `verify` blocked a draft whose claim that
+"support can restore them" is not in the source. These are synthetic smoke checks, not an
+accuracy benchmark or a latency guarantee; the policy tests cover uncertain and malformed answers.

@@ -12,8 +12,10 @@ and [Python](https://github.com/typesafe-ai/typesafe-sdk-python) (`typesafe-sdk`
 `typesafe_sdk`; the PyPI package `typesafe` is unrelated). Read the current
 [SDK docs](https://docs.typesafe.ai/sdk) and changelogs before integrating.
 
-Both SDKs read `TYPESAFE_BASE_URL` and `TYPESAFE_DEFAULT_MODEL`. `TYPESAFE_LOG_LEVEL=debug` logs
-request and response bodies unredacted; keep it off where state is sensitive.
+Both SDKs read `TYPESAFE_BASE_URL` and `TYPESAFE_DEFAULT_MODEL`. The cookbooks instead pass
+`TYPESAFE_ENDPOINT` to the client as its base URL and set the model in code.
+`TYPESAFE_LOG_LEVEL=debug` logs request and response bodies unredacted; keep it off where state
+is sensitive.
 
 ## Gateways and frameworks
 
@@ -38,7 +40,7 @@ Each provider has its own key. Chat-completion clients do not work with the deci
 | Symptom | Check |
 | --- | --- |
 | Authentication failure | The key and the endpoint belong to the same provider |
-| Model or request rejected | A versioned ID or alias, not the display name; limits in [models](https://docs.typesafe.ai/models) and the [API](https://docs.typesafe.ai/api) |
+| Model or request rejected | A versioned ID or alias, not the display name or a cookbook's older ID; limits in [models](https://docs.typesafe.ai/models) and the [API](https://docs.typesafe.ai/api) |
 | 429 or 529 | Retryable; the SDKs back off by default |
 | Results changed without a code change | An alias moved; pin a versioned ID |
-| Node exits after a JavaScript call timed out or was cancelled | [SDK issue #2](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2): a timeout firing mid-body can crash Node. Passing a `fetch` that reads the whole body first avoids it ([example](https://github.com/laguagu/jev-skills/blob/main/examples/fetch-whole-body.mjs)) |
+| Node exits after a JavaScript call timed out or was cancelled (JS SDK 0.6.0) | [SDK issue #2](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2): a timeout firing mid-body can crash Node. Passing a `fetch` that reads the whole body first avoids it ([example](https://github.com/laguagu/jev-skills/blob/main/examples/fetch-whole-body.mjs)) |

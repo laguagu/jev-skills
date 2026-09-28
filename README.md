@@ -14,14 +14,14 @@ the [cookbooks](https://docs.typesafe.ai/cookbooks) or an [offline example](#exa
 You write the question and its allowed answers; Jev returns a typed answer with probabilities,
 and your code decides what happens next.
 
-| Ask Jev | Question type | Your code then |
-| --- | --- | --- |
-| Which team should handle this ticket: billing, product, technical, or none of these? | Choice | Routes it; "none" or low confidence goes to triage |
-| Does this search result answer the query? (one question per result) | Noul | Sorts by probability; keeps the original order if the call fails |
-| How much harm could this shell command do: none, recoverable, or irreversible? | Score | Runs it, asks first, or blocks it |
-| Does the cited passage fully support this claim? | Noul | Publishes the answer, or sends doubtful ones to a stronger model |
-| Which of these tools fits the request, or none? | Choice | Checks arguments and permissions before calling anything |
-| Which of these numbered sentences gives the due date? | Choice | Copies the date word for word from the source |
+| Ask Jev | Question type | Your code then | Start from |
+| --- | --- | --- | --- |
+| Which team should handle this ticket: billing, technical, product, or unknown? | Choice | Routes it; "unknown" or low confidence goes to triage | [`routing` example](examples/decisions/README.md) · [intent routing](https://docs.typesafe.ai/patterns/intent-routing) |
+| Does this search result answer the query? (one question per result, 10–15 per request) | Noul | Sorts by probability; keeps the original order if the call fails | [Rerank example](examples/rerank/README.md) · [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe) |
+| How much harm could this shell command do: none, recoverable, or irreversible? | Score | Runs it, asks first, or blocks it | [`risk` example](examples/decisions/README.md) · [guardrails cookbook](https://docs.typesafe.ai/cookbooks/llm_guardrails) |
+| Does the cited passage fully support this claim? | Noul | Publishes the answer, or sends doubtful ones to a stronger model | [Evidence example](examples/evidence/README.md) · [citations cookbook](https://docs.typesafe.ai/cookbooks/citation_check) |
+| Which of these tools fits the request, or none? | Choice | Checks arguments and permissions before calling anything | [`tools` example](examples/decisions/README.md) · [function calling cookbook](https://docs.typesafe.ai/cookbooks/function_calling) |
+| Which of these numbered sentences gives the due date? | Choice | Copies the date word for word from the source | [Date extraction cookbook](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) |
 
 Two of those questions in one call, with the official JavaScript SDK:
 
@@ -34,8 +34,9 @@ const { answers } = await client.systemOne({
   questions: {
     team: choice("Which team should handle this message?", {
       billing: "Invoices, charges or payments.",
+      technical: "Broken product behavior or outages.",
       product: "Features, limits or how-to questions.",
-      none: "None of these, or not enough information.",
+      unknown: "Not enough information, or no matching team.",
     }),
     urgent: noul("Does the sender need an answer within a few days?"),
   },
@@ -264,10 +265,11 @@ their own behavior; their probabilities and thresholds are not interchangeable w
 Install the official API skill and this repo's builder skill:
 
 ```sh
-bunx --bun skills add typesafe-ai/skills --skill typesafe-ai
-bunx --bun skills add laguagu/jev-skills --skill jev-builder
+npx skills add typesafe-ai/skills --skill typesafe-ai
+npx skills add laguagu/jev-skills --skill jev-builder
 ```
 
+With Bun, use `bunx --bun skills add` instead of `npx skills add`.
 Replace `jev-builder` with `jev-evidence-eval` or `jev-curator` to install either companion.
 Choose your agent when prompted, or add `--agent codex`. [Plugin and other installation options](INSTALL.md).
 

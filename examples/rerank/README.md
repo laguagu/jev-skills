@@ -13,7 +13,8 @@ a fictional product; only one of them answers the query.
 | `run.test.mjs` | Runs `run.mjs --live` in a child process against a local server that sends headers and then stalls, with a synthetic key: the fallback must be served and the process must exit 0 |
 
 For question design, start from the [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe).
-Adapt the example's `corpus` field and criteria for your own data.
+It sends one request per candidate; this example batches 15 per request, and each question names
+the `passages[i]` it judges. Adapt the example's `corpus` field and criteria for your own data.
 
 ## Offline
 
@@ -59,7 +60,12 @@ It makes one request for the ten passages, pinned to `jev-1.13.0`, without retri
   the next search tries again.
 - **The model is recorded** as each response reports it, so a result can be traced to a version.
 
-Left out on purpose: a score cache, an admin switch and per-request overrides. Add a short cache
-keyed by query and candidate IDs if users page through results; the
-[production rules](https://github.com/laguagu/claude-code-nextjs-skills/blob/4827ea8/skills/postgres-semantic-search/references/reranking.md#production-rules-apply-to-any-reranker)
-cover the rest. The fixed deadline, cooldown and batch size are illustrations, not tuned values.
+Left out on purpose, and worth adding in an application:
+
+- a short score cache keyed by query and candidate IDs, so paging and repeated searches do not
+  pay again;
+- a runtime switch, off by default, that turns reranking off without a deploy;
+- if callers can pick a reranker per request, only backends the operator enabled, so a caller
+  cannot send your data to a provider nobody chose.
+
+The fixed deadline, cooldown and batch size are illustrations, not tuned values.

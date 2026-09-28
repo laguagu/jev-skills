@@ -1,6 +1,6 @@
 ---
 name: jev-curator
-description: Finds and checks Jev repositories, skills and examples, then updates the jev-skills README. Use when refreshing this collection, finding new ecosystem projects or fixing stale entries.
+description: Finds and checks Jev repositories, skills and examples, then updates the jev-skills README. Use when refreshing this collection, adding or checking an entry, finding new ecosystem projects from awesome-jev lists or GitHub, or fixing stale, renamed or duplicate entries.
 license: MIT
 ---
 
@@ -32,9 +32,9 @@ list's wording. Say what the project does with Jev, and mark beta, experimental 
 Distinguish skills, plugins, apps and demos; describe source review separately from tests run.
 Correct stale entries and duplicates, and update the "Entries checked" date.
 
-Keep benchmark numbers in `skills/jev-builder/references/evaluations.md`, and link benchmark
-repositories rather than copying their results, including this kit's own
-[jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench). Keep navigation working and avoid
+Link benchmark repositories rather than copying their results into the README or the skills,
+including this kit's own [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench). Keep
+navigation working, use the small logos in `docs/logos/` only where they help scanning, and avoid
 badges and link-count targets.
 
 Link maintained upstream skills. Bundle one only when it adds a missing capability and its

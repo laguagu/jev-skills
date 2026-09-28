@@ -1,6 +1,6 @@
 ---
 name: jev-evidence-eval
-description: Evaluates TypeSafe Jev evidence and classification workflows for accuracy, review coverage, latency and cost. Use when testing citation support, choosing confidence thresholds or comparing a Jev workflow with a classifier or LLM.
+description: Evaluates TypeSafe Jev evidence and classification workflows for accuracy, review coverage, latency and cost. Use when testing citation or support checks, building a labelled test set or eval harness for Jev decisions, choosing or validating confidence thresholds, or comparing a Jev workflow with a classifier, cross-encoder or LLM before adopting it.
 license: MIT
 ---
 

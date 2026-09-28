@@ -1,88 +1,87 @@
 ---
 name: jev-builder
-description: Designs TypeSafe Jev decisions (typed Choice, Score and Noul questions), their SDK or framework integration, fallbacks and evaluations. Use when adding Jev routing, reranking, classification, tool selection, citation or evidence checks, when a Jev question answers wrong or with low confidence, when choosing between Jev, an LLM and a local cross-encoder or open model, or when looking for a Jev SDK, integration or example project. Complements the official typesafe-ai skill, which carries current API detail; measuring a finished workflow and curating the jev-skills collection have their own companion skills.
+description: Maps what can be built with TypeSafe Jev and where to look for it. Use when adding Jev decisions (typed Choice, Score and Noul questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when connecting Jev through an SDK, gateway or framework; when looking for the official cookbook, client library, integration or example project that fits a need; when choosing between Jev, an LLM, a cross-encoder or an open model; or when a Jev question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; measuring a finished workflow has its own companion skill, jev-evidence-eval.
 license: MIT
 ---
 
 # Build with Jev
 
-Turn a concrete application need into a small typed decision. This skill complements the
-[official TypeSafe skill](https://github.com/typesafe-ai/skills); use that for detailed API
-implementation and the current [docs](https://docs.typesafe.ai/introduction) as source of truth.
-If the official skill is absent, the docs and references below are sufficient to begin.
+Jev answers typed questions about text and application state: `Choice` picks one of named
+options, `Score` places the input on ordered levels, `Noul` returns the probability of yes.
+Code owns the workflow and acts on the answers. This skill says what can be done and where to
+look; the [live docs](https://docs.typesafe.ai/llms.txt) are the source of truth. When the
+official [typesafe-ai skill](https://github.com/typesafe-ai/skills) is installed, follow it for
+API and question design; this skill adds the recipe map, connection paths, pitfalls and where
+measurements live.
 
-## Choose the right starting point
+## Where to look
 
-| Need | Read |
+| Need | Look here |
 | --- | --- |
-| First call, API key, provider choice, or authentication trouble | [Setup](references/setup.md) |
-| Routing, scoring, tool choice, escalation to an LLM, workflow design, or the official cookbook for a need | [Patterns](references/patterns.md) |
-| Reranking a search shortlist: batching, the question, gating, keeping search independent | [Rerank](references/rerank.md) |
-| Screening one document against a long checklist | [Screening](references/screening.md) |
-| Wording a question, or one that answers wrong or with low confidence | [Questions](references/questions.md) |
-| An answer that must cite its source, or missing and conflicting evidence | [Evidence](references/evidence.md) |
-| An existing skill, SDK, provider, MCP server, open model, or example project | [Resources](references/resources.md) |
-| Whether measurements back a choice: Jev against an LLM, a cross-encoder or an open model; batching, rerank depth, gates, wording | [Evaluations](references/evaluations.md) |
+| Concepts, primitives, confidence, HTTP API, SDKs, limits, prices | [Docs index](https://docs.typesafe.ai/llms.txt); append `.md` to a page path for Markdown |
+| A worked recipe for the need | [Cookbooks](#official-cookbooks) below; read the closest one in full before designing |
+| Architecture patterns | [Patterns](https://docs.typesafe.ai/patterns): fan-out, confidence routing, composite scoring, intent routing |
+| Where the current model is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) |
+| Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
+| Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
+| Offline runnable examples | [Decisions, rerank, evidence](https://github.com/laguagu/jev-skills#examples) |
+| Measurements | [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) (Finnish reranking, classification, citation checks) and the README's [evaluation list](https://github.com/laguagu/jev-skills#evaluations) |
 
-These reference files are bundled with this skill.
+## Official cookbooks
 
-## Implement a decision
+Each has runnable code, cached responses that replay without a key, and measured results. The
+[cookbook index](https://docs.typesafe.ai/cookbooks) may list newer ones.
 
-1. **Define the contract.** Identify the available input, allowed outcomes, cost of a
-   wrong decision, and what happens when information is missing. If an exact rule solves
-   the problem, use code. If the output is a new paragraph or arbitrary JSON content,
-   use a generative model or deterministic extraction instead. The two compose well: a typed
-   decision picks the slot or candidate, and a generative model fills only that one slot.
-2. **Connect the provider.** Follow the setup reference and the project's existing secret
-   handling. TypeSafe direct credentials and AI Gateway credentials are different.
-   Keep keys on the server; never ask the user to paste a key into the conversation.
-3. **Choose a primitive.** `Choice` selects from named alternatives; include unknown or
-   none when appropriate. `Score` uses ordered rubric levels. `Noul` returns the probability
-   of yes, not a separate confidence field or a Boolean decision made for the application.
-4. **Provide explicit context.** Put task data and candidate definitions in state. Write
-   self-contained instructions: question IDs are bookkeeping, not model-visible meaning.
-   Independent questions can share a request, including ones only some branches consume;
-   they are judged in parallel. If B requires A's answer, make a second request.
-   [Questions](references/questions.md) covers wording and diagnosis in detail.
-5. **Use the existing SDK or framework.** Prefer official clients and follow current API
-   examples. Check model names, request limits and pricing in live docs; pin a supported
-   version for a reproducible evaluation and record the returned model.
-6. **Compose in code.** Validate returned keys and allowed values. Map an answer to a
-   known route or candidate ID. Keep authorization and execution in application code;
-   a selected tool is a proposal, not permission. Handle missing, malformed, uncertain,
-   and service-error outcomes explicitly.
-7. **Test the policy.** Start with labelled ordinary, ambiguous, and out-of-scope inputs.
-   Compare with the existing rule/classifier/LLM on equivalent tasks. Report errors,
-   latency, usage, accepted accuracy, and review coverage. Choose thresholds on development
-   data and check them on held-out cases; do not present a tiny example as a benchmark.
+| Cookbook | Shows |
+| --- | --- |
+| [Re-ranking](https://docs.typesafe.ai/cookbooks/rerank_typesafe) | One Noul per query and candidate reorders a BM25 shortlist |
+| [Classifying RAG passages](https://docs.typesafe.ai/cookbooks/classifying_rag_passages) | Per-passage Nouls route retrieved text to evidence, conflict or neither before the generator |
+| [Line-by-line search](https://docs.typesafe.ai/cookbooks/semantic_find) | A Choice over numbered lines finds the answer; a Noul says whether the document has one |
+| [Double-checking citations](https://docs.typesafe.ai/cookbooks/citation_check) | A string match catches invented quotes, then a Choice decides whether the context supports the claim |
+| [Skill suggestion](https://docs.typesafe.ai/cookbooks/skill_suggestion) | Picks at most one skill from a large catalog: rank, then re-check the top candidates |
+| [Function calling](https://docs.typesafe.ai/cookbooks/function_calling) | Maps a request to a typed function: a Choice per closed-set argument, a Noul on whether it was stated |
+| [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment) | A Score matches catalog records; companion Nouls show which fields disagree |
+| [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat) | Rebuilds Markdown from flattened text; every output character comes from the input |
+| [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook) · [date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) | Code proposes candidate values, a Choice selects, code copies or assembles |
+| [Hierarchical classification](https://docs.typesafe.ai/cookbooks/hierarchical_classification) | Beam search over Choice probabilities through a deep taxonomy |
+| [Classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence) | Reports the broader parent label when a fine-grained Choice is unsure |
+| [Parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions) | Many questions about one document in one request: same answers, far cheaper and faster |
+| [Guardrails for LLMs](https://docs.typesafe.ai/cookbooks/llm_guardrails) | Hazard Nouls and a severity Score screen LLM input and output; thresholds live in code |
+| [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade) | Jev checks a small model's extraction and sends failing records to a reasoning model |
+| [Self-consistency: Nouls](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) · [Choices](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) | Repeated judgments vary slightly; route the unstable band to review |
+| [Autoresearch feature discovery](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery) | Proposed Score and Noul questions become features for a trained regressor |
 
-`Choice` and `Score` confidence summarizes the answer distribution. It is different from
-the chosen outcome's probability and does not prove correctness. Select operating thresholds
-for the actual task; constants in examples are illustrations.
+## Build a decision
 
-## Choose Jev or an alternative
+1. **Check the fit.** A decision suits Jev when a knowledgeable person would answer at once from
+   the supplied context, the allowed answers are known before the call, and code consumes the
+   answer. Exact rules, arithmetic and lookups stay in code; new prose or arbitrary JSON needs a
+   generative model. They compose: a decision picks the slot or candidate, a generator fills it.
+2. **Start from the closest cookbook**, then shape state and questions with the docs or the
+   official skill.
+3. **Keep policy in code.** Map answers to known IDs, validate them, and give unknown, malformed,
+   uncertain and service-error outcomes a defined path. A reranker or gate in front of an existing
+   feature needs a total deadline and falls back to the original behaviour.
+4. **Measure before adopting.** Compare with the current rule, classifier or LLM on the same
+   labelled cases in the user's language (English is Jev's strongest), and choose thresholds per
+   task and corpus on development data. [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval)
+   covers the procedure.
 
-Defaults from the Finnish runs in [Evaluations](references/evaluations.md#our-runs-on-finnish);
-re-check them on the user's own task.
+## Pitfalls
 
-- **Reranking:** use Jev on a shortlist that already works, reorder only its head, and put the
-  source title in state. When text must stay on your own servers, a small cross-encoder on CPU
-  over an even shorter head is the fallback; stronger open rerankers need a GPU. Score long
-  questions and one-to-three-word terms separately: cross-encoders promote passing mentions.
-- **Citation and support checks:** Jev matches a frontier LLM on clear-cut claims at a small
-  fraction of its cost, but trails it on subtle ones such as a dropped condition or *may* read
-  as *must*. Send the doubtful band onward ([Patterns](references/patterns.md#verify-then-escalate)).
-- **Open decision models** are not drop-in replacements: on Finnish, Laya made reranking worse
-  than none and fell far behind on citation checks. Measure any local model on your language,
-  and never reuse Jev's thresholds for it.
+- Use a versioned model ID such as `jev-1.13.0` or an alias such as `jev-latest`; the display
+  name `jev-1.13` returns HTTP 400. Pin a versioned ID for evaluations and log the returned `model`.
+- Question IDs are never shown to the model; say in the question which item it judges.
+- An option's name can outweigh its definition. Give each option a name that means what its
+  definition says.
+- Probabilities come back rounded to two decimals and vary slightly between identical requests;
+  do not tune a threshold finer than that, and cache answers when reproducibility matters.
+- Confidence summarizes the answer distribution; it is not accuracy, and a threshold learned on
+  one corpus does not transfer to another.
+- For evidence, number candidate spans in code, let a Choice pick one (with a none option), and
+  copy the text from the source. Silence is "not stated", not a denial.
+- Local open decision models and cross-encoders are not drop-in replacements: measure them on the
+  same task, and never reuse Jev's thresholds for them.
 
-For evidence work, preserve source IDs and copy exact text in code. Use a missing-evidence
-outcome instead of treating silence as a negative; [Evidence](references/evidence.md) covers
-the shapes and their failure modes. To measure a finished workflow, use the companion
-[evaluation skill](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval);
-install it separately if only this skill is present.
-
-When recommending a third-party project, verify its current primary docs, supported runtime,
-license, and actual integration. State whether it was run or only inspected. For compaction
-or agent hooks, explain what data they send and what behavior changes before recommending
-installation. Resource discovery alone does not install tools or change agent settings.
+When recommending a third-party project from the README, read its current source and license,
+say whether it was run or only read, and for agent hooks say what data leaves the machine.

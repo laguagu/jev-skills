@@ -12,7 +12,7 @@ a fictional product; only one of them answers the query.
 | `run.mjs` | `--dry-run` prints the requests; `--live` makes one paid request |
 | `run.test.mjs` | Runs `run.mjs --live` in a child process against a local server that sends headers and then stalls, with a synthetic key: the fallback must be served and the process must exit 0 |
 
-For question design and batching, see [Rerank](../../skills/jev-builder/references/rerank.md#a-question-you-can-copy).
+For question design, start from the [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe).
 Adapt the example's `corpus` field and criteria for your own data.
 
 ## Offline

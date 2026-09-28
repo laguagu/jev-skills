@@ -4,10 +4,47 @@ A curated collection of **skills, example projects and tools for [TypeSafe Jev](
 Jev is a decision model: it turns text and application state into choices, scores and yes
 probabilities that code can act on.
 
-[Skills](#skills) · [Projects](#projects) · [SDKs & integrations](#sdks--integrations) · [Examples](#examples) · [Learn](#learn) · [Open models](#open-models) · [Evaluations](#evaluations) · [Install](#install)
+[What you can build](#what-you-can-build) · [Skills](#skills) · [Projects](#projects) · [SDKs & integrations](#sdks--integrations) · [Examples](#examples) · [Learn](#learn) · [Open models](#open-models) · [Evaluations](#evaluations) · [Install](#install)
 
 New to Jev? Start with the [official guide](https://docs.typesafe.ai/introduction),
 the [cookbooks](https://docs.typesafe.ai/cookbooks) or an [offline example](#examples).
+
+## What you can build
+
+You write the question and its allowed answers; Jev returns a typed answer with probabilities,
+and your code decides what happens next.
+
+| Ask Jev | Question type | Your code then |
+| --- | --- | --- |
+| Which team should handle this ticket: billing, product, technical, or none of these? | Choice | Routes it; "none" or low confidence goes to triage |
+| Does this search result answer the query? (one question per result) | Noul | Sorts by probability; keeps the original order if the call fails |
+| How much harm could this shell command do: none, recoverable, or irreversible? | Score | Runs it, asks first, or blocks it |
+| Does the cited passage fully support this claim? | Noul | Publishes the answer, or sends doubtful ones to a stronger model |
+| Which of these tools fits the request, or none? | Choice | Checks arguments and permissions before calling anything |
+| Which of these numbered sentences gives the due date? | Choice | Copies the date word for word from the source |
+
+Two of those questions in one call, with the official JavaScript SDK:
+
+```js
+import { TypeSafeClient, choice, noul } from "@typesafe-ai/sdk";
+
+const client = new TypeSafeClient(); // reads TYPESAFE_API_KEY
+const { answers } = await client.systemOne({
+  state: { message: "My renewal invoice has an extra charge. Please explain it this week." },
+  questions: {
+    team: choice("Which team should handle this message?", {
+      billing: "Invoices, charges or payments.",
+      product: "Features, limits or how-to questions.",
+      none: "None of these, or not enough information.",
+    }),
+    urgent: noul("Does the sender need an answer within a few days?"),
+  },
+});
+// answers.team.choice is an option name such as "billing"; answers.urgent.noul is P(yes)
+```
+
+The [official cookbooks](https://docs.typesafe.ai/cookbooks) take these further: reranking,
+citation checks, function calling, entity matching, guardrails and more.
 
 ## Skills
 
@@ -15,11 +52,11 @@ the [cookbooks](https://docs.typesafe.ai/cookbooks) or an [offline example](#exa
 
 | Skill | What it helps with |
 | --- | --- |
-| [jev-builder](skills/jev-builder/SKILL.md) | Design typed decisions: routing, ranking, tool selection, document screening and evidence checks. |
+| [jev-builder](skills/jev-builder/SKILL.md) | Start building: what Jev can do, which cookbook, SDK or integration fits, and the pitfalls. |
 | [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | Evaluate a workflow's accuracy, review rate, latency and cost. |
 | [jev-curator](skills/jev-curator/SKILL.md) | Find useful Jev repos and skills, check their sources and keep this collection current. |
 
-### Community skills
+### Official and community skills
 
 | Skill collection | What it helps with |
 | --- | --- |
@@ -128,14 +165,14 @@ Links to the `typesafe-ai` organization are official; the others are community c
 | <img src="docs/logos/javascript.svg" width="16" height="16" alt=""> JavaScript / TypeScript | [Official SDK](https://github.com/typesafe-ai/typesafe-sdk-js) · [Advocaat](https://github.com/pithings/advocaat) |
 | <img src="docs/logos/python.svg" width="16" height="16" alt=""> Python | [Official SDK](https://github.com/typesafe-ai/typesafe-sdk-python) · [LLM baseline adapter](https://github.com/typesafe-ai/system-one-adapter-python) |
 | <img src="docs/logos/spring.svg" width="16" height="16" alt=""> Java | [Spring AI TypeSafe](https://github.com/spring-ai-community/spring-ai-typesafe) |
-| Scala | [zio-typesafe-ai](https://github.com/jamesward/zio-typesafe-ai) |
+| <img src="docs/logos/scala.svg" width="16" height="16" alt=""> Scala | [zio-typesafe-ai](https://github.com/jamesward/zio-typesafe-ai) |
 | <img src="docs/logos/swift.svg" width="16" height="16" alt=""> Swift | [TypeSafe](https://github.com/krzyzanowskim/TypeSafe) · [Jev for Foundation Models](https://github.com/peterfriese/jev-foundation-models) |
 | <img src="docs/logos/ruby.svg" width="16" height="16" alt=""> Ruby | [ruby_decision_model](https://github.com/obie/ruby_decision_model) · [RubyLLM judgments](https://github.com/crmne/ruby_llm/blob/main/docs/_core_features/judgments.md) |
 | <img src="docs/logos/elixir.svg" width="16" height="16" alt=""> Elixir | [jev](https://github.com/dannote/jev) |
-| Go | [typesafe-client](https://github.com/haileyok/typesafe-client) · [jev-go](https://github.com/Stumble/jev-go) |
-| Rust | [typesafe-client](https://github.com/haileyok/typesafe-client) · [typesafe-ai](https://github.com/Twister915/typesafe-ai) |
-| .NET | [TypeSafeAI .NET SDK](https://github.com/saibimajdi/typesafeai-dotnet-sdk) |
-| PHP | [typesafe-sdk-php](https://github.com/Butochnikov/typesafe-sdk-php) · [Laravel integration](https://github.com/Butochnikov/laravel-typesafe-jev) |
+| <img src="docs/logos/go.svg" width="16" height="16" alt=""> Go | [typesafe-client](https://github.com/haileyok/typesafe-client) · [jev-go](https://github.com/Stumble/jev-go) |
+| <img src="docs/logos/rust.svg" width="16" height="16" alt=""> Rust | [typesafe-client](https://github.com/haileyok/typesafe-client) · [typesafe-ai](https://github.com/Twister915/typesafe-ai) |
+| <img src="docs/logos/dotnet.svg" width="16" height="16" alt=""> .NET | [TypeSafeAI .NET SDK](https://github.com/saibimajdi/typesafeai-dotnet-sdk) |
+| <img src="docs/logos/php.svg" width="16" height="16" alt=""> PHP | [typesafe-sdk-php](https://github.com/Butochnikov/typesafe-sdk-php) · [Laravel integration](https://github.com/Butochnikov/laravel-typesafe-jev) |
 
 ### Providers & frameworks
 
@@ -220,9 +257,7 @@ their own behavior; their probabilities and thresholds are not interchangeable w
 - [sysone-bench](https://github.com/instax-dutta/sysone-bench) — Decision models compared on matching inputs.
 - [jev-spam-eval](https://github.com/bitnovus/jev-spam-eval) — Email classification against a trained baseline.
 - [JevBench](https://github.com/fstandhartinger/jevbench) — Decision-model comparisons.
-- [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) — Our separate Finnish retrieval, classification and citation experiments.
-
-What these results mean for a design: [evaluation reference](skills/jev-builder/references/evaluations.md).
+- [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) — Our own Finnish retrieval, classification and citation runs, with [lessons for builders](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders).
 
 ## Install
 

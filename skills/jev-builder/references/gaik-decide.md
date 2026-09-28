@@ -62,8 +62,13 @@ the gaik-decide key as the API key. Pin `jev-1.13.0` there too: the SDKs otherwi
   `bge-reranker-v2-m3` is six times slower than the default, and int8 does not rescue it on
   Rahti's CPUs, which lack VNNI instructions. Laya needed 20–26 s a query on a workstation CPU
   and scored far below the fused order ([Evaluations](evaluations.md#open-models)).
+  `Qwen3-Reranker-0.6B`, the smallest LUMI-tested model, took 21–25 s for 5 documents on the
+  pod's 2-core EPYC Rome CPU; 4 cores and int8 did not bring it near a 2 s budget.
 - **LUMI and Roihu are batch systems.** Use their GPUs for offline scoring and evaluation, as the
-  `Qwen3-Reranker` comparison did on LUMI, not for a per-search endpoint.
+  `Qwen3-Reranker` comparison did on LUMI, not for a per-search endpoint. For experiments, a
+  Slurm job can serve `Qwen3-Reranker-8B` on one LUMI GPU die with gaik-decide's `/v1/rerank`
+  shape (about 0.55 s for 5 documents through an SSH tunnel, 0.5 GPU-hours per hour). Rahti
+  cannot reach LUMI compute nodes, so this is never a production backend.
 - **An always-on GPU means a cPouta VM** requested through CSC's service desk. A P100 16 GB at
   60 BU/h costs about 21 times the gaik-decide pod, is too small for `Qwen3-Reranker-8B` and too
   old for vLLM. At QAdental's volume, the 4B model it could serve buys roughly what Jev already gives.

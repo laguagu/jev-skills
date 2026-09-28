@@ -77,7 +77,9 @@ so its lead may carry home advantage
   that CPU. On one LUMI MI250X GPU die, reordering the top 10 offline, `Qwen3-Reranker-4B`
   matched Jev (0.657 long, 1.000 short) at 0.73 s p50, and the 8B model reached 0.714 and 0.933,
   not a significant gain on 70 questions. `Qwen3-Reranker-0.6B` on the Rahti pod's CPU took
-  21–25 s for 5 documents, so even the smallest Qwen3 reranker needs a GPU. Where each can be hosted:
+  21–25 s for 5 documents, so even the smallest Qwen3 reranker needs a GPU. A general LLM
+  used as a listwise reranker through CSC Aitta (`Llama-3.3-70B`, first 5) reached 0.700 offline, but
+  Aitta's terms exclude production use. Where each can be hosted:
   [GAIK](gaik-decide.md#open-models-at-csc).
 
 ## Independent evaluations

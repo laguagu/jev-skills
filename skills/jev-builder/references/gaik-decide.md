@@ -69,6 +69,11 @@ the gaik-decide key as the API key. Pin `jev-1.13.0` there too: the SDKs otherwi
   Slurm job can serve `Qwen3-Reranker-8B` on one LUMI GPU die with gaik-decide's `/v1/rerank`
   shape (about 0.55 s for 5 documents through an SSH tunnel, 0.5 GPU-hours per hour). Rahti
   cannot reach LUMI compute nodes, so this is never a production backend.
+- **CSC Aitta (LUMI AI Factory's LLM API) is not a production reranker.** Its terms allow research
+  and development only, models must be preloaded (one took 68 minutes to start) and capacity is
+  shared. As a listwise LLM reranker on the first 5, `Llama-3.3-70B` reached 0.700 long hit@1
+  offline at about 1.4 s a call when used alone, against 0.600 for the own model and 0.729 for
+  `Qwen3-Reranker-8B`; the gain was on model-written labels and not significant.
 - **An always-on GPU means a cPouta VM** requested through CSC's service desk. A P100 16 GB at
   60 BU/h costs about 21 times the gaik-decide pod, is too small for `Qwen3-Reranker-8B` and too
   old for vLLM. At QAdental's volume, the 4B model it could serve buys roughly what Jev already gives.

@@ -12,13 +12,12 @@ Contents: [our runs on Finnish](#our-runs-on-finnish) ([search in production](#s
 ## Our runs on Finnish
 
 `jev-1.13.0`, September 2026, single runs on small sets: treat a gap of one query as noise. The
-public details are in [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench). The
-production search figures are GAIK-internal, from gaik-evals' QAdental reports `RERANKING.md`
-and `CSC-RERANKER.md`.
+public details are in [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench); the
+production search figures come from a private evaluation of one customer's search.
 
 ### Search in production
 
-QAdental, a Finnish dental-lecture video search (54 videos, 39 h, hybrid retrieval), measured end
+A Finnish dental-lecture video search (54 videos, 39 h, hybrid retrieval), measured end
 to end on September 27 with 70 long questions and 15 short terms of one to three words, k = 10:
 
 | Reranker | Long hit@1 | Short hit@1 | Added mean latency, question / term |
@@ -30,7 +29,8 @@ to end on September 27 with 70 long questions and 15 short terms of one to three
 Every search was reranked; none failed open. Jev gained 13 long questions and lost 3, the
 cross-encoder gained 12 and lost 7. Three runs without reranking scored 0.543, 0.529 and 0.529.
 The Jev question was written for this corpus and scored on the same queries, so its figure is an
-upper estimate. At 10 segments a search, Jev costs an estimated $0.27 per thousand searches.
+upper estimate. At 10 segments a search, about 6,600 input tokens, Jev cost about $0.28 per
+thousand searches.
 
 - **Size the reranked head per reranker.** The first production build sent Jev a question's
   whole pool of 20 and the cross-encoder the top 10. Jev scored 0.643 and lifted hit@10 from
@@ -67,20 +67,19 @@ so its lead may carry home advantage
 ### Open models
 
 - **Laya did worse than no reranking and checked citations poorly.** On collective agreements it
-  cut top-1 from 31.9% to 8.3%. Reordering QAdental's top 10 it reached 0.186 long and 0.867
+  cut top-1 from 31.9% to 8.3%. Reordering the video search's top 10 it reached 0.186 long and 0.867
   short, at 20–26 s per query on a workstation CPU. It scored 50.0% on the three-way citation set and 56.5% balanced accuracy on the subtle
   one, where chance is 50%. Its GPU latency was not measured.
-- **Small cross-encoders run on CPU; better ones need a GPU.** On a 2-core CSC Rahti pod,
-  `mmarco-mMiniLMv2-L12` (118M parameters) scored 10 segments of 1,200 characters in 1.56 s, 30
-  in 4.7 s and 100 in 15.2 s, in under 1 GiB. `bge-reranker-v2-m3` (568M) took 9.6 s for 10,
-  too slow for a search timeout of a few seconds, and int8 ONNX made it only 1.4 times faster on
-  that CPU. On one LUMI MI250X GPU die, reordering the top 10 offline, `Qwen3-Reranker-4B`
-  matched Jev (0.657 long, 1.000 short) at 0.73 s p50, and the 8B model reached 0.714 and 0.933,
-  not a significant gain on 70 questions. `Qwen3-Reranker-0.6B` on the Rahti pod's CPU took
-  21–25 s for 5 documents, so even the smallest Qwen3 reranker needs a GPU. A general LLM
-  used as a listwise reranker through CSC Aitta (`Llama-3.3-70B`, first 5) reached 0.700 offline, but
-  Aitta's terms exclude production use. Where each can be hosted:
-  [GAIK](gaik-decide.md#open-models-at-csc).
+- **Small cross-encoders run on CPU; better ones need a GPU.** On a 2-core cloud pod (AMD EPYC,
+  AVX2 without VNNI), `mmarco-mMiniLMv2-L12` (118M parameters) scored 10 segments of 1,200
+  characters in 1.56 s, 30 in 4.7 s and 100 in 15.2 s, in under 1 GiB. `bge-reranker-v2-m3`
+  (568M) took 9.6 s for 10, too slow for a search timeout of a few seconds, and int8 ONNX made it
+  only 1.4 times faster on that CPU. `Qwen3-Reranker-0.6B` took 21–25 s for 5 documents there, so
+  even the smallest Qwen3 reranker needs a GPU. On one AMD MI250X GPU die, reordering the top 10
+  offline, `Qwen3-Reranker-4B` matched Jev (0.657 long, 1.000 short) at 0.73 s p50, and the 8B
+  model reached 0.714 and 0.933, not a significant gain on 70 questions; on the first 5, 8B
+  reached 0.729. A general LLM used as a listwise reranker (`Llama-3.3-70B`, first 5) reached
+  0.700 offline at about 1.4 s a call.
 
 ## Independent evaluations
 

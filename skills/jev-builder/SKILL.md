@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Designs TypeSafe Jev decisions (typed Choice, Score and Noul questions), their SDK or framework integration, fallbacks and evaluations. Use when adding Jev routing, reranking, classification, tool selection, citation or evidence checks, when a Jev question answers wrong or with low confidence, when choosing between Jev, an LLM and a local cross-encoder or open model, when a GAIK app calls Jev or the team's own reranker through gaik-decide, or when looking for a Jev SDK, integration or example project. Complements the official typesafe-ai skill, which carries current API detail; measuring a finished workflow and curating the jev-skills collection have their own companion skills.
+description: Designs TypeSafe Jev decisions (typed Choice, Score and Noul questions), their SDK or framework integration, fallbacks and evaluations. Use when adding Jev routing, reranking, classification, tool selection, citation or evidence checks, when a Jev question answers wrong or with low confidence, when choosing between Jev, an LLM and a local cross-encoder or open model, or when looking for a Jev SDK, integration or example project. Complements the official typesafe-ai skill, which carries current API detail; measuring a finished workflow and curating the jev-skills collection have their own companion skills.
 license: MIT
 ---
 
@@ -16,7 +16,6 @@ If the official skill is absent, the docs and references below are sufficient to
 | Need | Read |
 | --- | --- |
 | First call, API key, provider choice, or authentication trouble | [Setup](references/setup.md) |
-| A GAIK project (GAIK-internal): Jev or the team's own CSC reranker through gaik-decide | [GAIK](references/gaik-decide.md) |
 | Routing, scoring, tool choice, escalation to an LLM, workflow design, or the official cookbook for a need | [Patterns](references/patterns.md) |
 | Reranking a search shortlist: batching, the question, gating, keeping search independent | [Rerank](references/rerank.md) |
 | Screening one document against a long checklist | [Screening](references/screening.md) |
@@ -37,7 +36,6 @@ These reference files are bundled with this skill.
 2. **Connect the provider.** Follow the setup reference and the project's existing secret
    handling. TypeSafe direct credentials and AI Gateway credentials are different.
    Keep keys on the server; never ask the user to paste a key into the conversation.
-   A GAIK project uses its gaik-decide key instead of a TypeSafe key of its own.
 3. **Choose a primitive.** `Choice` selects from named alternatives; include unknown or
    none when appropriate. `Score` uses ordered rubric levels. `Noul` returns the probability
    of yes, not a separate confidence field or a Boolean decision made for the application.

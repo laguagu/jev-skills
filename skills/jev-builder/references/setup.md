@@ -69,7 +69,7 @@ threshold finer than 0.01.
 
 For a team, put a gateway in front of the key, such as LiteLLM, Bifrost, or your own proxy that
 forwards `/v1/systemone` unchanged, and count the estimated tokens of requests still in flight
-against any spending or rate cap. GAIK projects already have one: [gaik-decide](gaik-decide.md).
+against any spending or rate cap.
 
 For LangChain, start with its [TypeSafe integration](https://docs.langchain.com/oss/python/integrations/providers/typesafe).
 For an agent that needs callable tools, consider an MCP integration in [Resources](resources.md).

@@ -104,7 +104,8 @@ of the reranker.
 ## Verify, then escalate
 
 Let Jev judge first and send uncertain or flagged cases to a stronger model or a person.
-The [citation example](questions.md#accepting-a-citation) gives one possible first-stage check.
+The [citation example](questions.md#accepting-a-citation) gives one possible first-stage check;
+[Evaluations](evaluations.md#citation-check) has a measured cascade built on it.
 Choose the escalation band on development cases and evaluate the complete cascade on held-out
 cases, including fallback latency and cost. Keep generated labels separate from independent review.
 TypeSafe's [SDE cascade cookbook](https://docs.typesafe.ai/cookbooks/sde_cascade) applies the

@@ -2,7 +2,7 @@
 
 - Read `README.md` and the relevant `skills/*/SKILL.md`. Use the official `typesafe-ai` skill for current API details.
 - The README is a browsable collection of Jev skills, repos, SDKs and examples: one link and one sentence per entry, under visible categories. For collection updates, follow `skills/jev-curator/SKILL.md`; a bare `skills/` folder is not discovered by every agent.
-- Keep measured results in `skills/jev-builder/references/evaluations.md`. The reranker benchmark lives in laguagu/jev-rerank-bench; link it, never copy its code or results here.
+- Keep measured results in `skills/jev-builder/references/evaluations.md`. The reranker benchmark lives in laguagu/jev-rerank-bench: link it, cite individual figures from it, and never copy its code, tables or result files here.
 - Bundle reusable guidance under `skills/jev-builder/references/`; runnable examples belong under `examples/`, with synthetic or explicitly public fixtures.
 - Use original wording and respect upstream licenses. Keep TypeSafe's official skill installed from upstream instead of maintaining a copy.
 - Never commit credentials, private inputs, or raw provider errors. Live calls are billed; dry runs are offline. `results/` is ignored run output.

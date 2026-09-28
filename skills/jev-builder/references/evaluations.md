@@ -1,13 +1,89 @@
-# What others measured
+# Measured results
 
-Independent evaluations of `jev-1.13.0`, published in September 2026, set against this kit's
-advice. Read them as priors for your own measurement: each ran on its own data and question
-wording, and most are single runs. Numbers were checked against each repository's README or report.
+Our own runs on Finnish text first, then independent evaluations. Read every figure as a prior
+for your own measurement: each ran on its own data and question wording, and most are single
+runs. Numbers were checked against each repository's README or report.
 
-Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibration) ·
-[wording and context](#wording-and-context) · [classification](#classification) · [sources](#sources)
+Contents: [our runs on Finnish](#our-runs-on-finnish) ([search in production](#search-in-production) ·
+[citation check](#citation-check) · [open models](#open-models)) · independent: [reranking](#reranking) ·
+[gates and calibration](#gates-and-calibration) · [wording and context](#wording-and-context) ·
+[classification](#classification) · [sources](#sources)
 
-## Reranking
+## Our runs on Finnish
+
+`jev-1.13.0`, September 2026, single runs on small sets: treat a gap of one query as noise. The
+public details are in [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench). The
+production search figures are GAIK-internal, from gaik-evals' QAdental reports `RERANKING.md`
+and `CSC-RERANKER.md`.
+
+### Search in production
+
+QAdental, a Finnish dental-lecture video search (54 videos, 39 h, hybrid retrieval), measured end
+to end on September 27 with 70 long questions and 15 short terms of one to three words, k = 10:
+
+| Reranker | Long hit@1 | Short hit@1 | Added mean latency, question / term |
+| --- | --- | --- | --- |
+| None | 0.529 | 0.933 | — |
+| Jev, top 10 as whole segments with the video title | 0.671 | 1.000 | 0.33 s / 0.30 s |
+| `mmarco-mMiniLMv2-L12` on a 2-core CPU pod, top 5 cut to 1,200 characters | 0.600 | 1.000 | 0.70 s / 0.60 s |
+
+Every search was reranked; none failed open. Jev gained 13 long questions and lost 3, the
+cross-encoder gained 12 and lost 7. Three runs without reranking scored 0.543, 0.529 and 0.529.
+The Jev question was written for this corpus and scored on the same queries, so its figure is an
+upper estimate. At 10 segments a search, Jev costs an estimated $0.27 per thousand searches.
+
+- **Size the reranked head per reranker.** The first production build sent Jev a question's
+  whole pool of 20 and the cross-encoder the top 10. Jev scored 0.643 and lifted hit@10 from
+  0.886 to 0.971, but pushed a hand-annotated customer query's only relevant video out of the top
+  10; the cross-encoder added 1.5 s and dropped the same case to second. Narrowed to 10 and 5,
+  both kept all three customer cases first, Jev's hit@1 rose and the cross-encoder's added time
+  halved. Over 10, Jev can no longer lift a segment from below rank 10; what it gains is the
+  first result, which is where users judge the search.
+- **Cross-encoders promote passing mentions of a short term.** Offline, reordering all 30,
+  `bge-reranker-v2-m3` took short terms from 0.933 to 0.600 and Voyage `rerank-2.5` to 0.800.
+  With a head of 5, every model measured reached 1.000. Jev's question says a short term must be
+  a substantial topic of the segment; it never fell below the fused order at either depth.
+- **Give Jev the whole segment and its title; cut text for a small cross-encoder.** Without the
+  video title, Jev's offline long hit@1 at 10 was 0.614 instead of 0.657. A 1,200-character
+  Finnish segment is about 320 tokens, inside the cross-encoder's 512-token window.
+
+### Citation check
+
+gpt-6-sol wrote Finnish claims about 120 MuPLeR-fi passages and labelled them. It is also judged,
+so its lead may carry home advantage
+([method and results](https://github.com/laguagu/jev-rerank-bench/tree/main/verify)).
+
+- **Clear-cut claims.** On 360 claims that the passage supports, contradicts or says nothing
+  about, a three-way Choice scored 99.2% against gpt-6-sol's 99.4%, at $0.03 against $0.88 per
+  thousand claims (about a thirtieth) and a p50 of 1.1 s against 1.7 s. Every hosted model
+  scored 96–99%, so this set separates nothing. Gated at 0.8, Jev answered 96% at 99.7%.
+- **Subtle claims.** On 600 claims, 120 supported only by inference and 480 subtly unsupported,
+  one demanding binary Noul ([wording](questions.md#accepting-a-citation)) reached 88.1% balanced
+  accuracy against gpt-6-sol's 93.2%, at $0.03 against $0.97. The three-way Choice fell to
+  81.8%. The Noul caught 72% of dropped conditions and 50% of *may* → *must* shifts, against 93%
+  and 97% for gpt-6-sol. Sending the doubtful 19% to gpt-6-sol reached 92.5% at $0.25; that is
+  exploratory, because the escalation rules were chosen on the same claims.
+
+### Open models
+
+- **Laya did worse than no reranking and checked citations poorly.** On collective agreements it
+  cut top-1 from 31.9% to 8.3%. Reordering QAdental's top 10 it reached 0.186 long and 0.867
+  short, at 20–26 s per query on a workstation CPU. It scored 50.0% on the three-way citation set and 56.5% balanced accuracy on the subtle
+  one, where chance is 50%. Its GPU latency was not measured.
+- **Small cross-encoders run on CPU; better ones need a GPU.** On a 2-core CSC Rahti pod,
+  `mmarco-mMiniLMv2-L12` (118M parameters) scored 10 segments of 1,200 characters in 1.56 s, 30
+  in 4.7 s and 100 in 15.2 s, in under 1 GiB. `bge-reranker-v2-m3` (568M) took 9.6 s for 10,
+  too slow for a search timeout of a few seconds, and int8 ONNX made it only 1.4 times faster on
+  that CPU. On one LUMI MI250X GPU die, reordering the top 10 offline, `Qwen3-Reranker-4B`
+  matched Jev (0.657 long, 1.000 short) at 0.73 s p50, and the 8B model reached 0.714 and 0.933,
+  not a significant gain on 70 questions. Where each can be hosted:
+  [GAIK](gaik-decide.md#open-models-at-csc).
+
+## Independent evaluations
+
+Evaluations of `jev-1.13.0` by others, published in September 2026, set against this kit's advice.
+
+### Reranking
 
 - **Batching holds well beyond 15 candidates.** S1Rank put all 100 BM25 candidates in one
   request with a Noul per document: about one nDCG@10 point above one request per document, at
@@ -32,7 +108,7 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
   than a new default". They also used a third batch layout: every candidate's text inside its own
   Noul, with the query alone in the shared state.
 
-## Gates and calibration
+### Gates and calibration
 
 - **A gate learned on one collection does not transfer.** In S1Rank, Jev was well calibrated on
   TREC-COVID (ECE 0.023) and overconfident where relevant documents were rare; recalibration
@@ -57,7 +133,7 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
   picks a threshold per question on half of your labelled data, checks it on the other half, and
   fails CI when a model update breaks it.
 
-## Wording and context
+### Wording and context
 
 - **The option's name outweighs its definition.** Swapping which name labels which rubric, with
   everything else unchanged, moved the hosted model's AUC from 0.81 to 0.58; neutral names barely
@@ -72,7 +148,7 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
   cut (Gaurav-Gosain/jev-sec-bench). A message that subverts one assistant can be an ordinary
   request to another.
 
-## Classification
+### Classification
 
 - **Near a trained classifier, and complementary to it.** Zero-shot Jev reached 98.64% on
   ham / spam / phishing against 98.87% for a TF-IDF logistic regression trained on the same fields;
@@ -88,7 +164,7 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
   for Laya and 0.605 for a Qwen2.5-1.5B decoder (sysone-bench; labels drafted by a model and
   corrected by one reviewer).
 
-## Sources
+### Sources
 
 TypeSafe publishes its own dated snapshots rather than a leaderboard, and argues why in
 [Antibenchmaxxing](https://typesafe.ai/blog/antibenchmaxxing). On its

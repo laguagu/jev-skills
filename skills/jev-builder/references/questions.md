@@ -79,6 +79,7 @@ contradiction from silence; the [official citation cookbook](https://docs.typesa
 shows that shape. Test dropped conditions, valid inferences and changes from *may* to *must*
 separately. An extra check can catch more errors while rejecting valid claims; evaluate the
 combined policy and consider sending flagged cases for [review](patterns.md#verify-then-escalate).
+This wording was measured on Finnish claims: [Evaluations](evaluations.md#citation-check).
 
 ## Fix it
 

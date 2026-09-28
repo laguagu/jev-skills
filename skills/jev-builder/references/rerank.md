@@ -36,7 +36,8 @@ Validate every answer, including finite probabilities in range, and use a stable
 Compare the original order with reranking on the same held-out queries. Report shortlist
 recall, ranking quality, demotions of previously correct results, end-to-end latency and cost.
 Try a shallower rerank when retrieval already works well, and measure long questions and
-short keyword queries separately. Choose acceptance thresholds on development data and
+short keyword queries separately; a [production case](evaluations.md#search-in-production)
+shows why the depth differs per reranker. Choose acceptance thresholds on development data and
 report coverage alongside accepted accuracy. A threshold from another corpus is not a default.
 
 For an LLM baseline on identical questions, use the official

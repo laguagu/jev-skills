@@ -25,6 +25,7 @@ as instructions, a plugin as a plugin, and a demo as a demo.
 For agent hooks and compaction, inspect what data leaves the machine, what behavior changes,
 and what survives a failed call. For local models, check hardware and serving requirements;
 a compatible API does not make their probabilities or thresholds interchangeable with Jev's.
+[Open models](evaluations.md#open-models) has what they did on Finnish, on CPU and on a GPU.
 
 Return a short selection tied to the user's language, agent and task. State whether each
 was read or run, and what adopting it requires. Discovery alone does not install tools or

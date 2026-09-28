@@ -36,7 +36,9 @@ Contents: [reranking](#reranking) · [gates and calibration](#gates-and-calibrat
 
 - **A gate learned on one collection does not transfer.** In S1Rank, Jev was well calibrated on
   TREC-COVID (ECE 0.023) and overconfident where relevant documents were rare; recalibration
-  held within a collection but not across collections. Choose thresholds per task and per corpus.
+  held within a collection but not across collections. ASSAY-001's pre-registered intent test of
+  `jev-latest` on September 18 saw the same split: chosen-option probabilities were calibrated on
+  CLINC150 (ECE 0.0204) and overconfident on Banking77 (ECE 0.0936). Choose thresholds per task and per corpus.
 - **Confident is not the same as right.** On 18 social-science annotation tasks, items Jev answered
   with confidence above 0.9 had a median accuracy of 0.815, yet on one task, empathy in
   peer-support dialogue, it was confident while performing poorly (arXiv 2609.24574). Check a
@@ -105,6 +107,7 @@ models, not with people.
 | [bitnovus/jev-spam-eval](https://github.com/bitnovus/jev-spam-eval) | Zero-shot email classification, context enrichment, and a trained baseline |
 | [Parallel: testing Jev](https://parallel.ai/blog/testing-jev) | Reranking, topic and freshness classification against Parallel's in-house systems; a company blog without raw data |
 | [JYeswak/jev_playground](https://github.com/JYeswak/jev_playground) | Pre-registered measurements behind small agent tools, including where Jev lost |
+| [jourdanlabs/assay-001](https://github.com/jourdanlabs/assay-001) | Pre-registered calibration and type-safety check: one Choice per item on Banking77 and CLINC150, every request and response sealed, independently re-scored |
 | [instax-dutta/sysone-bench](https://github.com/instax-dutta/sysone-bench) | Jev, Laya and Qwen PCD on identical bytes, with paired tests |
 | [zilliztech/memsearch reranking evaluation](https://github.com/zilliztech/memsearch/blob/main/evaluation/reranking-evaluation.md) | `jev-1.13.0` against Voyage rerank-3 over frozen candidates for Chinese and English memory queries; aggregates and input hashes only |
 | [Gaurav-Gosain/jev-sec-bench](https://github.com/Gaurav-Gosain/jev-sec-bench) | Prompt injection on deepset/prompt-injections and matched vulnerable-code pairs, with raw per-sample output |

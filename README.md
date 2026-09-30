@@ -1,51 +1,13 @@
 # Jev Skills
 
-A curated collection of **skills, example projects and tools for [TypeSafe Jev](https://typesafe.ai/)**.
-Jev is a decision model: it turns text and application state into choices, scores and yes
-probabilities that code can act on.
+A collection of **agent skills, repositories and examples for [TypeSafe Jev](https://typesafe.ai/)**.
+Jev answers typed questions about text: choose an option, score it, or return the probability of yes.
+Your code decides what happens next.
 
-[What you can build](#what-you-can-build) · [Skills](#skills) · [Projects](#projects) · [SDKs & integrations](#sdks--integrations) · [Examples](#examples) · [Learn](#learn) · [Open models](#open-models) · [Evaluations](#evaluations) · [Install](#install)
+[Skills](#skills) · [Install](#install) · [What you can build](#what-you-can-build) · [Projects](#projects) · [SDKs & integrations](#sdks--integrations) · [Examples](#examples) · [Learn](#learn) · [Open models](#open-models) · [Evaluations](#evaluations)
 
-New to Jev? Start with the [official guide](https://docs.typesafe.ai/introduction),
-the [cookbooks](https://docs.typesafe.ai/cookbooks) or an [offline example](#examples).
-
-## What you can build
-
-You write the question and its allowed answers; Jev returns a typed answer with probabilities,
-and your code decides what happens next.
-
-| Ask Jev | Question type | Your code then | Start from |
-| --- | --- | --- | --- |
-| Which team should handle this ticket: billing, technical, product, or unknown? | Choice | Routes it; "unknown" or low confidence goes to triage | [`routing` example](examples/decisions/README.md) · [intent routing](https://docs.typesafe.ai/patterns/intent-routing) |
-| Does this search result answer the query? (one question per result, 10–15 per request) | Noul | Sorts by probability; keeps the original order if the call fails | [Rerank example](examples/rerank/README.md) · [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe) |
-| How much harm could this shell command do: none, recoverable, or irreversible? | Score | Runs it, asks first, or blocks it | [`risk` example](examples/decisions/README.md) · [guardrails cookbook](https://docs.typesafe.ai/cookbooks/llm_guardrails) |
-| Does the cited passage fully support this claim? | Noul | Publishes the answer, or sends doubtful ones to a stronger model | [Evidence example](examples/evidence/README.md) · [citations cookbook](https://docs.typesafe.ai/cookbooks/citation_check) |
-| Which of these tools fits the request, or none? | Choice | Checks arguments and permissions before calling anything | [`tools` example](examples/decisions/README.md) · [function calling cookbook](https://docs.typesafe.ai/cookbooks/function_calling) |
-| Which of these numbered sentences gives the due date? | Choice | Copies the date word for word from the source | [Date extraction cookbook](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) |
-
-Two of those questions in one call, with the official JavaScript SDK:
-
-```js
-import { TypeSafeClient, choice, noul } from "@typesafe-ai/sdk";
-
-const client = new TypeSafeClient(); // reads TYPESAFE_API_KEY
-const { answers } = await client.systemOne({
-  state: { message: "My renewal invoice has an extra charge. Please explain it this week." },
-  questions: {
-    team: choice("Which team should handle this message?", {
-      billing: "Invoices, charges or payments.",
-      technical: "Broken product behavior or outages.",
-      product: "Features, limits or how-to questions.",
-      unknown: "Not enough information, or no matching team.",
-    }),
-    urgent: noul("Does the sender need an answer within a few days?"),
-  },
-});
-// answers.team.choice is an option name such as "billing"; answers.urgent.noul is P(yes)
-```
-
-The [official cookbooks](https://docs.typesafe.ai/cookbooks) take these further: reranking,
-citation checks, function calling, entity matching, guardrails and more.
+New to Jev? Read the [quickstart](https://docs.typesafe.ai/introduction/quickstart),
+install the two [starting skills](#install), or try an [offline example](#examples).
 
 ## Skills
 
@@ -53,9 +15,9 @@ citation checks, function calling, entity matching, guardrails and more.
 
 | Skill | What it helps with |
 | --- | --- |
-| [jev-builder](skills/jev-builder/SKILL.md) | Start building: what Jev can do, which cookbook, SDK or integration fits, and the pitfalls. |
-| [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | Evaluate a workflow's accuracy, review rate, latency and cost. |
-| [jev-curator](skills/jev-curator/SKILL.md) | Find useful Jev repos and skills, check their sources and keep this collection current. |
+| [jev-builder](skills/jev-builder/SKILL.md) | **Build:** find a fitting cookbook, SDK, integration or example. |
+| [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | **Evaluate:** measure accuracy, review rate, latency and cost. |
+| [jev-curator](skills/jev-curator/SKILL.md) | **Curate:** check original sources and keep this collection current. |
 
 ### Official and community skills
 
@@ -63,6 +25,7 @@ citation checks, function calling, entity matching, guardrails and more.
 | --- | --- |
 | [typesafe-ai/skills](https://github.com/typesafe-ai/skills) | **Official** API, SDK and decision-design guidance. Install from upstream. |
 | [altryne/jevify](https://github.com/altryne/jevify) | Delegate bulk reading and repeated semantic checks to Jev. |
+| [WanLanglin/jev-skills](https://github.com/WanLanglin/jev-skills) | Shortlist files, triage findings and extract relevant log lines. No repository license at review. |
 | [wuyoscar/jev-skill](https://github.com/wuyoscar/jev-skill) | Triage, documents, evaluation, UI and simulation, with recorded examples. |
 | [kerpopule/hermes-jev-skills](https://github.com/kerpopule/hermes-jev-skills) | Hermes agent routing, memory, compaction and browser workflows. |
 | [aaddrick/building-with-typesafe-jev](https://github.com/aaddrick/building-with-typesafe-jev) | Question design and a map of community decision patterns. |
@@ -70,12 +33,47 @@ citation checks, function calling, entity matching, guardrails and more.
 | [UditAkhourii/quicksilver](https://github.com/UditAkhourii/quicksilver) | Batch yes/no, label and score tasks from Claude Code. |
 | [dbreunig/building-with-jev-skill](https://github.com/dbreunig/building-with-jev-skill) | Question wording, composition and diagnosis. No repository license at review. |
 
+## Install
+
+Start with the official API skill and this repo's builder skill:
+
+```sh
+bunx --bun skills add typesafe-ai/skills --skill typesafe-ai
+bunx --bun skills add laguagu/jev-skills --skill jev-builder
+```
+
+Choose your agent when prompted, or add `--agent codex`. Add `-g` for a personal installation.
+Replace `jev-builder` with `jev-evidence-eval` or `jev-curator` for either companion.
+[Plugin and other installation options](INSTALL.md).
+
+## What you can build
+
+```mermaid
+flowchart LR
+    accTitle: A Jev decision in an application
+    accDescr: Text and typed questions go to Jev. The application uses its answers to act, review or fall back.
+    S[Text + typed questions] --> J["Jev<br/>Answers + probabilities"]
+    J --> P["Your code<br/>Act, review or fall back"]
+```
+
+| Build | Ask Jev | Start from |
+| --- | --- | --- |
+| Route tickets | **Choice:** which team, or unknown? | [Routing example](examples/decisions/README.md) |
+| Rerank search results | **Noul:** does each result answer the query? | [Rerank example](examples/rerank/README.md) |
+| Screen commands | **Score:** how much harm could this command do? | [Risk example](examples/decisions/README.md) |
+| Check citations | **Noul:** does the passage fully support the claim? | [Evidence example](examples/evidence/README.md) |
+| Select tools | **Choice:** which tool fits, or none? | [Tool selection example](examples/decisions/README.md) |
+| Extract source values | **Choice:** which candidate contains the date? | [Date extraction cookbook](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) |
+
+Read the [official cookbooks](https://docs.typesafe.ai/cookbooks) for worked recipes.
+Code handles permissions, thresholds and fallback behavior; measure decisions on your own cases.
+
 ## Projects
 
 [Coding agents & MCP](#coding-agents--mcp) · [Browser & desktop agents](#browser--desktop-agents) · [Search & data](#search--data) · [Developer tools](#developer-tools) · [Applications](#applications) · [Games & simulation](#games--simulation)
 
 Descriptions summarize each project's docs and source; a listing does not mean it was run here.
-Entries checked September 28, 2026.
+Sources and repository status checked September 30, 2026.
 
 ### Coding agents & MCP
 
@@ -84,9 +82,10 @@ Entries checked September 28, 2026.
 - [jev-router](https://github.com/gargpratyush/jev-router) — Model routing for Claude Code and Codex.
 - [fast-jev-compaction](https://github.com/tamaratran/fast-jev-compaction) — Select which tool results survive Claude Code compaction.
 - [jev-pruner](https://github.com/tamaratran/jev-pruner) — Trim long Bash output before it reaches the agent.
-- [winnow](https://github.com/GhalebDweikat/winnow) — Claude Code hook that swaps the parts of large tool results Jev judges unneeded for a stub you can expand again.
+- [winnow](https://github.com/GhalebDweikat/winnow) — Claude Code hook that replaces unneeded tool-result sections with expandable stubs.
 - [jev-skill-router](https://github.com/shimo4228/jev-skill-router) — Claude Code hook for skill suggestions; logs decisions in shadow mode by default.
 - [SkillRanker](https://github.com/Dicklesworthstone/skillranker) — Rust CLI that ranks installed agent skills for the next step from the live session.
+- [eran-broder/jev-skills](https://github.com/eran-broder/jev-skills) — Claude Code and Codex hooks that load only the skills Jev selects for the current step.
 - [Canny](https://github.com/qkal/Canny) — Claude Code and Codex hooks that refuse "done" until a check has passed; Jev's rule judgments add notes but never block.
 - [jev-guard](https://github.com/leepokai/jev-guard) — Risk-scores each tool call before it runs: an auto mode for several coding agents.
 - [pi-jev](https://github.com/y0usaf/pi-jev) — Pi coding agent extension that gates bash, write and edit calls and adds a `jev_ask` tool.
@@ -98,7 +97,7 @@ Entries checked September 28, 2026.
 - [Jev for Chrome](https://github.com/chy4pro/jev-for-chrome) — Extension that drives your current tab, choosing each click, keystroke or dropdown value.
 - [ts-browser-agent](https://github.com/ndrezn/ts-browser-agent) — Browser action selection through LangChain.
 - [agent-desktop](https://github.com/lahfir/agent-desktop) — Desktop automation over accessibility trees; its `jev-desktop` skill picks each operation and its target in one request.
-- [typesafe-computer-use](https://github.com/awlevin/typesafe-computer-use) — Drives a Mac toward a typed goal: code reads the screen, Jev picks the next action, and a writing model fills only free text. Beta.
+- [typesafe-computer-use](https://github.com/awlevin/typesafe-computer-use) — Mac automation with Jev choosing actions and a text model filling free text. Beta.
 - [mobile-jev](https://github.com/droidrun/mobile-jev) — Android action selection over Mobilerun screen controls.
 - [Jev Social](https://github.com/socai-io/jev-social) — Read-only research on Instagram, TikTok and LinkedIn, with Jev choosing each next browser step.
 
@@ -138,14 +137,14 @@ Entries checked September 28, 2026.
 - [tax-doc-classifier](https://github.com/kyotofin/tax-doc-classifier) — Classify IRS forms page by page, with an evaluation harness.
 - [jevmail](https://github.com/fazlerocks/jevmail) — Inbox triage with categories and urgency scores.
 - [jev-usecases](https://github.com/kenhuangus/jev-usecases) — Workflow examples that map decisions to automatic action, confirmation or review.
-- [Notra](https://github.com/usenotra/notra) — Generative-engine-optimization platform whose agent picks a fast, everyday or deep model for each turn through Jev.
+- [Notra](https://github.com/usenotra/notra) — Content platform whose agent uses Jev to choose a fast, everyday or deep model per turn.
 - [OpenWork](https://github.com/different-ai/openwork) — Open-source Claude Cowork alternative; its eval testkit can have Jev pick which checked-in checks cover a verification request. Experimental.
 - [Shapeshift](https://github.com/anishfn/shapeshift) — A text box that turns into an event card, checklist, timer or poll as you type; Jev classifies the intent when a key is set.
 - [unclutter](https://github.com/kitze/unclutter) — Browser extension that hides nonessential page elements and keeps the result as reusable rules.
 - [typesafe-adblock](https://github.com/realZachi/typesafe-adblock) — Browser extension demonstrating per-element ad detection.
 - [Jev Moderation Bot](https://github.com/brainstormity/Jev-Moderation-Bot) — Discord bot that deletes spam and scam links and escalates repeat offences.
 - [Kill My Idea](https://github.com/monteduro/killmyidea) — Scores a startup idea on eight questions and answers kill, fix or ship. No repository license at review.
-- [jev-trader](https://github.com/jarrodwatts/jev-trader) — Market-making demo with one buy-or-sell decision per Monad block, from Jev or a stand-in heuristic; without a wallet key it only simulates fills.
+- [jev-trader](https://github.com/jarrodwatts/jev-trader) — Monad market-making demo with buy-or-sell decisions; simulates fills without a wallet key.
 - [Prism](https://github.com/irfndi/prism-liquidity-agent) — Solana liquidity agent whose rule-based rebalancing also asks Jev about toxic flow, holding and deposit shape.
 
 ### Games & simulation
@@ -165,9 +164,10 @@ Links to the `typesafe-ai` organization are official; the others are community c
 | --- | --- |
 | <img src="docs/logos/javascript.svg" width="16" height="16" alt=""> JavaScript / TypeScript | [Official SDK](https://github.com/typesafe-ai/typesafe-sdk-js) · [Advocaat](https://github.com/pithings/advocaat) |
 | <img src="docs/logos/python.svg" width="16" height="16" alt=""> Python | [Official SDK](https://github.com/typesafe-ai/typesafe-sdk-python) · [LLM baseline adapter](https://github.com/typesafe-ai/system-one-adapter-python) |
-| <img src="docs/logos/spring.svg" width="16" height="16" alt=""> Java | [Spring AI TypeSafe](https://github.com/spring-ai-community/spring-ai-typesafe) |
+| <img src="docs/logos/java.svg" width="16" height="16" alt=""> Java | [jev-sdk-java](https://github.com/luigivis/jev-sdk-java) · [Spring AI TypeSafe](https://github.com/spring-ai-community/spring-ai-typesafe) |
+| <img src="docs/logos/clojure.svg" width="16" height="16" alt=""> Clojure | [CloJev](https://github.com/antlobach/clojev) |
 | <img src="docs/logos/scala.svg" width="16" height="16" alt=""> Scala | [zio-typesafe-ai](https://github.com/jamesward/zio-typesafe-ai) |
-| <img src="docs/logos/swift.svg" width="16" height="16" alt=""> Swift | [TypeSafe](https://github.com/krzyzanowskim/TypeSafe) · [Jev for Foundation Models](https://github.com/peterfriese/jev-foundation-models) |
+| <img src="docs/logos/swift.svg" width="16" height="16" alt=""> Swift | [TypeSafe](https://github.com/krzyzanowskim/TypeSafe) · [System One for Foundation Models](https://github.com/peterfriese/system-one-foundation-models) |
 | <img src="docs/logos/ruby.svg" width="16" height="16" alt=""> Ruby | [ruby_decision_model](https://github.com/obie/ruby_decision_model) · [RubyLLM judgments](https://github.com/crmne/ruby_llm/blob/main/docs/_core_features/judgments.md) |
 | <img src="docs/logos/elixir.svg" width="16" height="16" alt=""> Elixir | [jev](https://github.com/dannote/jev) |
 | <img src="docs/logos/go.svg" width="16" height="16" alt=""> Go | [typesafe-client](https://github.com/haileyok/typesafe-client) · [jev-go](https://github.com/Stumble/jev-go) |
@@ -182,6 +182,7 @@ Links to the `typesafe-ai` organization are official; the others are community c
 - <img src="docs/logos/cloudflare.svg" width="16" height="16" alt=""> [Cloudflare Workers AI](https://developers.cloudflare.com/ai/models/typesafe/jev/) — Jev through a Workers binding.
 - <img src="docs/logos/langchain.svg" width="16" height="16" alt=""> [LangChain](https://docs.langchain.com/oss/python/integrations/providers/typesafe) — Typed classification in a Runnable.
 - <img src="docs/logos/pydantic.svg" width="16" height="16" alt=""> [Pydantic AI](https://pydantic.dev/docs/ai/models/typesafe/) — Structured agent outputs through TypeSafe.
+- [AG2](https://docs.ag2.ai/docs/user-guide/model_configuration/#typesafe-jev-configuration) — Decision agents for yes/no questions, label selection and rubric scores.
 - [eve](https://github.com/vercel/eve/blob/main/docs/guides/evaluate.md) — Vercel's agent framework; its `auto` model selection asks Jev by default.
 - [json-render](https://json-render.dev/docs/jev) — Experimental, unreleased UI composition in which Jev chooses components from your catalog.
 - [DSPy](https://github.com/stanfordnlp/dspy/tree/main/docs/docs/tutorials/jev_decisions) — Decision types and optimization examples.
@@ -213,6 +214,7 @@ node examples/decisions/run.mjs routing --dry-run
 ## Learn
 
 - [TypeSafe documentation](https://docs.typesafe.ai/introduction) — Concepts, primitives and API reference.
+- [Jev with coding agents](https://docs.typesafe.ai/introduction/coding-agents) — How the official skill helps an agent write code that uses Jev.
 - [Official cookbooks](https://docs.typesafe.ai/cookbooks) — Worked recipes for routing, retrieval, verification and interactive apps.
 - [Use-case map](https://docs.typesafe.ai/concepts/use-case-map) — Find where a typed decision fits.
 - [Confidence guide](https://docs.typesafe.ai/confidence) — Decide when to accept, review or fall back.
@@ -228,6 +230,7 @@ node examples/decisions/run.mjs routing --dry-run
 - [Anil-matcha/awesome-jev-by-typesafe](https://github.com/Anil-matcha/awesome-jev-by-typesafe) — Use cases, prompt patterns and starter code.
 - [cobanov/awesome-jev](https://github.com/cobanov/awesome-jev) — Projects with public source and reproducible evidence.
 - [logicrw/awesome-jev-projects](https://github.com/logicrw/awesome-jev-projects) — Entries tied to source commits and decision points.
+- [AbdelStark/awesome-typesafe-jev](https://github.com/AbdelStark/awesome-typesafe-jev) — Field guide with SDKs, runnable projects and an agent skill.
 - [OmniJev/awesome-jev-gallery](https://github.com/OmniJev/awesome-jev-gallery) — Papers, open models and evaluations.
 
 Thanks to these collections and Charlie Hills for discovery leads. Descriptions here are written from the linked primary sources.
@@ -259,19 +262,6 @@ their own behavior; their probabilities and thresholds are not interchangeable w
 - [jev-spam-eval](https://github.com/bitnovus/jev-spam-eval) — Email classification against a trained baseline.
 - [JevBench](https://github.com/fstandhartinger/jevbench) — Decision-model comparisons.
 - [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) — Our own Finnish retrieval, classification and citation runs, with [lessons for builders](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders).
-
-## Install
-
-Install the official API skill and this repo's builder skill:
-
-```sh
-npx skills add typesafe-ai/skills --skill typesafe-ai
-npx skills add laguagu/jev-skills --skill jev-builder
-```
-
-With Bun, use `bunx --bun skills add` instead of `npx skills add`.
-Replace `jev-builder` with `jev-evidence-eval` or `jev-curator` to install either companion.
-Choose your agent when prompted, or add `--agent codex`. [Plugin and other installation options](INSTALL.md).
 
 ## Keep the collection current
 

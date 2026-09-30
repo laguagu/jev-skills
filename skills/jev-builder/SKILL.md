@@ -71,18 +71,17 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
 
 ## Pitfalls
 
-- Use a versioned model ID such as `jev-1.13.0` or the alias `jev-latest`. The direct API
-  answers HTTP 400 to the display name `jev-1.13`, which some docs pages use, and to `jev-1.12`,
-  which the cookbooks pin from when they were recorded (checked September 28, 2026). Re-tune a
-  cookbook's thresholds after changing its model. Pin a versioned ID for evaluations and log the
-  returned `model`.
+- Use a versioned model ID such as `jev-1.13.0` or the alias `jev-latest`; check the
+  [current models](https://docs.typesafe.ai/models) before reusing a cookbook's older ID.
+  Pin a versioned ID for evaluations, log the returned `model`, and re-tune thresholds
+  when changing models.
 - Question IDs are never shown to the model; say in the question which item it judges, such as
   `passages[3]`.
-- Rerank 10–15 candidates per request, not one request per candidate as the cookbooks do. At the
-  [published](https://docs.typesafe.ai/models) 1,200 requests per minute, one request per
-  candidate over 30 candidates serves about 40 searches a minute; in
-  [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders), batches of
-  15 cut p50 latency from 892 to 331 ms with no loss of accuracy. The rerank example batches 15.
+- Batch independent candidate judgments over shared state; the rerank example starts with 15
+  per request. Check the [current context and rate limits](https://docs.typesafe.ai/models)
+  when choosing batch size and concurrency; the provider can adjust them without notice.
+  See the [rerank measurements](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders)
+  for the tested tradeoffs.
 - A Noul per candidate is enough to sort. A graded Score ranked the same in that bench at slightly
   higher cost; use one when code acts on the levels themselves.
 - An option's name can outweigh its definition. Give each option a name that means what its

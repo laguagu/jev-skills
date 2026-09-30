@@ -3,11 +3,11 @@
 ## Any supported coding agent
 
 ```sh
-npx skills add typesafe-ai/skills --skill typesafe-ai
-npx skills add laguagu/jev-skills --skill jev-builder
+bunx --bun skills add typesafe-ai/skills --skill typesafe-ai
+bunx --bun skills add laguagu/jev-skills --skill jev-builder
 ```
 
-With Bun, use `bunx --bun skills add` instead of `npx skills add`.
+With npm, use `npx skills add` instead of `bunx --bun skills add`.
 Choose your agent when prompted, or add `--agent codex`. Omit `--skill` from the
 second command to pick from all three of this repo's skills. Installation is
 project-local by default; add `-g` for a personal installation.

@@ -256,6 +256,16 @@ The license shown is the repository's; check the model weights separately.
 - [litjev](https://github.com/zhengxuyu/litjev) — Decision API experiments on Qwen checkpoints. `Apache-2.0`
 - [AnyJev](https://github.com/nokia-applied-research/AnyJev) — Calibration heads for open models, served through vLLM. `Apache-2.0`
 
+### Model weights
+
+Hugging Face downloads for the open models above. Each is `Apache-2.0` on its model card.
+
+| Model | Sizes and variants |
+| --- | --- |
+| Kev | [0.8B](https://huggingface.co/jaredpalmer/kev-0.8b) · [4B](https://huggingface.co/jaredpalmer/kev-4b) · [9B](https://huggingface.co/jaredpalmer/kev-9b) · [27B](https://huggingface.co/jaredpalmer/kev-27b) · [0.6B ONNX](https://huggingface.co/onnx-community/kev-0.6b-ONNX) |
+| Laya | [English](https://huggingface.co/convaiinnovations/laya) · [multilingual](https://huggingface.co/convaiinnovations/laya-multilingual) · [typed decisions](https://huggingface.co/convaiinnovations/laya-typed-decisions) · community GGUF: [mys/laya-GGUF](https://huggingface.co/mys/laya-GGUF) |
+| decider | [0.8B](https://huggingface.co/Mapika/decider-0.8b) · [2B](https://huggingface.co/Mapika/decider-2b) · [4B](https://huggingface.co/Mapika/decider-4b) |
+
 ### Skills for open models
 
 Skills for the open alternatives below. Install from upstream; thresholds and probabilities are

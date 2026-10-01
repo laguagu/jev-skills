@@ -4,26 +4,26 @@ A collection of **agent skills, repositories and examples for [TypeSafe Jev](htt
 Jev answers typed questions about text: choose an option, score it, or return the probability of yes.
 Your code decides what happens next.
 
-[Skills](#skills) · [Install](#install) · [What you can build](#what-you-can-build) · [Projects](#projects) · [SDKs & integrations](#sdks--integrations) · [Examples](#examples) · [Learn](#learn) · [Open models](#open-models) · [Evaluations](#evaluations)
+[🧩 Skills](#-skills) · [📦 Install](#-install) · [🛠️ What you can build](#-what-you-can-build) · [🚀 Projects](#-projects) · [🔌 SDKs & integrations](#-sdks--integrations) · [🧪 Examples](#-examples) · [📚 Learn](#-learn) · [🏠 Open models](#-open-models) · [📊 Evaluations](#-evaluations)
 
 New to Jev? Read the [quickstart](https://docs.typesafe.ai/introduction/quickstart),
-install the two [starting skills](#install), or try an [offline example](#examples).
+install the two [starting skills](#-install), or try an [offline example](#-examples).
 
-## Skills
+## 🧩 Skills
 
-### In this repo
+### 📁 In this repo
 
 | Skill | What it helps with |
 | --- | --- |
-| [jev-builder](skills/jev-builder/SKILL.md) | **Build:** find a fitting cookbook, SDK, integration or example. |
-| [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | **Evaluate:** measure accuracy, review rate, latency and cost. |
-| [jev-curator](skills/jev-curator/SKILL.md) | **Curate:** check original sources and keep this collection current. |
+| [jev-builder](skills/jev-builder/SKILL.md) | 🔨 **Build:** find a fitting cookbook, SDK, integration or example. |
+| [jev-evidence-eval](skills/jev-evidence-eval/SKILL.md) | 📏 **Evaluate:** measure accuracy, review rate, latency and cost. |
+| [jev-curator](skills/jev-curator/SKILL.md) | 🧹 **Curate:** check original sources and keep this collection current. |
 
-### Official and community skills
+### 🌍 Official and community skills
 
 | Skill collection | What it helps with |
 | --- | --- |
-| [typesafe-ai/skills](https://github.com/typesafe-ai/skills) | **Official** API, SDK and decision-design guidance. Install from upstream. |
+| [typesafe-ai/skills](https://github.com/typesafe-ai/skills) | ✅ **Official** API, SDK and decision-design guidance. Install from upstream. |
 | [altryne/jevify](https://github.com/altryne/jevify) | Delegate bulk reading and repeated semantic checks to Jev. |
 | [WanLanglin/jev-skills](https://github.com/WanLanglin/jev-skills) | Shortlist files, triage findings and extract relevant log lines. No repository license at review. |
 | [wuyoscar/jev-skill](https://github.com/wuyoscar/jev-skill) | Triage, documents, evaluation, UI and simulation, with recorded examples. |
@@ -33,7 +33,7 @@ install the two [starting skills](#install), or try an [offline example](#exampl
 | [UditAkhourii/quicksilver](https://github.com/UditAkhourii/quicksilver) | Batch yes/no, label and score tasks from Claude Code. |
 | [dbreunig/building-with-jev-skill](https://github.com/dbreunig/building-with-jev-skill) | Question wording, composition and diagnosis. No repository license at review. |
 
-## Install
+## 📦 Install
 
 Start with the official API skill and this repo's builder skill:
 
@@ -46,7 +46,7 @@ Choose your agent when prompted, or add `--agent codex`. Add `-g` for a personal
 Replace `jev-builder` with `jev-evidence-eval` or `jev-curator` for either companion.
 [Plugin and other installation options](INSTALL.md).
 
-## What you can build
+## 🛠️ What you can build
 
 ```mermaid
 flowchart LR
@@ -68,14 +68,14 @@ flowchart LR
 Read the [official cookbooks](https://docs.typesafe.ai/cookbooks) for worked recipes.
 Code handles permissions, thresholds and fallback behavior; measure decisions on your own cases.
 
-## Projects
+## 🚀 Projects
 
-[Coding agents & MCP](#coding-agents--mcp) · [Browser & desktop agents](#browser--desktop-agents) · [Search & data](#search--data) · [Developer tools](#developer-tools) · [Applications](#applications) · [Games & simulation](#games--simulation)
+[🤖 Coding agents & MCP](#-coding-agents--mcp) · [🌐 Browser & desktop agents](#-browser--desktop-agents) · [🔎 Search & data](#-search--data) · [🧰 Developer tools](#-developer-tools) · [📱 Applications](#-applications) · [🎮 Games & simulation](#-games--simulation)
 
 Descriptions summarize each project's docs and source; a listing does not mean it was run here.
 Sources and repository status checked September 30, 2026.
 
-### Coding agents & MCP
+### 🤖 Coding agents & MCP
 
 - [jev-mcp](https://github.com/jkudish/jev-mcp) — MCP tools for verification, screening, reranking and decision gates.
 - [system-one-connector](https://github.com/itsmostafa/system-one-connector) — A general `evaluate` MCP tool; formerly `typesafe-mcp`.
@@ -91,7 +91,7 @@ Sources and repository status checked September 30, 2026.
 - [pi-jev](https://github.com/y0usaf/pi-jev) — Pi coding agent extension that gates bash, write and edit calls and adds a `jev_ask` tool.
 - [Foreman](https://github.com/thruwire/foreman) — Supervises Codex or OpenCode workers, judging whether a job is complete, tested enough or needs a person.
 
-### Browser & desktop agents
+### 🌐 Browser & desktop agents
 
 - [jev-ultrafast](https://github.com/browser-use/jev-ultrafast) — Browser agent that selects an action and a page element together.
 - [Jev for Chrome](https://github.com/chy4pro/jev-for-chrome) — Extension that drives your current tab, choosing each click, keystroke or dropdown value.
@@ -101,7 +101,7 @@ Sources and repository status checked September 30, 2026.
 - [mobile-jev](https://github.com/droidrun/mobile-jev) — Android action selection over Mobilerun screen controls.
 - [Jev Social](https://github.com/socai-io/jev-social) — Read-only research on Instagram, TikTok and LinkedIn, with Jev choosing each next browser step.
 
-### Search & data
+### 🔎 Search & data
 
 - [jegrep](https://github.com/can1357/jegrep) — Semantic code search without an embedding index.
 - [jevgrep](https://github.com/dzhng/jevgrep) — Repository questions answered with relevant files and verbatim excerpts; includes an agent skill.
@@ -116,7 +116,7 @@ Sources and repository status checked September 30, 2026.
 - [truffler](https://github.com/kieranklaassen/truffler) — Intent search for Rails with stored labels and query-time reranking.
 - [jev-curate](https://github.com/AkashPriyadarshii/jev-curate) — Filter and score large Parquet or JSONL training datasets. Beta.
 
-### Developer tools
+### 🧰 Developer tools
 
 - [jev-review](https://github.com/devagrawal09/jev-review) — Code review in stages: risk, supporting evidence and severity.
 - [Supercov](https://github.com/supercorp-ai/supercov) — Scores code quality and security risk with Jev and turns coverage gaps into tasks for a coding agent.
@@ -130,7 +130,7 @@ Sources and repository status checked September 30, 2026.
 - [commit-miner](https://github.com/devanshbatham/commit-miner) — Classify commit diffs into fixes, security changes and CWEs. No repository license at review.
 - [decision-gate](https://github.com/zachlandes/decision-gate) — Shared rate limits, spend limits and answer caching for decision loops.
 
-### Applications
+### 📱 Applications
 
 - [jev-cookbook](https://github.com/nexibeo/jev-cookbook) — Runnable Node recipes for support triage, tagging, deduplication, search and more.
 - [docjev](https://github.com/jerryjliu/docjev) — Classify documents and split document packets using parsed page text.
@@ -147,16 +147,17 @@ Sources and repository status checked September 30, 2026.
 - [jev-trader](https://github.com/jarrodwatts/jev-trader) — Monad market-making demo with buy-or-sell decisions; simulates fills without a wallet key.
 - [Prism](https://github.com/irfndi/prism-liquidity-agent) — Solana liquidity agent whose rule-based rebalancing also asks Jev about toxic flow, holding and deposit shape.
 
-### Games & simulation
+### 🎮 Games & simulation
 
 - [typesafe-mario](https://github.com/fhshaik/typesafe-mario) — Choose Mario actions from structured emulator state. No repository license at review.
 - [OneVOneJev](https://github.com/emrickgarrett/OneVOneJev) — Browser arena with a Jev-controlled opponent. No repository license at review.
 - [tsai-sc](https://github.com/phyous/tsai-sc) — Jev plays the first StarCraft shareware mission by keyboard and mouse, with recorded action probabilities.
+- [Trick Jev](https://trickjev.men/) — Browser game: change Jev's answer one word at a time.
 - [jev-drone](https://github.com/RomanSlack/jev-drone) — Camera-only quadrotor in MuJoCo: Jev reads the situation a few times a second while code flies.
 
-## SDKs & integrations
+## 🔌 SDKs & integrations
 
-### Clients
+### 🧑‍💻 Clients
 
 Links to the `typesafe-ai` organization are official; the others are community clients.
 
@@ -175,7 +176,7 @@ Links to the `typesafe-ai` organization are official; the others are community c
 | <img src="docs/logos/dotnet.svg" width="16" height="16" alt=""> .NET | [TypeSafeAI .NET SDK](https://github.com/saibimajdi/typesafeai-dotnet-sdk) |
 | <img src="docs/logos/php.svg" width="16" height="16" alt=""> PHP | [typesafe-sdk-php](https://github.com/Butochnikov/typesafe-sdk-php) · [Laravel integration](https://github.com/Butochnikov/laravel-typesafe-jev) |
 
-### Providers & frameworks
+### 🏗️ Providers & frameworks
 
 - <img src="docs/logos/vercel.svg" width="16" height="16" alt=""> [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/sdks-and-apis/typesafe) · [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai)
 - <img src="docs/logos/openrouter.svg" width="16" height="16" alt=""> [OpenRouter](https://openrouter.ai/~typesafe/jev-latest) — Hosted decisions endpoint.
@@ -193,7 +194,7 @@ Links to the `typesafe-ai` organization are official; the others are community c
 - [Hono](https://github.com/yusukebe/hono-jev-router) — Experimental router that matches HTTP requests to plain-language descriptions.
 - [Home Assistant](https://github.com/AboveColin/HA-Jev) — Typed questions about your home, exposed as entities for automations.
 
-## Examples
+## 🧪 Examples
 
 Small examples included in this repo, with synthetic inputs and offline checks.
 
@@ -211,7 +212,7 @@ cd jev-skills
 node examples/decisions/run.mjs routing --dry-run
 ```
 
-## Learn
+## 📚 Learn
 
 - [TypeSafe documentation](https://docs.typesafe.ai/introduction) — Concepts, primitives and API reference.
 - [Jev with coding agents](https://docs.typesafe.ai/introduction/coding-agents) — How the official skill helps an agent write code that uses Jev.
@@ -222,7 +223,7 @@ node examples/decisions/run.mjs routing --dry-run
 - [Search with Jev and Milvus](https://github.com/milvus-io/bootcamp/tree/master/bootcamp/RAG/search_with_jev) — Nine notebooks: reranking, context filtering, query routing, cache reuse and knowing when to stop searching.
 - [The Top 20 Jev Skills](https://charliehills.substack.com/p/the-top-20-jev-skills) — Charlie Hills' tour of agents, tools and demos.
 
-### More collections
+### 🗂️ More collections
 
 - [yibie/awesome-jev](https://github.com/yibie/awesome-jev) — Projects grouped by use case. No repository license at review.
 - [kraayenjon/awesome-jev](https://github.com/kraayenjon/awesome-jev) — Builds, SDKs, guides and community resources.
@@ -235,13 +236,14 @@ node examples/decisions/run.mjs routing --dry-run
 
 Thanks to these collections and Charlie Hills for discovery leads. Descriptions here are written from the linked primary sources.
 
-## Open models
+## 🏠 Open models
 
 Alternatives for exploring the decision-model interface locally. They are separate models with
 their own behavior; their probabilities and thresholds are not interchangeable with Jev's.
 
 - [kev](https://github.com/jaredpalmer/kev) — Open decision models, training code and a System One API server.
 - [Laya](https://github.com/NandhaKishorM/laya) — Local decision models for the three primitives.
+- [Ollaya](https://github.com/ollaya-dev/ollaya) — Pull and serve Laya, decider and other open decision models behind a TypeSafe-compatible API, plus an MCP server.
 - [Laya-MLX](https://github.com/mizorewww/laya-mlx) — Runs Laya checkpoints natively on Apple Silicon.
 - [SemIf-OpenJev](https://github.com/TheoLeeCJ/SemIf-OpenJev) — Typed decisions from open models, including a browser demo.
 - [simple-jev](https://github.com/featherless-ai/simple-jev) — Choices, scores and yes probabilities from model logits.
@@ -253,7 +255,23 @@ their own behavior; their probabilities and thresholds are not interchangeable w
 - [litjev](https://github.com/zhengxuyu/litjev) — Decision API experiments on Qwen checkpoints.
 - [AnyJev](https://github.com/nokia-applied-research/AnyJev) — Calibration heads for open models, served through vLLM.
 
-## Evaluations
+### Skills for open models
+
+Skills for the open alternatives below. Install from upstream; thresholds and probabilities are
+specific to each model, so measure on your own cases.
+
+| Skill | What it helps with |
+| --- | --- |
+| [kev-finetune](https://github.com/jaredpalmer/kev/tree/main/skills/kev-finetune) | **Official Kev:** draft a workload from your Jev call sites, fine-tune on Modal and check the numbers. |
+| [kev-deploy](https://github.com/jaredpalmer/kev/tree/main/skills/kev-deploy) | **Official Kev:** deploy a Kev server with the Jev-compatible `/v1/systemone` API. |
+| [laya-integration](https://github.com/wdobry/laya-playground/tree/main/skills/laya-integration) | Community: add Laya to a project with working questions, thresholds and calibration. |
+| [ollaya-decisions](https://github.com/ollaya-dev/ollaya/tree/main/skills/ollaya-decisions) | Community: when and how to use local decision models through `ollaya mcp`. |
+
+```sh
+bunx --bun skills add ollaya-dev/ollaya --skill ollaya-decisions
+```
+
+## 📊 Evaluations
 
 - [TypeSafe workflow evals](https://evals.typesafe.ai) — The provider's workflow measurements.
 - [S1Rank](https://github.com/zaesho/S1Rank) — Retrieval benchmarks, calibration and raw responses.
@@ -263,7 +281,7 @@ their own behavior; their probabilities and thresholds are not interchangeable w
 - [JevBench](https://github.com/fstandhartinger/jevbench) — Decision-model comparisons.
 - [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) — Our own Finnish retrieval, classification and citation runs, with [lessons for builders](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders).
 
-## Keep the collection current
+## 🔄 Keep the collection current
 
 Ask your agent:
 

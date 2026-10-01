@@ -240,20 +240,21 @@ Thanks to these collections and Charlie Hills for discovery leads. Descriptions 
 
 Alternatives for exploring the decision-model interface locally. They are separate models with
 their own behavior; their probabilities and thresholds are not interchangeable with Jev's.
+The license shown is the repository's; check the model weights separately.
 
-- [kev](https://github.com/jaredpalmer/kev) — Open decision models, training code and a System One API server.
-- [Laya](https://github.com/NandhaKishorM/laya) — Local decision models for the three primitives.
-- [Ollaya](https://github.com/ollaya-dev/ollaya) — Pull and serve Laya, decider and other open decision models behind a TypeSafe-compatible API, plus an MCP server.
-- [Laya-MLX](https://github.com/mizorewww/laya-mlx) — Runs Laya checkpoints natively on Apple Silicon.
-- [SemIf-OpenJev](https://github.com/TheoLeeCJ/SemIf-OpenJev) — Typed decisions from open models, including a browser demo.
-- [simple-jev](https://github.com/featherless-ai/simple-jev) — Choices, scores and yes probabilities from model logits.
-- [decider](https://github.com/Mapika/decider) — Qwen3.5 fine-tunes that answer typed questions in one forward pass.
-- [Von](https://github.com/wfzyx/von) — A non-autoregressive decision model for choices, probabilities and ordinal scores.
-- [NanoJev](https://github.com/TianyuCodings/NanoJev) — A 0.6B parallel decision model with its training pipeline and game demos.
-- [jevos](https://github.com/feder-cr/jev) — Yes/no probabilities on a laptop CPU.
-- [Jevlike](https://github.com/vinnylarouge/jevlike) — Train a small model that picks among a changing list of text options.
-- [litjev](https://github.com/zhengxuyu/litjev) — Decision API experiments on Qwen checkpoints.
-- [AnyJev](https://github.com/nokia-applied-research/AnyJev) — Calibration heads for open models, served through vLLM.
+- [kev](https://github.com/jaredpalmer/kev) — Open decision models, training code and a System One API server. `Apache-2.0`
+- [Laya](https://github.com/NandhaKishorM/laya) — Local decision models for the three primitives. `Apache-2.0`
+- [Ollaya](https://github.com/ollaya-dev/ollaya) — Pull and serve Laya, decider and other open decision models behind a TypeSafe-compatible API, plus an MCP server. `Apache-2.0`
+- [Laya-MLX](https://github.com/mizorewww/laya-mlx) — Runs Laya checkpoints natively on Apple Silicon. `Apache-2.0`
+- [SemIf-OpenJev](https://github.com/TheoLeeCJ/SemIf-OpenJev) — Typed decisions from open models, including a browser demo. `MIT`
+- [simple-jev](https://github.com/featherless-ai/simple-jev) — Choices, scores and yes probabilities from model logits. `Apache-2.0`
+- [decider](https://github.com/Mapika/decider) — Qwen3.5 fine-tunes that answer typed questions in one forward pass. `Apache-2.0`
+- [Von](https://github.com/wfzyx/von) — A non-autoregressive decision model for choices, probabilities and ordinal scores. `Apache-2.0`
+- [NanoJev](https://github.com/TianyuCodings/NanoJev) — A 0.6B parallel decision model with its training pipeline and game demos. `MIT`
+- [jevos](https://github.com/feder-cr/jev) — Yes/no probabilities on a laptop CPU. `MIT`
+- [Jevlike](https://github.com/vinnylarouge/jevlike) — Train a small model that picks among a changing list of text options. `MIT`
+- [litjev](https://github.com/zhengxuyu/litjev) — Decision API experiments on Qwen checkpoints. `Apache-2.0`
+- [AnyJev](https://github.com/nokia-applied-research/AnyJev) — Calibration heads for open models, served through vLLM. `Apache-2.0`
 
 ### Skills for open models
 

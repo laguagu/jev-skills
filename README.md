@@ -290,7 +290,6 @@ bunx --bun skills add ollaya-dev/ollaya --skill ollaya-decisions
 - [sysone-bench](https://github.com/instax-dutta/sysone-bench) — Decision models compared on matching inputs.
 - [jev-spam-eval](https://github.com/bitnovus/jev-spam-eval) — Email classification against a trained baseline.
 - [JevBench](https://github.com/fstandhartinger/jevbench) — Decision-model comparisons.
-- [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) — Our own Finnish retrieval, classification and citation runs, with [lessons for builders](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders).
 
 ## 🔄 Keep the collection current
 

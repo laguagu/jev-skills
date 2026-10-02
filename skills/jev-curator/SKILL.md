@@ -32,8 +32,7 @@ list's wording. Say what the project does with Jev, and mark beta, experimental 
 Distinguish skills, plugins, apps and demos; describe source review separately from tests run.
 Correct stale entries and duplicates, and update the "Entries checked" date.
 
-Link benchmark repositories rather than copying their results into the README or the skills,
-including this kit's own [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench). Keep
+Link benchmark repositories rather than copying their results into the README or the skills. Keep
 navigation working, use the small logos in `docs/logos/` only where they help scanning, and avoid
 badges and link-count targets.
 

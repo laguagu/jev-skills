@@ -25,7 +25,7 @@ connection paths, pitfalls and where measurements live.
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
-| Measurements | [jev-rerank-bench](https://github.com/laguagu/jev-rerank-bench) (Finnish reranking, classification, citation checks) and the README's [evaluation list](https://github.com/laguagu/jev-skills#evaluations) |
+| Measurements | The README's [evaluation list](https://github.com/laguagu/jev-skills#evaluations) |
 
 ## Official cookbooks
 
@@ -80,10 +80,8 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
 - Batch independent candidate judgments over shared state; the rerank example starts with 15
   per request. Check the [current context and rate limits](https://docs.typesafe.ai/models)
   when choosing batch size and concurrency; the provider can adjust them without notice.
-  See the [rerank measurements](https://github.com/laguagu/jev-rerank-bench#lessons-for-builders)
-  for the tested tradeoffs.
-- A Noul per candidate is enough to sort. A graded Score ranked the same in that bench at slightly
-  higher cost; use one when code acts on the levels themselves.
+  Measure the tradeoff on your own data.
+- A Noul per candidate is enough to sort. Use a graded Score when code acts on the levels themselves.
 - An option's name can outweigh its definition. Give each option a name that means what its
   definition says.
 - Probabilities come back rounded to two decimals and vary slightly between identical requests;

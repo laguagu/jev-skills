@@ -266,6 +266,12 @@ Hugging Face downloads for the open models above. Each is `Apache-2.0` on its mo
 | Laya | [English](https://huggingface.co/convaiinnovations/laya) · [multilingual](https://huggingface.co/convaiinnovations/laya-multilingual) · [typed decisions](https://huggingface.co/convaiinnovations/laya-typed-decisions) · community GGUF: [mys/laya-GGUF](https://huggingface.co/mys/laya-GGUF) |
 | decider | [0.8B](https://huggingface.co/Mapika/decider-0.8b) · [2B](https://huggingface.co/Mapika/decider-2b) · [4B](https://huggingface.co/Mapika/decider-4b) |
 
+### Discover models & datasets
+
+- [System One models on Hugging Face](https://huggingface.co/models?other=system-one) — Browse model cards tagged `system-one` for weights, usage and licenses.
+- [System One datasets on Hugging Face](https://huggingface.co/datasets?other=system-one) — Browse datasets tagged `system-one` for training and evaluation; check each card's provenance, splits and license.
+- [mindchain's System 1 collection](https://huggingface.co/collections/mindchain/system-1-decisions-like-a-maniak) — A community collection of decision models and datasets.
+
 ### Skills for open models
 
 Skills for the open alternatives below. Install from upstream; thresholds and probabilities are
@@ -284,12 +290,16 @@ bunx --bun skills add ollaya-dev/ollaya --skill ollaya-decisions
 
 ## 📊 Evaluations
 
+- [System One Mosaic Benchmark (S1MB)](https://huggingface.co/blog/hotchpotch/system-one-mosaic-benchmark) — English Choice, Noul and Score comparisons, with links to evaluation code, datasets and a leaderboard; the article explains scoring and training-overlap limits.
+- [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index) — A community leaderboard comparing open Jev reproductions with Jev, with per-model results, methodology and ecosystem news.
 - [TypeSafe workflow evals](https://evals.typesafe.ai) — The provider's workflow measurements.
 - [S1Rank](https://github.com/zaesho/S1Rank) — Retrieval benchmarks, calibration and raw responses.
 - [ASSAY-001](https://github.com/jourdanlabs/assay-001) — Pre-registered calibration and type-safety check on two intent datasets, with every raw response. No repository license at review.
 - [sysone-bench](https://github.com/instax-dutta/sysone-bench) — Decision models compared on matching inputs.
 - [jev-spam-eval](https://github.com/bitnovus/jev-spam-eval) — Email classification against a trained baseline.
 - [JevBench](https://github.com/fstandhartinger/jevbench) — Decision-model comparisons.
+
+Hugging Face discovery and evaluation links checked October 4, 2026.
 
 ## 🔄 Keep the collection current
 

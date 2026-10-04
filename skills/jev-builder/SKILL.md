@@ -7,7 +7,8 @@ license: MIT
 # Build with Jev
 
 Jev answers typed questions about text and application state: `Choice` picks one of named
-options, `Score` places the input on ordered levels, `Noul` returns the probability of yes.
+options, `Score` returns a probability-weighted position across ordered levels (including
+between levels), and `Noul` returns the probability of yes.
 Code owns the workflow and acts on the answers. This skill says what can be done and where to
 look; the [live docs](https://docs.typesafe.ai/llms.txt) are the source of truth. When the
 official [typesafe-ai skill](https://docs.typesafe.ai/agent-skill) is installed (that page has
@@ -29,8 +30,9 @@ connection paths, pitfalls and where measurements live.
 
 ## Official cookbooks
 
-Each has runnable code, cached responses that replay without a key, and measured results; change
-the model ID before running one live (see [Pitfalls](#pitfalls)). The
+The cookbooks include worked code, published caches and reported results. Follow each recipe's
+setup: cached replay can still require keys and matching cache files; changing the model or
+questions can trigger billed calls. Use a current model ID for live runs (see [Pitfalls](#pitfalls)). The
 [cookbook index](https://docs.typesafe.ai/cookbooks) may list newer ones.
 
 | For | Cookbook | Shows |
@@ -41,7 +43,7 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
 | Checks | [Double-checking citations](https://docs.typesafe.ai/cookbooks/citation_check) | A string match catches invented quotes, then a Choice decides whether the context supports the claim |
 | | [Guardrails for LLMs](https://docs.typesafe.ai/cookbooks/llm_guardrails) | Hazard Nouls and a severity Score screen LLM input and output; thresholds live in code |
 | | [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade) | Jev checks a small model's extraction and sends failing records to a reasoning model |
-| Selection and extraction | [Function calling](https://docs.typesafe.ai/cookbooks/function_calling) | Maps a request to a typed function: a Choice per closed-set argument, a Noul on whether it was stated |
+| Selection and extraction | [Function calling](https://docs.typesafe.ai/cookbooks/function_calling) | Maps a request to a typed function: a Choice per enum argument, a Noul per member of a set-valued argument, and Nouls for whether arguments were stated |
 | | [Skill suggestion](https://docs.typesafe.ai/cookbooks/skill_suggestion) | Picks at most one skill from a large catalog: rank, then re-check the top candidates |
 | | [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment) | A Score matches catalog records; companion Nouls show which fields disagree |
 | | [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook) · [date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) | Code proposes candidate values, a Choice selects, code copies or assembles |
@@ -49,8 +51,8 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
 | Classification | [Classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence) | Reports the broader parent label when a fine-grained Choice is unsure |
 | | [Hierarchical classification](https://docs.typesafe.ai/cookbooks/hierarchical_classification) | Beam search over Choice probabilities through a deep taxonomy |
 | | [Autoresearch feature discovery](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery) | Proposed Score and Noul questions become features for a trained regressor |
-| Cost and stability | [Parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions) | Many questions about one document in one request: same answers, far cheaper and faster |
-| | [Self-consistency: Nouls](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) · [Choices](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) | Repeated judgments vary slightly; route the unstable band to review |
+| Cost and stability | [Parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions) | Batches questions about one document; reports matching answers with lower cost and latency in its example |
+| | [Self-consistency: Nouls](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) · [Choices](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) | Samples with a fresh, irrelevant `uid` expose variation; route the unstable band to review |
 
 ## Build a decision
 
@@ -66,7 +68,9 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
    or 5xx.
 4. **Measure before adopting.** Compare with the current rule, classifier or LLM on the same
    labelled cases in the user's language (English is Jev's strongest), and choose thresholds per
-   task and corpus on development data. [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval)
+   task and corpus on development data. Keep test cases separate from development and retrieved
+   demonstrations; distinguish model-authored labels and judge checks from independent human
+   review. [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval)
    covers the procedure.
 
 ## Pitfalls
@@ -74,7 +78,7 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
 - Use a versioned model ID such as `jev-1.13.0` or the alias `jev-latest`; check the
   [current models](https://docs.typesafe.ai/models) before reusing a cookbook's older ID.
   Pin a versioned ID for evaluations, log the returned `model`, and re-tune thresholds
-  when changing models.
+  when changing models. Hosted Jev uses shared weights and offers no customer fine-tuning or LoRA.
 - Question IDs are never shown to the model; say in the question which item it judges, such as
   `passages[3]`.
 - Batch independent candidate judgments over shared state; the rerank example starts with 15
@@ -83,16 +87,19 @@ the model ID before running one live (see [Pitfalls](#pitfalls)). The
   Measure the tradeoff on your own data.
 - A Noul per candidate is enough to sort. Use a graded Score when code acts on the levels themselves.
 - An option's name can outweigh its definition. Give each option a name that means what its
-  definition says.
-- Probabilities come back rounded to two decimals and vary slightly between identical requests;
-  do not tune a threshold finer than that, and cache answers when reproducibility matters.
-- Confidence summarizes the answer distribution; it is not accuracy, and a threshold learned on
-  one corpus does not transfer to another.
+  definition says. Test reordered options and untrusted state with injected instructions.
+- Choice/Score confidence summarizes the answer distribution; it is not accuracy, and a threshold learned on
+  one corpus does not transfer to another. Measure stability near thresholds on your requests;
+  cache answers when reproducibility matters.
 - For evidence, number candidate spans in code, let a Choice pick one (with a none option), and
-  copy the text from the source. Silence is "not stated", not a denial.
+  copy the text from the source, preserving its version and offsets. Multi-part support needs an
+  explicit, validated set of spans. A missing answer in a retrieved window says nothing about
+  unsearched text; partial or failed extraction needs its own outcome. Silence is "not stated",
+  not a denial. Questions in one request are independent; validate consistency across related fields.
 - State leaves your system. Jev is not trained on customer requests, and zero data retention is
   offered to enterprise customers ([data handling](https://docs.typesafe.ai/models#data-handling),
-  [legal](https://docs.typesafe.ai/legal)). Send only the fields a decision needs.
+  [legal](https://docs.typesafe.ai/legal)). Send only the fields a decision needs; check
+  [processing location and output-training rights](references/setup.md#deployment-and-training).
 - Local open decision models and cross-encoders are not drop-in replacements: measure them on the
   same task, and never reuse Jev's thresholds for them.
 

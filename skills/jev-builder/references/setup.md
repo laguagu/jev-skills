@@ -27,13 +27,30 @@ The official SDKs work through a gateway by changing the base URL, key and model
 | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/sdks-and-apis/typesafe) | `https://ai-gateway.vercel.sh/typesafe` | `typesafe-ai/jev` | AI Gateway |
 
 Each provider has its own key. Chat-completion clients do not work with the decision endpoint.
+With OpenRouter, the TypeSafe SDK's `client.models.list()` is incompatible with the gateway's
+Models API response; use OpenRouter's model catalog or Models API separately
+([integration guide](https://openrouter.ai/docs/guides/community/typesafe-sdk)).
 
 - [Cloudflare Workers AI](https://developers.cloudflare.com/ai/models/typesafe/jev/) serves Jev as `typesafe/jev` through a Workers binding.
-- The [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) answers through `experimental_evaluate`; its `boolean` question is a Noul.
+- The [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) answers through `experimental_evaluate`; its `boolean` question is a Noul. Its default key variable is `TYPESAFE_AI_API_KEY`, unlike the direct SDK's `TYPESAFE_API_KEY`.
 - [LangChain](https://docs.langchain.com/oss/python/integrations/providers/typesafe) and [Pydantic AI](https://pydantic.dev/docs/ai/models/typesafe/) have integrations; the README lists more.
-- Vercel AI Gateway's [evaluation fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/evaluation-fallbacks) rerun a low-confidence request on another model. Both stages are billed, and an LLM answer returns `confidence: 0`, meaning unavailable.
+- Vercel AI Gateway's [evaluation fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/evaluation-fallbacks) rerun a low-confidence request on another model. Both stages are billed. In TypeSafe-compatible Choice/Score responses, an LLM fallback uses `confidence: 0` to mean unavailable; Noul has no confidence field. Vercel's AI SDK and native `/v1/evaluate` responses omit unavailable confidence.
 - For an LLM baseline on identical Python requests, the [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) answers with OpenAI, Anthropic or Gemini.
 - For a team, a proxy such as LiteLLM or Bifrost can hold the key and enforce spend limits.
+
+## Deployment and training
+
+TypeSafe's [privacy policy](https://typesafe.ai/legal/privacy-policy) describes US hosting.
+Zero retention and no customer-data training do not establish EU-only processing; verify the
+selected provider or gateway's processing locations and agreement for an EU requirement.
+
+Before using Jev outputs to train another model, check the applicable agreement. The
+[MCA, section 2.3(b)](https://typesafe.ai/legal/mca) restricts using the Services or outputs
+for distillation, training a model to imitate the Services, or developing a similar or competing
+product or service. A separate written agreement may govern instead. The official
+[feature-discovery recipe](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery)
+uses Jev judgments as downstream regressor features; do not infer unrestricted teacher-label
+or distillation rights from that example.
 
 ## Troubleshooting
 

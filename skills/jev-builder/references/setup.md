@@ -27,14 +27,16 @@ The official SDKs work through a gateway by changing the base URL, key and model
 | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/sdks-and-apis/typesafe) | `https://ai-gateway.vercel.sh/typesafe` | `typesafe-ai/jev` | AI Gateway |
 
 Each provider has its own key. Chat-completion clients do not work with the decision endpoint.
+Other decision models behind the same request, and the gateway's other entry points, are in
+[providers](providers.md).
 With OpenRouter, the TypeSafe SDK's `client.models.list()` is incompatible with the gateway's
 Models API response; use OpenRouter's model catalog or Models API separately
 ([integration guide](https://openrouter.ai/docs/guides/community/typesafe-sdk)).
 
 - [Cloudflare Workers AI](https://developers.cloudflare.com/ai/models/typesafe/jev/) serves Jev as `typesafe/jev` through a Workers binding.
-- The [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) answers through `experimental_evaluate`; its `boolean` question is a Noul. Its default key variable is `TYPESAFE_AI_API_KEY`, unlike the direct SDK's `TYPESAFE_API_KEY`.
+- The [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) answers through `experimental_decide` (`ai` 7.0.128 or later; earlier AI SDK 7 releases call it `experimental_evaluate`, which remains as a deprecated alias). Its `boolean` question is a Noul, and Choice and Score confidence is under `providerMetadata.typesafe.confidence`. Its default key variable is `TYPESAFE_AI_API_KEY`, unlike the direct SDK's `TYPESAFE_API_KEY`.
 - [LangChain](https://docs.langchain.com/oss/python/integrations/providers/typesafe) and [Pydantic AI](https://pydantic.dev/docs/ai/models/typesafe/) have integrations; the README lists more.
-- Vercel AI Gateway's [evaluation fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/evaluation-fallbacks) rerun a low-confidence request on another model. Both stages are billed. In TypeSafe-compatible Choice/Score responses, an LLM fallback uses `confidence: 0` to mean unavailable; Noul has no confidence field. Vercel's AI SDK and native `/v1/evaluate` responses omit unavailable confidence.
+- Vercel AI Gateway's [decision fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/decision-fallbacks) (previously called evaluation fallbacks) rerun a low-confidence request on another model. Both stages are billed. In TypeSafe-compatible Choice/Score responses, an LLM fallback uses `confidence: 0` to mean unavailable; Noul has no confidence field. Vercel's AI SDK and native `/v1/evaluate` responses omit unavailable confidence.
 - For an LLM baseline on identical Python requests, the [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) answers with OpenAI, Anthropic or Gemini.
 - For a team, a proxy such as LiteLLM or Bifrost can hold the key and enforce spend limits.
 

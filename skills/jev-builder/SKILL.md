@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Maps what can be built with TypeSafe Jev and where to look for it. Use when adding Jev decisions (typed Choice, Score and Noul questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when connecting Jev through an SDK, gateway or framework; when looking for the official cookbook, client library, integration or example project that fits a need; when choosing between Jev, an LLM, a cross-encoder or an open model; or when a Jev question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; measuring a finished workflow has its own companion skill, jev-evidence-eval.
+description: Maps what can be built with TypeSafe Jev and the other decision models that take the same typed request (OpenAI Decisions, Cloudflare Clef, Microsoft-Decision-1, Liquid d1), and where to look for it. Use when adding typed decisions (Choice, Score, Noul or yes/no questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision should read an image; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for the official cookbook, client library, integration or example that fits a need; when choosing between Jev, another decision model, an LLM, a cross-encoder or an open model; or when a question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; measuring a finished workflow has its own companion skill, jev-evidence-eval.
 license: MIT
 ---
 
@@ -15,6 +15,10 @@ official [typesafe-ai skill](https://docs.typesafe.ai/agent-skill) is installed 
 the install commands), follow it for API and question design; this skill adds the recipe map,
 connection paths, pitfalls and where measurements live.
 
+OpenAI, Cloudflare, Microsoft and Liquid now serve the same kind of request, some of them with
+images. The recipes and pitfalls below apply to them too; model IDs, limits and thresholds do
+not carry over. [Providers](references/providers.md) has each request form.
+
 ## Where to look
 
 | Need | Look here |
@@ -22,8 +26,10 @@ connection paths, pitfalls and where measurements live.
 | Concepts, primitives, confidence, HTTP API, SDKs, limits, prices | [Docs index](https://docs.typesafe.ai/llms.txt); append `.md` to a page path for Markdown |
 | A worked recipe for the need | [Cookbooks](#official-cookbooks) below; read the closest one in full before designing |
 | Architecture patterns | [Intent routing](https://docs.typesafe.ai/patterns/intent-routing) (a ticket or request router), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring) |
+| Ideas by industry or product | TypeSafe's [example use cases](https://docs.typesafe.ai/concepts/use-case-map); Vercel's [nine Jev use cases](https://vercel.com/i/jev-use-cases) (question type, evidence and action for each) and [five builds on five decision models](https://vercel.com/i/ai-gateway-decision-api-use-cases) |
 | Where the current model is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) |
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
+| Another provider's request form, image input, one gateway for several decision models | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
 | Measurements | The README's [evaluation list](https://github.com/laguagu/jev-skills#evaluations) |
@@ -45,6 +51,7 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
 | | [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade) | Jev checks a small model's extraction and sends failing records to a reasoning model |
 | Selection and extraction | [Function calling](https://docs.typesafe.ai/cookbooks/function_calling) | Maps a request to a typed function: a Choice per enum argument, a Noul per member of a set-valued argument, and Nouls for whether arguments were stated |
 | | [Skill suggestion](https://docs.typesafe.ai/cookbooks/skill_suggestion) | Picks at most one skill from a large catalog: rank, then re-check the top candidates |
+| | [Simple memory system](https://docs.typesafe.ai/cookbooks/basic_memory) | A Noul decides which requests are worth remembering; a wrapper adds the saved ones to later state |
 | | [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment) | A Score matches catalog records; companion Nouls show which fields disagree |
 | | [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook) · [date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) | Code proposes candidate values, a Choice selects, code copies or assembles |
 | | [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat) | Rebuilds Markdown from flattened text; every output character comes from the input |
@@ -65,13 +72,33 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
 3. **Keep policy in code.** Map answers to known IDs, validate them, and give unknown, malformed,
    uncertain and service-error outcomes a defined path. A reranker or gate in front of an existing
    feature needs a total deadline, falls back to the original behaviour, and pauses after a 429
-   or 5xx.
+   or 5xx. Until labelled cases from the user's own data support a threshold, a probability only
+   orders the review queue and approves nothing: wrong answers also arrive with a high
+   probability, and with a second model agreeing.
 4. **Measure before adopting.** Compare with the current rule, classifier or LLM on the same
    labelled cases in the user's language (English is Jev's strongest), and choose thresholds per
    task and corpus on development data. Keep test cases separate from development and retrieved
    demonstrations; distinguish model-authored labels and judge checks from independent human
    review. [jev-evidence-eval](https://github.com/laguagu/jev-skills/tree/main/skills/jev-evidence-eval)
    covers the procedure.
+   To compare models or providers, freeze the cases, wording, options and visible input and send
+   every arm that same request in its provider's own form. Write the pass rule, the sample and
+   the spend cap before the first call. Ask each request once and count failures as failures.
+   Then recount the reported numbers from the saved answers with code that shares nothing with
+   the runner.
+
+## Keep the provider behind a thin adapter
+
+The application's contract is its own typed request (state, questions by ID, allowed options)
+and typed answer (chosen option, probability per option, the model ID the provider returned,
+usage, or a named failure). An adapter only translates that contract to one provider's request
+form and back. Retrieval, masking, thresholds, review and fallback stay outside it, so a second
+provider is one more adapter and one more measurement.
+
+- A refusal, a malformed answer, a timeout and a quota error are each their own outcome. Never
+  turn one into a "no" or into one of the options.
+- Store the provider and the returned model version beside each answer; an alias or a gateway
+  fallback can change it per request.
 
 ## Pitfalls
 
@@ -96,12 +123,29 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
   explicit, validated set of spans. A missing answer in a retrieved window says nothing about
   unsearched text; partial or failed extraction needs its own outcome. Silence is "not stated",
   not a denial. Questions in one request are independent; validate consistency across related fields.
+- To point at the answer inside a long document, take two steps: a Choice picks the passage,
+  then a second Choice picks the line or sentence among that passage's own numbered units. The
+  line is a pointer for the reader, not a check of the passage: a model names a line also where
+  the passage does not answer.
+- When a generative model copies a value out of a passage, accept it only if code finds it
+  verbatim in the source, and record where. The match shows the value is in the text, not that
+  the passage answers the question; generative models also return a value from a passage that
+  holds no answer. Show such a value as a pointer for review, not as a confirmed field.
+- Jev reads text only. Where a decision should read a page image or a photo, use a provider whose
+  endpoint takes images ([providers](references/providers.md)). Where layout carries the answer,
+  measure the picture against its OCR text on your own pages before choosing. Check the size
+  limits before the call. An image bypasses every text screen you run.
 - State leaves your system. Jev is not trained on customer requests, and zero data retention is
   offered to enterprise customers ([data handling](https://docs.typesafe.ai/models#data-handling),
   [legal](https://docs.typesafe.ai/legal)). Send only the fields a decision needs; check
   [processing location and output-training rights](references/setup.md#deployment-and-training).
-- Local open decision models and cross-encoders are not drop-in replacements: measure them on the
-  same task, and never reuse Jev's thresholds for them.
+  Mask identifiers (personal identity, card and account numbers, e-mail addresses, phone numbers)
+  in code before the text leaves, map the cited spans back to the unmasked source locally, and
+  say what the screen misses: masking is not anonymisation.
+- No other model is a drop-in replacement, whether another hosted decision model, a local open
+  one or a cross-encoder. Equal response shapes do not mean equal judgments, and probabilities
+  are not comparable between models: measure each on the same task and never reuse Jev's
+  thresholds.
 
 When recommending a third-party project from the README, read its current source and license,
 say whether it was run or only read, and for agent hooks say what data leaves the machine.

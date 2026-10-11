@@ -1,0 +1,46 @@
+# Providers of the typed decision request
+
+Read this when the decision should run on another model than Jev, read an image, or stay
+swappable between providers. Checked on 2026-10-11 against the linked pages. Model IDs, limits
+and preview status move: read the page before pinning one, and take prices, rate limits,
+retention and processing location from the provider's own page, never from memory.
+
+| Provider | Models | Endpoint and request | Images |
+| --- | --- | --- | --- |
+| [TypeSafe](https://docs.typesafe.ai/api) | `jev-1.13.0`; aliases `jev-latest` and `jev-preview` ([models](https://docs.typesafe.ai/models)) | `POST https://api.typesafe.ai/v1/systemone` with `model`, `state` and a `questions` map from your ID to `{type, instructions, criteria}`; `type` is `noul`, `choice` or `score`; answers return under the same IDs | No, text only |
+| [OpenAI Decisions](https://developers.openai.com/api/docs/guides/decisions) (public beta) | `gpt-6-luna` | `POST /v1/decisions` with `model`, `input` (a string or user messages) and a `questions` array of `{type, name, instructions}`; `type` is `predicate`, `choice` (with `choices: [{value, description}]`) or `score` (with `levels: [{label, description}]`); answers are an array matched by `name` | Yes: `input_image` parts as inline base64 data URLs; hosted URLs and file IDs are refused |
+| [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/models/clef-flash/) | `@cf/cloudflare/clef-flash`, [`clef`](https://developers.cloudflare.com/workers-ai/models/clef/) and [`clef-omni`](https://developers.cloudflare.com/workers-ai/models/clef-omni/); the weights are also on Hugging Face under Apache-2.0 | A Workers binding, or `POST https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/@cf/cloudflare/clef-flash`, with TypeSafe's `model`, `state` and `questions` map | Yes: an `images` array of embedded PNG, JPEG or WebP, at most four, no remote URLs; `clef-omni` also takes audio and video |
+| [Microsoft Foundry](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/introducing-microsoft-decision-1-in-microsoft-foundry-for-decision-and-classific/4562742) (public preview in the announcement of 2026-10-09) | `Microsoft-Decision-1`; `model` is your deployment name | `POST {endpoint}/providers/microsoft/v1/systemone` with `model`, `state` and the `questions` map | No, text only ([capabilities](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure)) |
+| [Liquid](https://docs.liquid.ai/lfm/models/d1) | `d1`; the [family](https://docs.liquid.ai/lfm/models/decision-models) also lists `d1-3B` and `d1-omni-600M` | `POST https://api.liquid.ai/decisions/v1/systemone`; the TypeSafe SDKs work with the base URL `https://api.liquid.ai` | Yes: a top-level `images` array over plain HTTP; the TypeSafe SDKs do not send images |
+| [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/modalities/decision) | `typesafe-ai/jev`, `openai/gpt-6-luna-decisions`, `microsoft/microsoft-decision-1`, `liquid/d1`, `convaiinnovations/laya` (the [Decision filter](https://vercel.com/ai-gateway/models?capabilities=decision) is the current list) | One gateway key for all of them, four ways in: AI SDK `experimental_decide` with `gateway.decisionModel(id)`; `POST https://ai-gateway.vercel.sh/v1/evaluate`; OpenAI's `decisions.create` against `https://ai-gateway.vercel.sh/v1`; the TypeSafe SDK against `https://ai-gateway.vercel.sh/typesafe` | Only when the answering model takes images; a text-only model returns 400 |
+
+Jev is also served through OpenRouter and Cloudflare; see [setup](setup.md#gateways-and-frameworks).
+A gateway adds a recipient of the state: check its terms as well as the model provider's.
+
+## What differs under the same shape
+
+- **Yes/no has three names.** `noul` in TypeSafe-style requests, `predicate` at OpenAI, `boolean`
+  in the AI SDK and the gateway's `/v1/evaluate`. Each returns the probability of yes and has no
+  separate confidence.
+- **Questions are a map or an array.** TypeSafe-style requests key each question by your ID, and
+  TypeSafe does not show that ID to the model, so the instructions must say which item is
+  judged. OpenAI takes an array and echoes each `name`.
+- **Options are spelled differently.** TypeSafe-style `criteria` is a map of option to description
+  for a Choice and an ordered array for a Score. OpenAI uses `choices` and `levels`.
+- **OpenAI can refuse one question.** That answer has `type: "refusal"` while the others are
+  answered. Route it to review; it is not a negative answer.
+- **Cloudflare cuts long text silently.** Images and questions that exceed the context window
+  fail the request, but a long text `state` is truncated to fit without an error. Measure the
+  input before the call when the whole source has to be read.
+- **Confidence is a provider statistic** about how concentrated a Choice or Score distribution
+  is. It is not accuracy and not comparable across providers. A language-model fallback on
+  Vercel's gateway has none; see [setup](setup.md#gateways-and-frameworks).
+- **Images count as input tokens** toward the price and the context window, and each provider
+  has its own size and count limits on the linked page.
+- **The AI SDK function was renamed.** `experimental_decide` and `decisionModel` need `ai` 7.0.128
+  or later; `experimental_evaluate` and `evaluationModel` remain as deprecated aliases.
+
+On calibration the providers agree with each other: OpenAI's guide says to set thresholds from
+labelled examples of your own application, Microsoft's announcement says to validate calibration
+on your own data, and Vercel's guide says matching response shapes imply neither matching
+judgments nor matching calibration.

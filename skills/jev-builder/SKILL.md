@@ -32,7 +32,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | Another provider's request form, image input, one gateway for several decision models | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
-| Measurements | The README's [evaluation list](https://github.com/laguagu/jev-skills#evaluations) |
+| Measurements | The README's [evaluation list](https://github.com/laguagu/jev-skills#-evaluations) |
 
 ## Official cookbooks
 

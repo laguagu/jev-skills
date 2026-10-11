@@ -54,7 +54,7 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
 | | [Simple memory system](https://docs.typesafe.ai/cookbooks/basic_memory) | A Noul decides which requests are worth remembering; a wrapper adds the saved ones to later state |
 | | [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment) | A Score matches catalog records; companion Nouls show which fields disagree |
 | | [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook) · [date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) | Code proposes candidate values, a Choice selects, code copies or assembles |
-| | [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat) | Rebuilds Markdown from flattened text; every output character comes from the input |
+| | [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat) | Rebuilds Markdown from flattened text: the words come from the input, code adds the boundaries and markup |
 | Classification | [Classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence) | Reports the broader parent label when a fine-grained Choice is unsure |
 | | [Hierarchical classification](https://docs.typesafe.ai/cookbooks/hierarchical_classification) | Beam search over Choice probabilities through a deep taxonomy |
 | | [Autoresearch feature discovery](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery) | Proposed Score and Noul questions become features for a trained regressor |
@@ -74,7 +74,8 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
    feature needs a total deadline, falls back to the original behaviour, and pauses after a 429
    or 5xx. Until labelled cases from the user's own data support a threshold, a probability only
    orders the review queue and approves nothing: wrong answers also arrive with a high
-   probability, and with a second model agreeing.
+   probability ([an example](https://docs.typesafe.ai/cookbooks/classification_using_confidence)),
+   and a second model agreeing is no check until it has been measured on the same cases.
 4. **Measure before adopting.** Compare with the current rule, classifier or LLM on the same
    labelled cases in the user's language (English is Jev's strongest), and choose thresholds per
    task and corpus on development data. Keep test cases separate from development and retrieved
@@ -97,8 +98,9 @@ provider is one more adapter and one more measurement.
 
 - A refusal, a malformed answer, a timeout and a quota error are each their own outcome. Never
   turn one into a "no" or into one of the options.
-- Store the provider and the returned model version beside each answer; an alias or a gateway
-  fallback can change it per request.
+- Store the requested model ID, the model the response names, the provider and any routing
+  metadata beside each answer. An alias can move, a gateway can echo the requested ID, and a
+  fallback names its own model; only a pinned versioned ID says which model was evaluated.
 
 ## Pitfalls
 
@@ -108,13 +110,17 @@ provider is one more adapter and one more measurement.
   when changing models. Hosted Jev uses shared weights and offers no customer fine-tuning or LoRA.
 - Question IDs are never shown to the model; say in the question which item it judges, such as
   `passages[3]`.
-- Batch independent candidate judgments over shared state; the rerank example starts with 15
-  per request. Check the [current context and rate limits](https://docs.typesafe.ai/models)
+- Batch independent questions over the same state into one request
+  ([parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions)); the re-ranking
+  recipe sends one candidate per request for clarity. Check the
+  [current context and rate limits](https://docs.typesafe.ai/models)
   when choosing batch size and concurrency; the provider can adjust them without notice.
   Measure the tradeoff on your own data.
 - A Noul per candidate is enough to sort. Use a graded Score when code acts on the levels themselves.
-- An option's name can outweigh its definition. Give each option a name that means what its
-  definition says. Test reordered options and untrusted state with injected instructions.
+- The model reads both an option's name and its description
+  ([Choice](https://docs.typesafe.ai/primitives/choice)), and instructions that disagree with the
+  criteria confuse it. Give each option a name that means what its description says. Test
+  reordered options and untrusted state with injected instructions.
 - Choice/Score confidence summarizes the answer distribution; it is not accuracy, and a threshold learned on
   one corpus does not transfer to another. Measure stability near thresholds on your requests;
   cache answers when reproducibility matters.
@@ -129,12 +135,14 @@ provider is one more adapter and one more measurement.
   the passage does not answer.
 - When a generative model copies a value out of a passage, accept it only if code finds it
   verbatim in the source, and record where. The match shows the value is in the text, not that
-  the passage answers the question; generative models also return a value from a passage that
-  holds no answer. Show such a value as a pointer for review, not as a confirmed field.
+  the passage answers the question, and a generative model can return a plausible value from a
+  passage that holds no answer. Show such a value as a pointer for review, not as a confirmed field.
 - Jev reads text only. Where a decision should read a page image or a photo, use a provider whose
   endpoint takes images ([providers](references/providers.md)). Where layout carries the answer,
   measure the picture against its OCR text on your own pages before choosing. Check the size
-  limits before the call. An image bypasses every text screen you run.
+  limits before the call. An image bypasses every text screen you run: that a provider takes
+  images is no reason to send customer pages. Keep that route off for personal documents until
+  its own handling has been reviewed; a default-off switch or a warning screens nothing.
 - State leaves your system. Jev is not trained on customer requests, and zero data retention is
   offered to enterprise customers ([data handling](https://docs.typesafe.ai/models#data-handling),
   [legal](https://docs.typesafe.ai/legal)). Send only the fields a decision needs; check

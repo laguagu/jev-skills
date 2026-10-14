@@ -31,6 +31,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
 | Another provider's request form, image input, one gateway for several decision models | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
+| Which open decision model ranks best now | [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index), a community leaderboard (unofficial; English benchmarks and private tests): use it to find candidates, then measure them on your own task |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
 | Measurements | The README's [evaluation list](https://github.com/laguagu/jev-skills#-evaluations) |
 

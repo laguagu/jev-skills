@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Maps what can be built with TypeSafe Jev and the other decision models that take the same typed request (OpenAI Decisions, Cloudflare Clef, Microsoft-Decision-1, Liquid d1), and where to look for it. Use when adding typed decisions (Choice, Score, Noul or yes/no questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision should read an image; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for the official cookbook, client library, integration or example that fits a need; when choosing between Jev, another decision model, an LLM, a cross-encoder or an open model; or when a question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; measuring a finished workflow has its own companion skill, jev-evidence-eval.
+description: Maps what can be built with TypeSafe Jev and the other decision models that take the same typed request (OpenAI Decisions, Cloudflare Clef, Microsoft-Decision-1, Liquid d1), and where to look for it. Use when adding typed decisions (Choice, Score, Noul or yes/no questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision should read an image; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for the official cookbook, client library, integration or example that fits a need; when choosing between Jev, another decision model, an LLM, a cross-encoder, an open model you host or a small trained model, including when a decision must be fast; or when a question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; measuring a finished workflow has its own companion skill, jev-evidence-eval.
 license: MIT
 ---
 
@@ -29,7 +29,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | Ideas by industry or product | TypeSafe's [example use cases](https://docs.typesafe.ai/concepts/use-case-map); Vercel's [nine Jev use cases](https://vercel.com/i/jev-use-cases) (question type, evidence and action for each) and [five builds on five decision models](https://vercel.com/i/ai-gateway-decision-api-use-cases) |
 | Where the current model is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) |
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
-| Another provider's request form, image input, one gateway for several decision models | [Providers](references/providers.md) |
+| Another provider's request form, image input, one gateway for several decision models, an open decision model you host | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
 | Which open decision model ranks best now | [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index), a community leaderboard (unofficial; English benchmarks and private tests): use it to find candidates, then measure them on your own task |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
@@ -89,6 +89,25 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
    Then recount the reported numbers from the saved answers with code that shares nothing with
    the runner.
 
+## When speed decides
+
+A decision model reads the whole state for every request, so its answer takes the time of a
+large-model forward pass, plus the network for a hosted one. Measure latency and throughput on
+your own requests before designing around them, and plan for this:
+
+- **Many questions about one input go in one request.** That is the cheap and fast path
+  ([parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions)); one request per
+  question pays the read of the state again each time.
+- **A self-hosted 26-27B model is not a real-time component.** On one data-centre GPU expect
+  answers in the order of a second, not milliseconds, and throughput that falls with longer
+  state. Size the hardware from your own load test, not from a leaderboard.
+- **Real-time control needs a small task model.** Where a decision must come in milliseconds,
+  run on a device, or repeat at every control step, train a small model for that one task from
+  your own labelled data or a simulator's teacher (never from a hosted model's answers where its
+  terms forbid it). A decision model can still label, audit or explain offline, but measure
+  before letting it override the small model: where the small model is unsure, a large general
+  model is not necessarily better.
+
 ## Keep the provider behind a thin adapter
 
 The application's contract is its own typed request (state, questions by ID, allowed options)
@@ -105,7 +124,8 @@ provider is one more adapter and one more measurement.
 
 ## Pitfalls
 
-- Use a versioned model ID such as `jev-1.13.0` or the alias `jev-latest`; check the
+- Use a versioned model ID such as `jev-1.13.0` (the stable release, alias `jev-latest`) or the
+  newer `jev-1.14.0` (alias `jev-preview`); check the
   [current models](https://docs.typesafe.ai/models) before reusing a cookbook's older ID.
   Pin a versioned ID for evaluations, log the returned `model`, and re-tune thresholds
   when changing models. Hosted Jev uses shared weights and offers no customer fine-tuning or LoRA.

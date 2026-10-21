@@ -31,7 +31,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
 | Another provider's request form, image input, one gateway for several decision models, an open decision model you host | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
-| Which open decision model ranks best now | [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index), a community leaderboard (unofficial; English benchmarks and private tests): use it to find candidates, then measure them on your own task |
+| Which open decision model ranks best now | [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index), a community leaderboard (unofficial; English benchmarks and private tests): use it to find candidates, then measure them on your own task; it changes within days, and [finding a newer one](references/providers.md#finding-a-newer-one) says what to check first |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
 | Measurements | The README's [evaluation list](https://github.com/laguagu/jev-skills#-evaluations) |
 
@@ -100,7 +100,8 @@ your own requests before designing around them, and plan for this:
   question pays the read of the state again each time.
 - **A self-hosted 26-27B model is not a real-time component.** On one data-centre GPU expect
   answers in the order of a second, not milliseconds, and throughput that falls with longer
-  state. Size the hardware from your own load test, not from a leaderboard.
+  state. Size the hardware from your own load test, not from a leaderboard: which of two models
+  serves faster can flip between GPU types and serving set-ups.
 - **Real-time control needs a small task model.** Where a decision must come in milliseconds,
   run on a device, or repeat at every control step, train a small model for that one task from
   your own labelled data or a simulator's teacher (never from a hosted model's answers where its
@@ -143,8 +144,10 @@ provider is one more adapter and one more measurement.
   criteria confuse it. Give each option a name that means what its description says. Test
   reordered options and untrusted state with injected instructions.
 - Choice/Score confidence summarizes the answer distribution; it is not accuracy, and a threshold learned on
-  one corpus does not transfer to another. Measure stability near thresholds on your requests;
-  cache answers when reproducibility matters.
+  one corpus does not transfer to another. Decision models are often overconfident outside the
+  tasks they were trained on: fit a temperature per model on development labels before choosing a
+  threshold. Measure stability near thresholds on your requests; cache answers when
+  reproducibility matters.
 - For evidence, number candidate spans in code, let a Choice pick one (with a none option), and
   copy the text from the source, preserving its version and offsets. Multi-part support needs an
   explicit, validated set of spans. A missing answer in a retrieved window says nothing about
@@ -163,7 +166,9 @@ provider is one more adapter and one more measurement.
   measure the picture against its OCR text on your own pages before choosing. Check the size
   limits before the call. An image bypasses every text screen you run: that a provider takes
   images is no reason to send customer pages. Keep that route off for personal documents until
-  its own handling has been reviewed; a default-off switch or a warning screens nothing.
+  its own handling has been reviewed; a default-off switch or a warning screens nothing. An open
+  model that reads images on your own hardware keeps the page in-house
+  ([open models](references/providers.md#open-decision-models-you-host-yourself)).
 - State leaves your system. Jev is not trained on customer requests, and zero data retention is
   offered to enterprise customers ([data handling](https://docs.typesafe.ai/models#data-handling),
   [legal](https://docs.typesafe.ai/legal)). Send only the fields a decision needs; check

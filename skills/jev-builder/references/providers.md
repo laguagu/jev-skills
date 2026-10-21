@@ -58,8 +58,25 @@ Hugging Face card and the Hub API, read 2026-10-21; read the card again before a
 | [`perplexity-ai/pplx-decider-v1.2`](https://huggingface.co/perplexity-ai/pplx-decider-v1.2) | 26B; also [`pplx-decider-flash-v1.2`](https://huggingface.co/perplexity-ai/pplx-decider-flash-v1.2) | Apache-2.0 | Text and images; also hosted on the Vercel gateway (table above) |
 | [Amos 1 Large](https://huggingface.co/mukaddamzaid/amos-1-large) | 27B | Apache-2.0 | Text, JSON or a photo. Its hosted endpoint's [docs](https://amos.scira.ai/docs/) say every request is kept to improve the models: send it public material only, or self-host |
 
+### Finding a newer one
+
+New open decision models appear every few days, so build for swapping rather than for one model.
 The [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index) ranks
-these and newer ones; the [jev-skills README](https://github.com/laguagu/jev-skills#-open-models)
-lists more open models and their skills. Rankings are English and general: measure on your own
-task before choosing, and size the GPU from the card (the 26-27B models need one large
-data-centre GPU each in BF16).
+them on a text board and a vision board that change within days; their data are also plain JSON
+(`data/index.json` and `data/vision.json` under the Space's `resolve/main/`). The
+[jev-skills README](https://github.com/laguagu/jev-skills#-open-models) lists more open models
+and their skills. Before measuring a candidate:
+
+- **Licence first.** Top entries are often CC BY-NC (research only) or under a custom, gated
+  licence. Weights described as trained to imitate Jev may conflict with TypeSafe's output terms
+  ([setup](setup.md#deployment-and-training)): a legal question their own licence does not settle.
+- **Treat the board as a shortlist.** Its benchmarks are English and partly private; rerun your
+  own frozen cases, and keep the runner-up as the fallback.
+- **Pin the Hub revision and weight hashes.** A new revision may change only the card or also
+  the weights.
+- **Size the GPU from the card.** The 26-27B models need about 52 GB in BF16, one large
+  data-centre GPU each. On compute nodes without internet, cache every repository the runtime
+  loads (a base tokenizer, a vision encoder), not only the weights.
+- **Fine-tuning is possible, unlike hosted Jev,** but few cards publish training code, and a
+  recipe must keep the model's attention masks and readout. A fine-tune that lifts one question
+  type can lower another: rerun every question type you use.

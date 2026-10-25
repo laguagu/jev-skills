@@ -125,9 +125,10 @@ provider is one more adapter and one more measurement.
 
 ## Pitfalls
 
-- Use a versioned model ID such as `jev-1.13.0` (the stable release, alias `jev-latest`) or the
-  newer `jev-1.14.0` (alias `jev-preview`); check the
-  [current models](https://docs.typesafe.ai/models) before reusing a cookbook's older ID.
+- Use a versioned model ID such as `jev-1.14.0` (the current stable release behind `jev-latest`;
+  `jev-preview` points to the same model while no preview build exists) or the older
+  `jev-1.13.0`; check the [current models](https://docs.typesafe.ai/models) before reusing a
+  cookbook's older ID.
   Pin a versioned ID for evaluations, log the returned `model`, and re-tune thresholds
   when changing models. Hosted Jev uses shared weights and offers no customer fine-tuning or LoRA.
 - Question IDs are never shown to the model; say in the question which item it judges, such as

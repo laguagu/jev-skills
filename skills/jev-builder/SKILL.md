@@ -8,7 +8,8 @@ license: MIT
 
 Jev answers typed questions about text and application state: `Choice` picks one of named
 options, `Score` returns a probability-weighted position across ordered levels (including
-between levels), and `Noul` returns the probability of yes.
+between levels), and `Noul` returns the probability of yes. `Box` (where in an image) and
+image input are experimental ([Pitfalls](#pitfalls)).
 Code owns the workflow and acts on the answers. This skill says what can be done and where to
 look; the [live docs](https://docs.typesafe.ai/llms.txt) are the source of truth. When the
 official [typesafe-ai skill](https://docs.typesafe.ai/agent-skill) is installed (that page has
@@ -27,7 +28,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | A worked recipe for the need | [Cookbooks](#official-cookbooks) below; read the closest one in full before designing |
 | Architecture patterns | [Intent routing](https://docs.typesafe.ai/patterns/intent-routing) (a ticket or request router), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring) |
 | Ideas by industry or product | TypeSafe's [example use cases](https://docs.typesafe.ai/concepts/use-case-map); Vercel's [nine Jev use cases](https://vercel.com/i/jev-use-cases) (question type, evidence and action for each) and [five builds on five decision models](https://vercel.com/i/ai-gateway-decision-api-use-cases) |
-| Where the current model is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) |
+| Where Jev is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) (covers Jev 1.13) |
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
 | Another provider's request form, image input, one gateway for several decision models, an open decision model you host | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
@@ -49,6 +50,7 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
 | | [Line-by-line search](https://docs.typesafe.ai/cookbooks/semantic_find) | A Choice over numbered lines finds the answer; a Noul says whether the document has one |
 | Checks | [Double-checking citations](https://docs.typesafe.ai/cookbooks/citation_check) | A string match catches invented quotes, then a Choice decides whether the context supports the claim |
 | | [Guardrails for LLMs](https://docs.typesafe.ai/cookbooks/llm_guardrails) | Hazard Nouls and a severity Score screen LLM input and output; thresholds live in code |
+| | [Chat message filter](https://docs.typesafe.ai/cookbooks/twitch_chat_filter) | Three questions per chat message (category, toxicity, spoilers); code decides whether to show, highlight, hide or blur it |
 | | [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade) | Jev checks a small model's extraction and sends failing records to a reasoning model |
 | Selection and extraction | [Function calling](https://docs.typesafe.ai/cookbooks/function_calling) | Maps a request to a typed function: a Choice per enum argument, a Noul per member of a set-valued argument, and Nouls for whether arguments were stated |
 | | [Skill suggestion](https://docs.typesafe.ai/cookbooks/skill_suggestion) | Picks at most one skill from a large catalog: rank, then re-check the top candidates |
@@ -162,10 +164,13 @@ provider is one more adapter and one more measurement.
   verbatim in the source, and record where. The match shows the value is in the text, not that
   the passage answers the question, and a generative model can return a plausible value from a
   passage that holds no answer. Show such a value as a pointer for review, not as a confirmed field.
-- Jev reads text only. Where a decision should read a page image or a photo, use a provider whose
-  endpoint takes images ([providers](references/providers.md)). Where layout carries the answer,
-  measure the picture against its OCR text on your own pages before choosing. Check the size
-  limits before the call. An image bypasses every text screen you run: that a provider takes
+- Hosted Jev's image input (an `assets` map behind the `TypeSafe-Danger-Zone-Images: true`
+  header on Jev 1.13 and 1.14; `box` questions need 1.14) is "Dreamer-ready": for prototypes, not
+  production, and some docs pages still say text only
+  ([images](https://docs.typesafe.ai/images)). Where a production decision should read a page image
+  or a photo, use a provider whose endpoint takes images ([providers](references/providers.md)).
+  Where layout carries the answer, measure the picture against its OCR text on your own pages
+  before choosing. Check the size limits before the call. An image bypasses every text screen you run: that a provider takes
   images is no reason to send customer pages. Keep that route off for personal documents until
   its own handling has been reviewed; a default-off switch or a warning screens nothing. An open
   model that reads images on your own hardware keeps the page in-house

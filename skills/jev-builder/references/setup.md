@@ -7,7 +7,7 @@ Create a key in the [console](https://console.typesafe.ai) and follow the
 server environment or secret store, never in client code or a prompt, and never ask the user to
 paste it into the conversation.
 
-Official SDKs: [JavaScript](https://github.com/typesafe-ai/typesafe-sdk-js) (`@typesafe-ai/sdk`)
+Official SDKs: [JavaScript](https://github.com/typesafe-ai/typesafe-sdk-js) (`@typesafe-ai/sdk`, Node 22 or newer)
 and [Python](https://github.com/typesafe-ai/typesafe-sdk-python) (`typesafe-sdk`, imported as
 `typesafe_sdk`; the PyPI package `typesafe` is unrelated). Read the current
 [SDK docs](https://docs.typesafe.ai/sdk) and changelogs before integrating.
@@ -17,6 +17,10 @@ code and differ in the base URL: some pass `TYPESAFE_ENDPOINT` to the client, ot
 `TYPESAFE_BASE_URL`. Follow the setup of the recipe you run.
 `TYPESAFE_LOG_LEVEL=debug` logs request and response bodies unredacted; keep it off where state
 is sensitive.
+Since JavaScript SDK 0.7.0 and Python SDK 0.7.5 (2026-10-14) request bodies of 1 KiB or more are
+zstd-compressed (Node 22.15 or newer; Python 3.14 or newer, or with the `zstd` extra). A gateway or other
+base URL that does not accept compressed requests needs it off: `compression: false` in the JavaScript
+client, `compression=False` in the Python one.
 
 ## Gateways and frameworks
 
@@ -35,7 +39,7 @@ Models API response; use OpenRouter's model catalog or Models API separately
 ([integration guide](https://openrouter.ai/docs/guides/community/typesafe-sdk)).
 
 - [Cloudflare Workers AI](https://developers.cloudflare.com/ai/models/typesafe/jev/) serves Jev as `typesafe/jev` through a Workers binding.
-- The [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) answers through `experimental_decide` (`ai` 7.0.128 or later; earlier AI SDK 7 releases call it `experimental_evaluate`, which remains as a deprecated alias). Its `boolean` question is a Noul, and Choice and Score confidence is under `providerMetadata.typesafe.confidence`. Its default key variable is `TYPESAFE_AI_API_KEY`, unlike the direct SDK's `TYPESAFE_API_KEY`.
+- The [AI SDK provider](https://ai-sdk.dev/providers/ai-sdk-providers/typesafe-ai) (`@ai-sdk/typesafe-ai`) answers through `experimental_decide` (`ai` 7.0.128 or later; earlier AI SDK 7 releases call it `experimental_evaluate`, which remains as a deprecated alias). Its `boolean` question is a Noul, and Choice and Score confidence is under `providerMetadata.typesafe.confidence`. Its default key variable is `TYPESAFE_AI_API_KEY`, unlike the direct SDK's `TYPESAFE_API_KEY`.
 - [LangChain](https://docs.langchain.com/oss/python/integrations/providers/typesafe) and [Pydantic AI](https://pydantic.dev/docs/ai/models/typesafe/) have integrations; the README lists more.
 - Vercel AI Gateway's [decision fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/decision-fallbacks) (previously called evaluation fallbacks) rerun a low-confidence request on another model. Both stages are billed. A language-model fallback has neither a confidence nor a probability distribution: TypeSafe-compatible Choice/Score responses carry `confidence: 0` and `probabilities: {}` as unavailable sentinels, and the AI SDK and native `/v1/evaluate` omit both; a Noul still returns its probability. Treat a missing distribution as a fallback outcome, not as an answer with one probability per option.
 - For an LLM baseline on identical Python requests, the [System One Adapter](https://github.com/typesafe-ai/system-one-adapter-python) answers with OpenAI, Anthropic or Gemini.
@@ -63,4 +67,4 @@ or distillation rights from that example.
 | Model or request rejected | A versioned ID or alias, not the display name or a cookbook's older ID; limits in [models](https://docs.typesafe.ai/models) and the [API](https://docs.typesafe.ai/api) |
 | 429 or 529 | Retryable; the SDKs back off by default |
 | Results changed without a code change | An alias moved; pin a versioned ID |
-| Node exits after a JavaScript call timed out or was cancelled (JS SDK 0.6.0) | [SDK issue #2](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2) (open): on Node 20 and 22 a timeout or cancellation while the body is still arriving can end the process; the issue reports Node 24 passing. A `fetch` that reads the whole body first is an unmerged workaround ([example](https://github.com/laguagu/jev-skills/blob/main/examples/fetch-whole-body.mjs)); verify it on your runtime |
+| Node exits after a JavaScript call timed out or was cancelled | JS SDK 0.6.0 on Node 20 and 22 leaked an unhandled `AbortError` when a timeout or cancellation hit while the body was still arriving ([issue #2](https://github.com/typesafe-ai/typesafe-sdk-js/issues/2), still open on GitHub); 0.7.0 fixes it on Node 22 ([changelog](https://docs.typesafe.ai/sdk/javascript/changelog)). Upgrade the SDK and test a timeout mid-body on your Node version: the [rerank example](https://github.com/laguagu/jev-skills/blob/main/examples/rerank/README.md) saw 0.6.0 exit on some Node 24 and 25 releases too, and a `fetch` that reads the whole body first ([example](https://github.com/laguagu/jev-skills/blob/main/examples/fetch-whole-body.mjs)) avoids it |

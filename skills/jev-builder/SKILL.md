@@ -28,7 +28,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | A worked recipe for the need | [Cookbooks](#official-cookbooks) below; read the closest one in full before designing |
 | Architecture patterns | [Intent routing](https://docs.typesafe.ai/patterns/intent-routing) (a ticket or request router), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring) |
 | Ideas by industry or product | TypeSafe's [example use cases](https://docs.typesafe.ai/concepts/use-case-map); Vercel's [nine Jev use cases](https://vercel.com/i/jev-use-cases) (question type, evidence and action for each) and [five builds on five decision models](https://vercel.com/i/ai-gateway-decision-api-use-cases) |
-| Where Jev is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) (covers Jev 1.13) |
+| Where Jev is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) (the page names no Jev version: recheck a listed weakness on the model you use) |
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
 | Another provider's request form, image input, one gateway for several decision models, an open decision model you host | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |

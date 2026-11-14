@@ -1,7 +1,7 @@
 # Providers of the typed decision request
 
 Read this when the decision should run on another model than Jev, read an image, or stay
-swappable between providers. Checked on 2026-10-26 against the linked pages. Model IDs, limits
+swappable between providers. Model IDs, limits
 and preview status move: read the page before pinning one, and take prices, rate limits,
 retention and processing location from the provider's own page, never from memory.
 
@@ -13,37 +13,45 @@ retention and processing location from the provider's own page, never from memor
 | [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/models/clef-flash/) | `@cf/cloudflare/clef-flash`, [`clef`](https://developers.cloudflare.com/workers-ai/models/clef/) and [`clef-omni`](https://developers.cloudflare.com/workers-ai/models/clef-omni/); the weights are also on Hugging Face under Apache-2.0 | A Workers binding, or `POST https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/@cf/cloudflare/clef-flash`, with TypeSafe's `model`, `state` and `questions` map | Yes: an `images` array of embedded PNG, JPEG or WebP, at most four, no remote URLs; `clef-omni` also takes audio and video |
 | [Microsoft Foundry](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/introducing-microsoft-decision-1-in-microsoft-foundry-for-decision-and-classific/4562742) (public preview in the announcement of 2026-10-09; [how-to](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/use-foundry-models-microsoft-decision)) | `Microsoft-Decision-1`; `model` is your deployment name | `POST {endpoint}/providers/microsoft/v1/systemone` with `model`, `state` and the `questions` map | No, text only ([capabilities](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure)) |
 | [Liquid](https://docs.liquid.ai/lfm/models/d1) | `d1.1`, the default hosted model, and `d1-ultra`; the [family](https://docs.liquid.ai/lfm/models/decision-models) also lists the open-weight `d1-2B`, `d1-omni-2B` and `d1-omni-600M`; Liquid lists the earlier `d1` on OpenRouter and the Vercel gateway, not on its own API | `POST https://api.liquid.ai/decisions/v1/systemone`; the TypeSafe SDKs work with the base URL `https://api.liquid.ai` and compression off, since Liquid does not accept zstd bodies ([setup](setup.md)) | Yes: a top-level `images` array of base64 data URLs (at most eight, body under 4.5 MB, no remote URLs) in a direct HTTPS JSON request: Liquid's image examples do not use the SDKs |
-| [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/modalities/decision) | for example `typesafe-ai/jev` (pinned: `typesafe-ai/jev-1.13.0`, `typesafe-ai/jev-1.14.0`), `openai/gpt-6-luna-decisions`, `microsoft/microsoft-decision-1`, `liquid/d1`, `liquid/d1-ultra`, `perplexity/pplx-decider-v1.2` and the open-weight `baseten/mammoth-1` and `convaiinnovations/laya`; the [Decision filter](https://vercel.com/ai-gateway/models?capabilities=decision) is the current list | One gateway key for all of them, three ways in: AI SDK `experimental_decide` with `gateway.decisionModel(id)`; OpenAI's `decisions.create` against `https://ai-gateway.vercel.sh/v1` (over plain HTTP, `POST /v1/decisions`); the TypeSafe SDK against `https://ai-gateway.vercel.sh/typesafe`. The older `POST /v1/evaluate` is deprecated and kept only for existing integrations | Only when the answering model takes images; a text-only model returns 400 |
+| [Google Gemini API](https://aistudio.google.com/docs/decisions-api) ([announcement](https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/) of 2026-11-11) | `gemini-decision-1`, the only supported model, on the Gemini Developer API (`v1beta`) only; the `google-genai` and `@google/genai` SDKs need 3.2 or later | `POST https://generativelanguage.googleapis.com/v1beta/decisions` with an `x-goog-api-key` header, `model`, `input` (a string or content blocks; not `state`) and a `questions` map of 1 to 1,000 from your ID to `{type, instructions, criteria}`; `type` is `noul` (criteria optional: `true_description`, `false_description`), `choice` (criteria map, 2 to 255 options) or `score` (ordered criteria array, 2 to 255 levels); answers return under the same IDs, each with a `confidence` | Yes: `image`, `audio`, `video` and `document` (PDF) blocks inside `input`, as base64 `data` (up to 100 MB per request, 50 MB for PDFs) or a `uri` (a Files API URI, or an HTTPS URL of up to 15 MB; no `gs://` or YouTube); question instructions take text only |
+| [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/modalities/decision) | for example `typesafe-ai/jev` (pinned: `typesafe-ai/jev-1.13.0`, `typesafe-ai/jev-1.14.0`), `openai/gpt-6-luna-decisions`, `microsoft/microsoft-decision-1`, `google/gemini-decision-1`, `liquid/d1`, `liquid/d1-ultra`, `perplexity/pplx-decider-v1.3` and the open-weight `baseten/mammoth-1` and `convaiinnovations/laya`; the [Decision filter](https://vercel.com/ai-gateway/models?capabilities=decision) is the current list | One gateway key for all of them, three ways in: AI SDK `experimental_decide` with `gateway.decisionModel(id)`; OpenAI's `decisions.create` against `https://ai-gateway.vercel.sh/v1` (over plain HTTP, `POST /v1/decisions`); the TypeSafe SDK against `https://ai-gateway.vercel.sh/typesafe`. The older `POST /v1/evaluate` is deprecated and kept only for existing integrations | Only when the answering model takes images (a text-only model such as `typesafe-ai/jev` returns 400; a language-model fallback must support vision); `/v1/decisions` takes base64 data URLs only, at most 128 images, no external URLs or file IDs. `google/gemini-decision-1` takes PDF, audio and video only through the AI SDK; the TypeSafe-compatible and Decisions endpoints take text and images |
 
 Jev is also served through OpenRouter and Cloudflare; see [setup](setup.md#gateways-and-frameworks).
 A gateway adds a recipient of the state: check its terms as well as the model provider's.
 
 ## What differs under the same shape
 
-- **Yes/no has three names.** `noul` in TypeSafe-style requests, `predicate` at OpenAI, `boolean`
-  in the AI SDK and the gateway's deprecated `/v1/evaluate`. Each returns the probability of yes and has no
-  separate confidence.
-- **Questions are a map or an array.** TypeSafe-style requests key each question by your ID, and
-  TypeSafe does not show that ID to the model, so the instructions must say which item is
-  judged. OpenAI takes an array and echoes each `name`.
+- **Yes/no has three names.** `noul` in TypeSafe-style requests and at Gemini, `predicate` at OpenAI, `boolean`
+  in the AI SDK and the gateway's deprecated `/v1/evaluate`. Each returns the probability of yes. Only
+  Gemini adds a `confidence`, equal to `max(noul, 1 - noul)`, and keeps the probability between 0.01
+  and 0.99, so a threshold above 0.99 never matches.
+- **Questions are a map or an array.** TypeSafe-style requests and Gemini key each question by your ID, and
+  neither shows that ID to the model, so the instructions must say which item is
+  judged. Gemini takes `input`, not `state`. OpenAI takes an array and echoes each `name`.
 - **Options are spelled differently.** TypeSafe-style `criteria` is a map of option to description
   for a Choice and an ordered array for a Score. OpenAI uses `choices` and `levels`.
 - **OpenAI can refuse one question.** That answer has `type: "refusal"` while the others are
   answered. Route it to review; it is not a negative answer.
+- **Gemini fails the whole request instead.** A safety block returns HTTP 400 with no `answers`;
+  there is no per-question refusal.
 - **Cloudflare cuts long text silently.** Images and questions that exceed the context window
   fail the request, but a long text `state` is truncated to fit without an error. Measure the
   input before the call when the whole source has to be read.
 - **Confidence is a provider statistic** about how concentrated a Choice or Score distribution
-  is. It is not accuracy and not comparable across providers. A language-model fallback on
+  is (at Gemini the top outcome's probability). It is not accuracy and not comparable across providers. A language-model fallback on
   Vercel's gateway has neither a confidence nor a distribution; see
   [setup](setup.md#gateways-and-frameworks).
 - **Images are spelled differently.** TypeSafe takes an `assets` map referenced from the text; Cloudflare and
-  Liquid take a top-level `images` array; OpenAI and Azure take `input_image` parts. Code that adapts one
+  Liquid take a top-level `images` array; OpenAI and Azure take `input_image` parts; Gemini takes media
+  blocks inside `input`. Code that adapts one
   request form to another carries the images in the matching field.
 - **Images count as input tokens** toward the price and the context window, and each provider
   has its own size and count limits on the linked page.
 - **The AI SDK function was renamed.** `experimental_decide` and `decisionModel` need `ai` 7.0.128
   or later; `experimental_evaluate` and `evaluationModel` remain as deprecated aliases.
+- **The AI SDK reads an array `state` as parts.** From `ai` 7.0.133 an array passed as `state` holds
+  `{ type: 'text', text }`, `{ type: 'json', value }` or file parts, not JSON data. Wrap each string of
+  an array in a text part, and put a JSON array inside an object or a `json` part.
 
 On calibration the providers agree with each other: OpenAI's guide says to set thresholds from
 labelled examples of your own application, Microsoft's announcement says to validate calibration
@@ -53,13 +61,13 @@ judgments nor matching calibration.
 ## Open decision models you host yourself
 
 Several open-weight models take the same `state` and `questions` request and run on your own
-GPU, so the state never leaves your infrastructure. Licences and dates below are from each
-Hugging Face card and the Hub API, read 2026-10-26; read the card again before adopting one.
+GPU, so the state never leaves your infrastructure. Licences below are from each Hugging Face
+card; read the card again before adopting one.
 
 | Model | Sizes | Licence | Notes |
 | --- | --- | --- | --- |
-| d3 family by vLLM Semantic Router | [`vllm-sr/d3`](https://huggingface.co/vllm-sr/d3) and [`d3-turbo`](https://huggingface.co/vllm-sr/d3-turbo) about 26B, [`d3-flash`](https://huggingface.co/vllm-sr/d3-flash) 8B, [`d3-mini`](https://huggingface.co/vllm-sr/d3-mini) 4.5B | Apache-2.0 | Reads images (and video); a Python `system_one()` call or `POST /v1/systemone` through vLLM (main branch and nightly builds since 2026-10-14; no release has it yet, v0.32.0 included). `d3-turbo` is the newest (Hub entry 2026-10-19) |
-| [`perplexity-ai/pplx-decider-v1.2`](https://huggingface.co/perplexity-ai/pplx-decider-v1.2) | 26B; also [`pplx-decider-flash-v1.2`](https://huggingface.co/perplexity-ai/pplx-decider-flash-v1.2) | Apache-2.0 | Text and images; also hosted on the Vercel gateway (table above) |
+| d3 family by vLLM Semantic Router | [`vllm-sr/d3`](https://huggingface.co/vllm-sr/d3) and [`d3-turbo`](https://huggingface.co/vllm-sr/d3-turbo) about 26B, [`d3-flash`](https://huggingface.co/vllm-sr/d3-flash) 8B, [`d3-mini`](https://huggingface.co/vllm-sr/d3-mini) 4.5B | Apache-2.0 | Reads images (and video); a Python `system_one()` call or `POST /v1/systemone` through vLLM 0.33.0 or later. The family keeps growing (`d3-ultra`, `d3.1-nano`): list the `vllm-sr` models on the Hub for the newest |
+| [`perplexity-ai/pplx-decider-v1.3`](https://huggingface.co/perplexity-ai/pplx-decider-v1.3) | 26B; also [`pplx-decider-flash-v1.3`](https://huggingface.co/perplexity-ai/pplx-decider-flash-v1.3) 4.5B; v1.2 remains on the Hub and the gateway | Apache-2.0 | Text and images; a `locate` question returns verbatim text spans with character offsets (text state only, no images); build requests with its `pplx_decider` package, not v1.2 prompt builders; also hosted on the Vercel gateway (table above) |
 | [Amos 1 Large](https://huggingface.co/mukaddamzaid/amos-1-large) | 27B | Apache-2.0 | Text, JSON or a photo. Its hosted endpoint's [docs](https://amos.scira.ai/docs/) say every request is kept to improve the models: send it public material only, or self-host |
 | [Mammoth-1](https://huggingface.co/baselabs/mammoth-1) by Baseten | 27B; [`elephant-1`](https://huggingface.co/baselabs/elephant-1) 9B | MIT | Text and images; own serving bundle (`setup.sh`, a pinned runtime) rather than vLLM; input past 16,384 tokens is refused, not truncated. Also hosted by Baseten and on the Vercel gateway |
 

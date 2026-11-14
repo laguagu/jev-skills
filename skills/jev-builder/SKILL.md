@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Maps what can be built with TypeSafe Jev and the other decision models that take the same typed request (OpenAI Decisions, Cloudflare Clef, Microsoft-Decision-1, Liquid d1), and where to look for it. Use when adding typed decisions (Choice, Score, Noul or yes/no questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision should read an image; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for the official cookbook, client library, integration or example that fits a need; when choosing between Jev, another decision model, an LLM, a cross-encoder, an open model you host or a small trained model, including when a decision must be fast; or when a question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; measuring a finished workflow has its own companion skill, jev-evidence-eval.
+description: Maps what can be built with TypeSafe Jev and the other decision models that take the same typed request (OpenAI Decisions, Gemini Decision 1, Cloudflare Clef, Microsoft-Decision-1, Liquid d1), and where to look for it. Use when adding typed decisions (Choice, Score, Noul or yes/no questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision should read an image; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for the official cookbook, client library, integration or example that fits a need; when choosing between Jev, another decision model, an LLM, a cross-encoder, an open model you host or a small trained model, including when a decision must be fast; or when a question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; jev-evidence-eval measures a finished workflow.
 license: MIT
 ---
 
@@ -16,7 +16,7 @@ official [typesafe-ai skill](https://docs.typesafe.ai/agent-skill) is installed 
 the install commands), follow it for API and question design; this skill adds the recipe map,
 connection paths, pitfalls and where measurements live.
 
-OpenAI, Cloudflare, Microsoft and Liquid now serve the same kind of request, some of them with
+OpenAI, Google, Cloudflare, Microsoft and Liquid now serve the same kind of request, some of them with
 images. The recipes and pitfalls below apply to them too; model IDs, limits and thresholds do
 not carry over. [Providers](references/providers.md) has each request form.
 
@@ -26,7 +26,7 @@ not carry over. [Providers](references/providers.md) has each request form.
 | --- | --- |
 | Concepts, primitives, confidence, HTTP API, SDKs, limits, prices | [Docs index](https://docs.typesafe.ai/llms.txt); append `.md` to a page path for Markdown |
 | A worked recipe for the need | [Cookbooks](#official-cookbooks) below; read the closest one in full before designing |
-| Architecture patterns | [Intent routing](https://docs.typesafe.ai/patterns/intent-routing) (a ticket or request router), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring) |
+| Architecture patterns | [Routing by probability](https://docs.typesafe.ai/patterns/probability-routing) (a higher threshold for riskier actions), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring) |
 | Ideas by industry or product | TypeSafe's [example use cases](https://docs.typesafe.ai/concepts/use-case-map); Vercel's [nine Jev use cases](https://vercel.com/i/jev-use-cases) (question type, evidence and action for each) and [five builds on five decision models](https://vercel.com/i/ai-gateway-decision-api-use-cases) |
 | Where Jev is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) (the page names no Jev version: recheck a listed weakness on the model you use) |
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
@@ -48,7 +48,10 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
 | Retrieval | [Re-ranking](https://docs.typesafe.ai/cookbooks/rerank_typesafe) | One Noul per query and candidate reorders a BM25 shortlist, one request per candidate |
 | | [Classifying RAG passages](https://docs.typesafe.ai/cookbooks/classifying_rag_passages) | Four Nouls per passage (relevant, evidence, contradicts the query, injection) decide whether it reaches the generator as evidence, as a conflict or not at all |
 | | [Line-by-line search](https://docs.typesafe.ai/cookbooks/semantic_find) | A Choice over numbered lines finds the answer; a Noul says whether the document has one |
+| | [Infinite cardinality choice](https://docs.typesafe.ai/cookbooks/infinite_cardinality_choice) | Finds one item among thousands: a Noul per candidate on a short description, again on a longer one for the top candidates, then one Choice over the shortlist |
+| | [Intelliprompter](https://docs.typesafe.ai/cookbooks/intelliprompter) | One Score per planned talking point against a growing live transcript; code ticks a point once it passes the threshold and never unticks it |
 | Checks | [Double-checking citations](https://docs.typesafe.ai/cookbooks/citation_check) | A string match catches invented quotes, then a Choice decides whether the context supports the claim |
+| | [Verifying LLM answers against their source](https://docs.typesafe.ai/cookbooks/verify_llm_outputs) | Three Nouls in one request check whether an LLM's answer follows from the paragraphs it was given; doubtful answers go to review |
 | | [Guardrails for LLMs](https://docs.typesafe.ai/cookbooks/llm_guardrails) | Hazard Nouls and a severity Score screen LLM input and output; thresholds live in code |
 | | [Chat message filter](https://docs.typesafe.ai/cookbooks/twitch_chat_filter) | Three questions per chat message (category, toxicity, spoilers); code decides whether to show, highlight, hide or blur it |
 | | [SDE cascade](https://docs.typesafe.ai/cookbooks/sde_cascade) | Jev checks a small model's extraction and sends failing records to a reasoning model |
@@ -58,11 +61,15 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
 | | [Entity alignment](https://docs.typesafe.ai/cookbooks/entity_alignment) | A Score matches catalog records; companion Nouls show which fields disagree |
 | | [Pre-parsed value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook) · [date extraction](https://docs.typesafe.ai/cookbooks/date_extraction_cookbook) | Code proposes candidate values, a Choice selects, code copies or assembles |
 | | [Structure recovery](https://docs.typesafe.ai/cookbooks/autoformat) | Rebuilds Markdown from flattened text: the words come from the input, code adds the boundaries and markup |
+| | [Shopping cart](https://docs.typesafe.ai/cookbooks/cart_from_primitives) | A loop of Choice questions with shrinking options finds every ordered item, then one batched request per item fills its fields |
 | Classification | [Classification using confidence](https://docs.typesafe.ai/cookbooks/classification_using_confidence) | Reports the broader parent label when a fine-grained Choice is unsure |
 | | [Hierarchical classification](https://docs.typesafe.ai/cookbooks/hierarchical_classification) | Beam search over Choice probabilities through a deep taxonomy |
 | | [Autoresearch feature discovery](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery) | Proposed Score and Noul questions become features for a trained regressor |
 | Cost and stability | [Parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions) | Batches questions about one document; reports matching answers with lower cost and latency in its example |
 | | [Self-consistency: Nouls](https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook) · [Choices](https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook) | Samples with a fresh, irrelevant `uid` expose variation; route the unstable band to review |
+| Images (experimental, see [Pitfalls](#pitfalls)) | [Reading a scanned record](https://docs.typesafe.ai/cookbooks/reading_scanned_documents) | A Noul and a Box per expected item on a scan, a Choice with an `unreadable` option for each value, then a text-only request checks the readings |
+| | [OCR confidence and boxes](https://docs.typesafe.ai/cookbooks/ocr_confidence_bounding_boxes) | A Box per OCR value, scored against the whole page and against a crop of its box; a low score goes to review |
+| | [Feeder-cam visit log](https://docs.typesafe.ai/cookbooks/feeder_watch) | Five questions per video frame, one of them a Box that finds the bird; plain code turns the answers into a visit log |
 
 ## Build a decision
 
@@ -79,6 +86,9 @@ questions can trigger billed calls. Use a current model ID for live runs (see [P
    orders the review queue and approves nothing: wrong answers also arrive with a high
    probability ([an example](https://docs.typesafe.ai/cookbooks/classification_using_confidence)),
    and a second model agreeing is no check until it has been measured on the same cases.
+   The official skill's 0.7 and 0.3 Noul thresholds are a starting point to tune from: until
+   the labelled cases support them, a Noul above 0.7 marks a likely yes to review first, not one
+   that code acts on alone.
 4. **Measure before adopting.** Compare with the current rule, classifier or LLM on the same
    labelled cases in the user's language (English is Jev's strongest), and choose thresholds per
    task and corpus on development data. Keep test cases separate from development and retrieved

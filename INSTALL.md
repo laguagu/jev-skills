@@ -17,7 +17,13 @@ Pick one installation method per skill to avoid duplicate copies.
 
 ## Claude Code plugin alternative
 
-Install all three of this repo's skills together:
+Install all three of this repo's skills together (Claude Code 2.1.275 or later):
+
+```sh
+claude plugin install jev-skills --marketplace laguagu/jev-skills
+```
+
+On older versions, add the marketplace first:
 
 ```sh
 claude plugin marketplace add laguagu/jev-skills

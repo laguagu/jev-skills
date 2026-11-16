@@ -1,6 +1,6 @@
 ---
 name: jev-builder
-description: Maps what can be built with TypeSafe Jev and the other decision models that take the same typed request (OpenAI Decisions, Gemini Decision 1, Cloudflare Clef, Microsoft-Decision-1, Liquid d1), and where to look for it. Use when adding typed decisions (Choice, Score, Noul or yes/no questions) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision should read an image; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for the official cookbook, client library, integration or example that fits a need; when choosing between Jev, another decision model, an LLM, a cross-encoder, an open model you host or a small trained model, including when a decision must be fast; or when a question answers wrong or with low confidence. Complements the official typesafe-ai skill, which covers API and question design from the live docs; jev-evidence-eval measures a finished workflow.
+description: Maps what can be built with TypeSafe Jev and other decision models that take the same typed request (OpenAI Decisions, Gemini Decision 1, Cloudflare Clef, Microsoft-Decision-1, Liquid d1, open models on Ollama or llama.cpp), and where to look. Use when adding typed decisions (Choice, Score, Noul or yes/no) for routing, reranking, classification, tool or model selection, value extraction, moderation, citation or evidence checks; when a decision reads an image or must be fast; when connecting through an SDK, gateway or framework, or keeping the provider swappable; when looking for a fitting cookbook, client or example; when choosing between Jev, another decision model, an LLM, a cross-encoder or a small trained model; or when a question answers wrong or with low confidence. The official typesafe-ai skill covers API and question design; jev-evidence-eval measures a finished workflow.
 license: MIT
 ---
 
@@ -16,8 +16,9 @@ official [typesafe-ai skill](https://docs.typesafe.ai/agent-skill) is installed 
 the install commands), follow it for API and question design; this skill adds the recipe map,
 connection paths, pitfalls and where measurements live.
 
-OpenAI, Google, Cloudflare, Microsoft and Liquid now serve the same kind of request, some of them with
-images. The recipes and pitfalls below apply to them too; model IDs, limits and thresholds do
+OpenAI, Google, Cloudflare, Microsoft, Liquid and Telnyx now serve the same kind of request, some of them with
+images, and Ollama, llama.cpp and LM Studio serve open decision models locally behind TypeSafe's
+form. The recipes and pitfalls below apply to them too; model IDs, limits and thresholds do
 not carry over. [Providers](references/providers.md) has each request form.
 
 ## Where to look
@@ -26,11 +27,11 @@ not carry over. [Providers](references/providers.md) has each request form.
 | --- | --- |
 | Concepts, primitives, confidence, HTTP API, SDKs, limits, prices | [Docs index](https://docs.typesafe.ai/llms.txt); append `.md` to a page path for Markdown |
 | A worked recipe for the need | [Cookbooks](#official-cookbooks) below; read the closest one in full before designing |
-| Architecture patterns | [Routing by probability](https://docs.typesafe.ai/patterns/probability-routing) (a higher threshold for riskier actions), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring) |
+| Architecture patterns | [Routing by probability](https://docs.typesafe.ai/patterns/probability-routing) (a higher threshold for riskier actions), [confidence-gated routing](https://docs.typesafe.ai/patterns/confidence-routing), [fan-out](https://docs.typesafe.ai/patterns/fan-out), [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring), [a Noul screen first](https://docs.typesafe.ai/patterns/noul-screen) (the expensive step runs only on a clear yes), [a companion Noul](https://docs.typesafe.ai/patterns/companion-noul) (does any option fit at all) |
 | Ideas by industry or product | TypeSafe's [example use cases](https://docs.typesafe.ai/concepts/use-case-map); Vercel's [nine Jev use cases](https://vercel.com/i/jev-use-cases) (question type, evidence and action for each) and [five builds on five decision models](https://vercel.com/i/ai-gateway-decision-api-use-cases) |
 | Where Jev is weak | [Jagged edges](https://docs.typesafe.ai/model-jaggedness) (the page names no Jev version: recheck a listed weakness on the model you use) |
 | Keys, gateways, frameworks, troubleshooting | [Setup](references/setup.md) |
-| Another provider's request form, image input, one gateway for several decision models, an open decision model you host | [Providers](references/providers.md) |
+| Another provider's request form, image input, one gateway for several decision models, an open decision model you host or run locally (Ollama, llama.cpp, LM Studio) | [Providers](references/providers.md) |
 | Client in another language, MCP server, agent hook, app, open model | [jev-skills README](https://github.com/laguagu/jev-skills#readme) |
 | Which open decision model ranks best now | [Jev Decision Index](https://huggingface.co/spaces/multimodalart/jev-decision-index), a community leaderboard (unofficial; English benchmarks and private tests): use it to find candidates, then measure them on your own task; it changes within days, and [finding a newer one](references/providers.md#finding-a-newer-one) says what to check first |
 | Offline runnable examples | [Decisions](https://github.com/laguagu/jev-skills/tree/main/examples/decisions) (routing, ranking, tools, workflow, risk, verify), [rerank](https://github.com/laguagu/jev-skills/tree/main/examples/rerank), [evidence](https://github.com/laguagu/jev-skills/tree/main/examples/evidence) |
@@ -150,7 +151,10 @@ provider is one more adapter and one more measurement.
   recipe sends one candidate per request for clarity. Check the
   [current context and rate limits](https://docs.typesafe.ai/models)
   when choosing batch size and concurrency; the provider can adjust them without notice.
-  Measure the tradeoff on your own data.
+  Measure the tradeoff on your own data. A state past the default limits (64k per request, 32k
+  per question) needs the `TypeSafe-Danger-Zone-Long-Context: true` header (262k on Jev 1.13 and
+  1.14, same price per token); it is slower and less accurate, so send it only where the whole
+  document must be read at once.
 - A Noul per candidate is enough to sort. Use a graded Score when code acts on the levels themselves.
 - The model reads both an option's name and its description
   ([Choice](https://docs.typesafe.ai/primitives/choice)), and instructions that disagree with the

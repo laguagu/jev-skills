@@ -13,10 +13,11 @@ retention and processing location from the provider's own page, never from memor
 | [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/models/clef-flash/) | `@cf/cloudflare/clef-flash`, [`clef`](https://developers.cloudflare.com/workers-ai/models/clef/) and [`clef-omni`](https://developers.cloudflare.com/workers-ai/models/clef-omni/); the weights are also on Hugging Face under Apache-2.0 | A Workers binding, or `POST https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/@cf/cloudflare/clef-flash`, with TypeSafe's `model`, `state` and `questions` map | Yes: an `images` array of embedded PNG, JPEG or WebP, at most four, no remote URLs; `clef-omni` also takes audio and video |
 | [Microsoft Foundry](https://techcommunity.microsoft.com/blog/azure-ai-foundry-blog/introducing-microsoft-decision-1-in-microsoft-foundry-for-decision-and-classific/4562742) (public preview in the announcement of 2026-10-09; [how-to](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/use-foundry-models-microsoft-decision)) | `Microsoft-Decision-1`; `model` is your deployment name | `POST {endpoint}/providers/microsoft/v1/systemone` with `model`, `state` and the `questions` map | No, text only ([capabilities](https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure)) |
 | [Liquid](https://docs.liquid.ai/lfm/models/d1) | `d1.1`, the default hosted model, and `d1-ultra`; the [family](https://docs.liquid.ai/lfm/models/decision-models) also lists the open-weight `d1-2B`, `d1-omni-2B` and `d1-omni-600M`; Liquid lists the earlier `d1` on OpenRouter and the Vercel gateway, not on its own API | `POST https://api.liquid.ai/decisions/v1/systemone`; the TypeSafe SDKs work with the base URL `https://api.liquid.ai` and compression off, since Liquid does not accept zstd bodies ([setup](setup.md)) | Yes: a top-level `images` array of base64 data URLs (at most eight, body under 4.5 MB, no remote URLs) in a direct HTTPS JSON request: Liquid's image examples do not use the SDKs |
+| [Telnyx Inference](https://developers.telnyx.com/docs/inference/decision-models) (beta) | `telnyx/decision-flash` (the default) and `telnyx/decision-pro` for long context; Telnyx manages the models behind both aliases | `POST https://api.telnyx.com/v2/ai/typesafe/v1/systemone`, a subset of TypeSafe's request form: Choice and Score take 2 to 64 options; the TypeSafe Python SDK works with the base URL `https://api.telnyx.com/v2/ai/typesafe` and a Telnyx key | No, text only |
 | [Google Gemini API](https://aistudio.google.com/docs/decisions-api) ([announcement](https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/) of 2026-11-11) | `gemini-decision-1`, the only supported model, on the Gemini Developer API (`v1beta`) only; the `google-genai` and `@google/genai` SDKs need 3.2 or later | `POST https://generativelanguage.googleapis.com/v1beta/decisions` with an `x-goog-api-key` header, `model`, `input` (a string or content blocks; not `state`) and a `questions` map of 1 to 1,000 from your ID to `{type, instructions, criteria}`; `type` is `noul` (criteria optional: `true_description`, `false_description`), `choice` (criteria map, 2 to 255 options) or `score` (ordered criteria array, 2 to 255 levels); answers return under the same IDs, each with a `confidence` | Yes: `image`, `audio`, `video` and `document` (PDF) blocks inside `input`, as base64 `data` (up to 100 MB per request, 50 MB for PDFs) or a `uri` (a Files API URI, or an HTTPS URL of up to 15 MB; no `gs://` or YouTube); question instructions take text only |
 | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway/modalities/decision) | for example `typesafe-ai/jev` (pinned: `typesafe-ai/jev-1.13.0`, `typesafe-ai/jev-1.14.0`), `openai/gpt-6-luna-decisions`, `microsoft/microsoft-decision-1`, `google/gemini-decision-1`, `liquid/d1`, `liquid/d1-ultra`, `perplexity/pplx-decider-v1.3` and the open-weight `baseten/mammoth-1` and `convaiinnovations/laya`; the [Decision filter](https://vercel.com/ai-gateway/models?capabilities=decision) is the current list | One gateway key for all of them, three ways in: AI SDK `experimental_decide` with `gateway.decisionModel(id)`; OpenAI's `decisions.create` against `https://ai-gateway.vercel.sh/v1` (over plain HTTP, `POST /v1/decisions`); the TypeSafe SDK against `https://ai-gateway.vercel.sh/typesafe`. The older `POST /v1/evaluate` is deprecated and kept only for existing integrations | Only when the answering model takes images (a text-only model such as `typesafe-ai/jev` returns 400; a language-model fallback must support vision); `/v1/decisions` takes base64 data URLs only, at most 128 images, no external URLs or file IDs. `google/gemini-decision-1` takes PDF, audio and video only through the AI SDK; the TypeSafe-compatible and Decisions endpoints take text and images |
 
-Jev is also served through OpenRouter and Cloudflare; see [setup](setup.md#gateways-and-frameworks).
+Jev is also served through OpenRouter, Cloudflare and other gateways; see [setup](setup.md#gateways-and-frameworks).
 A gateway adds a recipient of the state: check its terms as well as the model provider's.
 
 ## What differs under the same shape
@@ -36,9 +37,11 @@ A gateway adds a recipient of the state: check its terms as well as the model pr
   there is no per-question refusal.
 - **Cloudflare cuts long text silently.** Images and questions that exceed the context window
   fail the request, but a long text `state` is truncated to fit without an error. Measure the
-  input before the call when the whole source has to be read.
+  input before the call when the whole source has to be read. Ollama refuses input that does
+  not fit instead of cutting it.
 - **Confidence is a provider statistic** about how concentrated a Choice or Score distribution
-  is (at Gemini the top outcome's probability). It is not accuracy and not comparable across providers. A language-model fallback on
+  is (at Gemini the top outcome's probability, at Telnyx a normalized entropy). It is not accuracy and not comparable across providers.
+  Telnyx says its option scores are relative preferences, not calibrated probabilities. A language-model fallback on
   Vercel's gateway has neither a confidence nor a distribution; see
   [setup](setup.md#gateways-and-frameworks).
 - **Images are spelled differently.** TypeSafe takes an `assets` map referenced from the text; Cloudflare and
@@ -70,6 +73,27 @@ card; read the card again before adopting one.
 | [`perplexity-ai/pplx-decider-v1.3`](https://huggingface.co/perplexity-ai/pplx-decider-v1.3) | 26B; also [`pplx-decider-flash-v1.3`](https://huggingface.co/perplexity-ai/pplx-decider-flash-v1.3) 4.5B; v1.2 remains on the Hub and the gateway | Apache-2.0 | Text and images; a `locate` question returns verbatim text spans with character offsets (text state only, no images); build requests with its `pplx_decider` package, not v1.2 prompt builders; also hosted on the Vercel gateway (table above) |
 | [Amos 1 Large](https://huggingface.co/mukaddamzaid/amos-1-large) | 27B | Apache-2.0 | Text, JSON or a photo. Its hosted endpoint's [docs](https://amos.scira.ai/docs/) say every request is kept to improve the models: send it public material only, or self-host |
 | [Mammoth-1](https://huggingface.co/baselabs/mammoth-1) by Baseten | 27B; [`elephant-1`](https://huggingface.co/baselabs/elephant-1) 9B | MIT | Text and images; own serving bundle (`setup.sh`, a pinned runtime) rather than vLLM; input past 16,384 tokens is refused, not truncated. Also hosted by Baseten and on the Vercel gateway |
+
+### Local runtimes
+
+These serve an open decision model behind the same `POST /v1/systemone` request on a laptop or
+your own server, so code written against TypeSafe's form changes only the base URL and model:
+
+- [Ollama](https://docs.ollama.com/api/systemone) 0.35.0 or later, at `http://localhost:11434/v1/systemone`
+  (for example `ollama pull nimble`). Locally, text and schema must fit in 64 KiB and the whole
+  input in the loaded context; input is never truncated. Its cloud models (0.40.5 or later) are a
+  paid, hosted path with their own question and image limits.
+- [llama.cpp server](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md):
+  `/v1/systemone` for native decision models, which `GET /models` marks with `decisions` in
+  `output_modalities`; images and audio go in a `files` array of data URLs.
+- [LM Studio](https://lmstudio.ai/docs/developer/jev-compat/systemone), at
+  `http://localhost:1234/v1/systemone` with a loaded decision model (not a chat model); images as
+  inline base64 data URLs.
+- vLLM 0.33.0 or later for the models that name it in the table above.
+
+[Pydantic AI's `SystemOneModel`](https://pydantic.dev/docs/ai/models/system-one/) talks to any of
+these by URL. A local runtime keeps the state in-house, but the model behind it is still a
+different model: measure it, and set its own thresholds.
 
 ### Finding a newer one
 
